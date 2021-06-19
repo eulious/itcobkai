@@ -1,0 +1,110 @@
+@import "../../main/style.scss";
+
+@mixin member {
+    border-radius: 50%;
+    box-sizing: border-box;
+    line-height: 1.2em;
+    width: 1.1em;
+    height: 1.1em;
+    text-align: center;
+    color: #444;
+}
+
+.viewer {
+    &__side_wrapper {
+        vertical-align: top;
+        width: 250px;
+    }
+
+    &__wrapper {
+        // background: #fff;
+        background: #fafafa;
+        margin: 3em auto;
+        padding: 0 1em;
+    }
+
+    &__side {
+        &_wrapper {
+            vertical-align: top;
+            width: 250px;
+        }
+
+        &_contents {
+            @include scrollbar;
+            height: 100%;
+        }
+
+        &_table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+    }
+
+    &__canvas {
+        padding: 5px 20px;
+    }
+
+    &__tab {
+        &-wrap {
+            table-layout: fixed;
+            width: 250px;
+        }
+
+        &-switch {
+            cursor: pointer;
+            text-align: center;
+            &:hover {
+                color: #888;
+            }
+            border-bottom: 3px solid #ddd;
+            // width: 100%;
+            height: 2em;
+            order: -1;
+
+            &--select {
+                border-bottom: 3px solid #222;
+            }
+        }
+
+        &-content {
+            width: 100%;
+            display: none;
+        }
+    }
+}
+
+.user {
+    &__img_box {
+        width: 50px;
+        vertical-align: top;
+    }
+    &__thumbnail {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+    &__contents {
+        border-bottom: 1px solid #ddd;
+        width: 250px;
+        &:hover {
+            background-color: #eee;
+        }
+    }
+    &__dtm {
+        @include member;
+        background-color: #c2efff;
+    }
+    &__cg {
+        @include member;
+        background-color: #8ce9bc;
+    }
+    &__prog {
+        @include member;
+        background-color: #f7cfbe;
+    }
+    &__mv {
+        @include member;
+        background-color: #fff5c2;
+    }
+}
