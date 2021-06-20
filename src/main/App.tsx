@@ -3,6 +3,7 @@ import Signup from "../auth/Signup";
 import { getParam } from "../common/Common";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
+import Main from "./Main";
 import "./style.scss"
 
 export default function App() {
@@ -18,14 +19,7 @@ export default function App() {
             case "auth":
                 return <Signup />
             default:
-                return (
-                    <div>
-                        <div>
-                            回数: {a}
-                        </div>
-                        <button onClick={onClick}>button</button>
-                    </div>
-                )
+                return (<Main />)
         }
     }, [location.search])
 

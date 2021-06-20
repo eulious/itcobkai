@@ -1,6 +1,7 @@
+import { LAMBDA } from "./Config";
 
 export async function request(method: "GET" | "PUT" | "POST" | "DELETE", path: string, post?: Object): Promise<any> {
-    const res = await fetch("https://pwh2cd4j1e.execute-api.ap-northeast-1.amazonaws.com/itcobkai" + path, {
+    const res = await fetch(`${LAMBDA}&api=${path}`, {
         method: method,
         mode: "cors",
         headers: {

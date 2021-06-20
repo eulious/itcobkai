@@ -2,13 +2,16 @@
 
 from time import time
 from base64 import b64decode
-from .keys import KEYS
-from .utils import API, CustomError, db, id62, s3, auth
+from keys import KEYS
+from utils import CustomError, db, id62, s3, auth
+from discord import Discord
+from lambdaAPI import LambdaAPI
 
-app = API()
+app = LambdaAPI()
 
 def lambda_handler(event, context):
-    return app.request(event)
+    return app.debug(event)
+    # return app.request(event)
 
 
 @app.get("init")
@@ -28,6 +31,29 @@ def init(params):
         raise CustomError("無効なトークンです")
 
 
+@app.post("init")
+def init(params):
+    dc = Discord()
+    if "refresh" in params["post"]:
+        discord = dc.refresh(params["post"]["refresh"])
+        access_token = discord["access"]
+    else:
+        discord = None
+        access_token = params["post"]["access"]
+    user = dc.user(access_token)
+    
+    items = db("itcobkai").scan()["Items"]
+    profiles = {}
+    for item in items:
+        profile = item["profile"]
+        profiles[item["id"]] = profile
+        if user["id"] == item["id"] and (user["name"] != profile["name"] or user["thumbnail"] != profile["thumbnail"]):
+            profile["name"] = user["name"]
+            profile["thumbnail"] = user["thumbnail"]
+            db("itcobkai").put_item( Item={ "id": item["id"], "profile": profile,"secret": item["secret"] })
+    return {"profiles": profiles, "keys": KEYS, discord: discord}
+
+
 @app.get("users")
 def get_user(params):
     if not auth(params["token"]):
@@ -41,21 +67,22 @@ def get_user(params):
 
 
 @app.get("refresh")
-def refresh(param):
-    id, token = param["token"].split("-")
+def refresh(params):
+    id, token = params["token"].split("-")
     res = db("itcobkai").get_item(Key={"id": id})
     if "Item" in res and res["Item"]["secret"]["refresh"] == token:
-        res["secret"]["access"] = id62()
-        res["secret"]["expiration"] = int(time())
-        db("itcobkai").put_item( Item=res)
-        return res["token"]["access"] == token
+        item = res["Item"]
+        item["secret"]["access"] = id62()
+        item["secret"]["expiration"] = int(time())
+        db("itcobkai").put_item(Item=item)
+        return item["secret"]["access"]
     else:
         raise CustomError("無効なトークンです")
 
 
 @app.get("signup")
-def signup(param):
-    post = param["post"]
+def signup(params):
+    post = params["post"]
 
     if post["base64"]:
         h = id62()
@@ -76,5 +103,12 @@ def signup(param):
         "expiration": int(time())
     }
     
-    db("itcobkai").put_item( Item={ "id": id, "profile": post ,"secret": secret })
+    db("itcobkai").put_item( Item={ "id": id, "profile": post, "secret": secret })
     return {"secret": secret}
+
+
+@app.post("code")
+def convert_code(params):
+    dc = Discord()
+    d = dc.get_token(params["post"]["code"], params["post"]["redirect"])
+    return {"discord":d, "users": dc.user(d["access"]), "guild": dc.guild(d["access"])}
