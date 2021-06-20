@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-from utils import CustomError
-from re import sub
 from json import loads, dumps
+from utils import CustomError
 from traceback import format_exc
 
 
@@ -11,22 +10,9 @@ class LambdaAPI():
         self.funcs = {}
 
 
-    def get(self, url):
+    def api(self, url):
         def _wrapper(func):
-            if not url in self.funcs:
-                self.funcs[url] = {}
-            self.funcs[url]["GET"] = func
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-            return wrapper
-        return _wrapper
-
-
-    def post(self, url):
-        def _wrapper(func):
-            if not self.funcs[url]:
-                self.funcs[url] = {}
-            self.funcs[url]["POST"] = func
+            self.funcs[url] = func
             def wrapper(*args, **kwargs):
                 return func(*args, **kwargs)
             return wrapper
@@ -34,12 +20,13 @@ class LambdaAPI():
 
 
     def request(self, event):
-        params = self.__parse_params(event)
+        post = self.__parse_params(event)
         try:
-            body = self.funcs[params["api"]][params["method"]](params)
+            body = self.funcs[post["_api"]](post)
             status_code = 200
         except CustomError as e:
             body = {"status": "ng", "detail": str(e)}
+            status_code = 200
         except:
             body = {"status": "ng", "detail": format_exc()}
             status_code = 500
@@ -56,7 +43,7 @@ class LambdaAPI():
             },
             "body": dumps(body, ensure_ascii=False)
         }
-    
+
 
     def debug(self, event):
         return {
@@ -73,15 +60,8 @@ class LambdaAPI():
 
 
     def __parse_params(self, event):
-        params = {}
-        params["get"] = event["queryStringParameters"]
-        params["api"] = params["get"]["api"]
-        params["method"] = event["httpMethod"]
-        headers = event["headers"]
-        if headers and "Authorization" in headers:
-            params["token"] = sub(".*Bearer\ ", "", headers["Authorization"])
         if event["body"] and type(event["body"]) == dict:
-            params["post"] = event["body"]
+            post = event["body"]
         elif event["body"] and type(event["body"]) == str:
-            params["post"] = loads(event["body"])
-        return params
+            post = loads(event["body"])
+        return post

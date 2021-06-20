@@ -1,13 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useReducer, useState } from "react";
 import Signup from "../auth/Signup";
 import { getParam } from "../common/Common";
+import { Context, initState, reducer } from "../common/Context";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
 import Main from "./Main";
 import "./style.scss"
 
 export default function App() {
-    const [a, setA] = useState(0)
+    const [state, dispatch] = useReducer(reducer, initState)
     const params = getParam()
 
     const dom = useMemo(() => {
@@ -23,9 +24,9 @@ export default function App() {
         }
     }, [location.search])
 
-    function onClick() {
-        setA(a + 1)
-    }
-
-    return dom
+    return (
+        <Context.Provider value={{ state, dispatch }}>
+            {dom}
+        </Context.Provider>
+    )
 }

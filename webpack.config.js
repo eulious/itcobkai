@@ -1,7 +1,7 @@
 const path = require('path');
 const mode = process.env.NODE_ENV
 
-const moduleList = ["react", "react-dom"];
+const moduleList = ["react", "react-dom", "dayjs", "crypto-js"];
 
 module.exports = {
     mode: mode,
