@@ -7,6 +7,17 @@ body {
     font: 400 87.5%/1.5em "Open Sans", sans-serif;
 }
 
+.discord_logo {
+    padding: 5px 10px;
+    background-color: #6272f1;
+    border-radius: 5%;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    &:hover {
+        background-color: #62a7f1;
+    }
+}
+
 .auth {
     &__form-wrapper {
         background: #fafafa;
@@ -65,15 +76,15 @@ body {
 
     &__button {
         background: #6272f1;
+        padding: 15px 0px;
         border: none;
         color: #fff;
         cursor: pointer;
-        height: 50px;
-        font-family: "Open Sans", sans-serif;
         font-size: 1.2em;
         letter-spacing: 0.05em;
         text-align: center;
         text-transform: uppercase;
+        vertical-align: middle;
         transition: background 0.3s ease-in-out;
         width: 100%;
     }

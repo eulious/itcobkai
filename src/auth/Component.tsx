@@ -11,6 +11,7 @@ export function TextBox(props: TextBoxProps) {
     function onChange(e: ChangeEvent<HTMLInputElement>) {
         props.value[props.form] = e.target!.value
         props.setValue({ ...props.value })
+        console.log(props.value)
     }
 
     return (
@@ -18,7 +19,9 @@ export function TextBox(props: TextBoxProps) {
             <input type="text"
                 onChange={onChange}
                 maxLength={props.maxLength}
-                placeholder={props.placeholder} />
+                placeholder={props.placeholder}
+                value={props.value[props.form]}
+            />
         </div>
     )
 }

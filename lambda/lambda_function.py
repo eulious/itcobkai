@@ -2,7 +2,7 @@
 
 from time import time
 from keys import KEYS
-from utils import CustomError, db, id62, auth
+from utils import CustomError, db, id62, try_get_me
 from discord import Discord
 from lambdaAPI import LambdaAPI
 
@@ -16,13 +16,7 @@ def lambda_handler(event, context):
 
 @app.api("/init")
 def init(post):
-    if "_refreshd" in post:
-        discord = dc.refresh(post["_refreshd"])
-        access_token = discord["_accessd"]
-    else:
-        discord = None
-        access_token = post["_accessd"]
-    user = dc.user(access_token)
+    user = dc.user(post["_access"])
     
     items = db("itcobkai").scan()["Items"]
     profiles = {}
@@ -33,32 +27,42 @@ def init(post):
             profile["name"] = user["name"]
             profile["thumbnail"] = user["thumbnail"]
             db("itcobkai").put_item( Item={ "id": item["id"], "profile": profile,"secret": item["secret"] })
-    return {"profiles": profiles, "keys": KEYS, discord: discord}
+    return { "profiles": profiles, "keys": KEYS }
 
 
 @app.api("/users")
 def get_user(post):
-    if not auth(post["_token"]):
-        raise CustomError("無効なトークンです")
-
-    res = db("itcobkai").get_item(Key={"id": post["_id"][0]})
-    if "Item" not in res:
-        raise CustomError("無効なトークンです")
-    else:
+    try_get_me(post)
+    res = db("itcobkai").get_item(Key={"id": post["id"][0]})
+    if "Item" in res:
         return res["Item"]["profile"]
+    else:
+        raise CustomError("ユーザが存在しません")
 
 
-@app.api("/refresh")
+@app.api("/users/me")
+def get_user_me(post):
+    return try_get_me(post)
+
+
+@app.api("/refresh/db")
 def refresh(post):
     res = db("itcobkai").get_item(Key={"id": post["_id"]})
     if "Item" in res and res["Item"]["secret"]["refresh"] == post["_refresh"]:
-        item = res["Item"]
-        item["secret"]["access"] = id62()
-        item["secret"]["expiration"] = int(time())
-        db("itcobkai").put_item(Item=item)
-        return item["secret"]["access"]
+        res["Item"]["secret"] = {
+            "access": id62(),
+            "refresh": id62(),
+            "expires_at": int(time()) + 604800
+        }
+        db("itcobkai").put_item(Item=res["Item"])
+        return res["Item"]["secret"]
     else:
         raise CustomError("無効なトークンです")
+
+
+@app.api("/refresh/discord")
+def refresh(post):
+    return dc.refresh(post["_refresh"])
 
 
 @app.api("/signup")

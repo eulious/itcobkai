@@ -15,18 +15,12 @@ class CustomError(Exception):
         return self.arg
 
 
-def auth(token, item=None):
-    if "-" not in token:
-        return False
-    id, token = token.split("-")
-    if not item:
-        res = resource('dynamodb').Table("itcobkai").get_item(Key={"id": id})
-        if "Item" not in res:
-            return False
-        item = res["Item"]
-    if item["token"]["expiration"] < int(time()):
-        return False
-    return item["token"]["access"] == token
+def try_get_me(post):
+    res = db("itcobkai").get_item(Key={"id": post["_id"]})
+    if "Item" in res and res["Item"]["secret"]["access"] == post["_access"]:
+        return res["Item"]["profile"]
+    else:
+        raise CustomError("無効なトークンです")
 
 
 def id62(num):

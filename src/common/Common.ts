@@ -1,11 +1,13 @@
 import { LAMBDA_URL } from "./Config";
+import Token from "./Token";
 
-export async function request(api: string, post: any = {}, oauth = true): Promise<any> {
+const t = new Token()
+
+export async function request(api: string, post: any = {}, auth: "db" | "discord" | "" = ""): Promise<any> {
+    if (auth) post._access = await t.get(auth)
+    if (auth === "db") post._id = localStorage._id
     post._api = api
-    if (oauth) {
-        post._id = lsLoad("_id")
-        post._token = lsLoad("_token")
-    }
+    console.log("api")
     const res = await fetch(LAMBDA_URL, {
         method: "POST",
         mode: "cors",
@@ -38,27 +40,4 @@ export function throttle(func: Function, limit: number): Function {
             setTimeout(() => (inThrottle = false), limit)
         }
     }
-}
-
-
-const a = 'BsEaXfLKFHpxk1DSwTu4ycAQVitN70z6dgbjYJ2ZPCvWI8OGRUnmMqr5l3oh9e'
-const b = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-const c: { [key: string]: string } = {}
-const d: { [key: string]: string } = {}
-for (let i = 0; i < a.length; i++) {
-    c[a[i]] = b[i]
-    d[b[i]] = a[i]
-}
-
-export function lsSave(key: string, word: string) {
-    // const mm = CryptoJS.AES.encrypt(word, AES).toString()
-    const mm = Array.from(word).map(x => c[x] ? c[x] : x).join('')
-    localStorage[key] = mm
-}
-
-
-export function lsLoad(key: string): string | undefined {
-    const mm = localStorage[key] as string
-    if (mm) return Array.from(mm).map(x => d[x] ? d[x] : x).join('')
-    // if (mm) return CryptoJS.AES.decrypt(mm, AES).toString(CryptoJS.enc.Utf8)
 }
