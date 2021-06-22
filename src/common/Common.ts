@@ -3,10 +3,11 @@ import Token from "./Token";
 
 const t = new Token()
 
-export async function request(api: string, post: any = {}, auth: "db" | "discord" | "" = ""): Promise<any> {
+export async function request(method: "GET" | "POST", api: string, post: any = {}, auth: "db" | "discord" | "" = ""): Promise<any> {
     if (auth) post._access = await t.get(auth)
     if (auth === "db") post._id = localStorage._id
     post._api = api
+    post._method = method
     console.log("api")
     const res = await fetch(LAMBDA_URL, {
         method: "POST",

@@ -6,7 +6,7 @@ export default function Main() {
 
     async function discord() {
         if (!(params.code)) return
-        const res = await request("/code", {
+        const res = await request("POST", "/code", {
             code: params.code, redirect: location.href.split("?")[0]
         })
         console.log(res)

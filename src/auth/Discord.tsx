@@ -41,10 +41,10 @@ export default function Discord(props: DiscordProps) {
     useEffect(() => {
         if (params.code) {
             setLog("Discordからユーザ情報を取得中...")
-            // code2token()
+            code2token()
         } else if (localStorage._id) {
             setLog("前回のユーザ情報を取得中...")
-            // fetchValue()
+            fetchValue()
         } else {
             setLog("Discordで認証をして下さい")
             setIsEnable(true)

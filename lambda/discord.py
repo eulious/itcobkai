@@ -2,8 +2,8 @@
 
 from utils import CustomError, id62
 from time import time
-from keys import DISCORD
-from random import seed, sample
+from keys import DISCORD, SEED
+from random import randint, seed, sample
 import requests
 
 class Discord():
@@ -34,7 +34,7 @@ class Discord():
             'client_id': DISCORD["CLIENT_ID"],
             'client_secret': DISCORD["CLIENT_SECRET"],
             "grant_type": "refresh_token",
-            "refresh_token": refresh_token
+            "refresh_token": self.c.decode(refresh_token)
         }
         headers = { "Content-Type": "application/x-www-form-urlencoded", }
         res = requests.post(self.oauth_url, data=data, headers=headers)
@@ -49,7 +49,7 @@ class Discord():
                 "expires_at": res["expires_in"] + int(time())
             }
         except:
-            raise CustomError(f"Discordの認証が失敗しました: {res}")
+            raise CustomError(402, f"Discordの認証が失敗しました: {res}")
 
 
     def guild(self, token):
@@ -63,7 +63,7 @@ class Discord():
             if obj["id"] == self.itc_ob:
                 group.append("itc_ob")
         if group == []:
-            CustomError(f"サーバに参加する資格がありません")
+            CustomError(402, f"サーバに参加する資格がありません")
         return group
 
 
@@ -78,22 +78,24 @@ class Discord():
                 "thumbnail": res["avatar"]
             }
         except:
-            raise CustomError(f"Discordの認証が失敗しました: {res}")
-    
+            raise CustomError(402, f"Discordの認証が失敗しました: {res}")
+
 
 class Crypto:
     # 申し訳程度のセキュリティ要素
     def __init__(self):
-        seed(DISCORD["CLIENT_ID"])
-        A = [chr(i) for i in [*range(48, 58), *range(65, 91), *range(97, 123)]]
-        A, B, self.C, self.D = sample(A, 62), sample(A, 62), {}, {}
-        for x, y in zip(A, B):
-            self.C[x] = y
-            self.D[y] = x
+        seed(SEED)
+        arr = [*range(48, 58), *range(65, 91), *range(97, 123)]
+        self.A = sample([chr(i) for i in arr], 62)
+        self.B = {x: i for i, x in enumerate(self.A)}
 
     def encode(self, s):
-        return "".join([self.C[x] if x in self.C else x for x in s])
+        seed(SEED)
+        l = lambda x: self.A[(self.B[x] + randint(0, 62)) % 62]
+        return "".join([l(x) if x in self.B else x for x in s])
 
 
     def decode(self, s):
-        return "".join([self.D[x] if x in self.D else x for x in s])
+        seed(SEED)
+        l = lambda x: self.A[(self.B[x] - randint(0, 62)) % 62]
+        return "".join([l(x) if x in self.B else x for x in s])

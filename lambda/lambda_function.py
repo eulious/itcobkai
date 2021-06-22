@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from time import time
+from aws import db
 from keys import KEYS
-from utils import CustomError, db, id62, try_get_me
+from utils import CustomError, generate_token, try_get_me
 from discord import Discord
 from lambdaAPI import LambdaAPI
 
@@ -10,15 +10,13 @@ app = LambdaAPI()
 dc = Discord()
 
 def lambda_handler(event, context):
-    # return app.debug(event)
     return app.request(event)
 
 
-@app.api("/init")
+@app.get("/init")
 def init(post):
     user = dc.user(post["_access"])
-    
-    items = db("itcobkai").scan()["Items"]
+    items = db("itcobkai").scan()
     profiles = {}
     for item in items:
         profile = item["profile"]
@@ -26,64 +24,48 @@ def init(post):
         if user["id"] == item["id"] and (user["name"] != profile["name"] or user["thumbnail"] != profile["thumbnail"]):
             profile["name"] = user["name"]
             profile["thumbnail"] = user["thumbnail"]
-            db("itcobkai").put_item( Item={ "id": item["id"], "profile": profile,"secret": item["secret"] })
+            db("itcobkai").put({**item, **profile})
     return { "profiles": profiles, "keys": KEYS }
 
 
-@app.api("/users")
+@app.get("/users")
 def get_user(post):
     try_get_me(post)
-    res = db("itcobkai").get_item(Key={"id": post["id"][0]})
-    if "Item" in res:
-        return res["Item"]["profile"]
-    else:
-        raise CustomError("ユーザが存在しません")
+    res = db("itcobkai").get(post["id"])
+    return res["profile"] if res else CustomError(500, "ユーザが存在しません")
 
 
-@app.api("/users/me")
+@app.get("/users/me")
 def get_user_me(post):
     return try_get_me(post)
 
 
-@app.api("/refresh/db")
+@app.post("/refresh/db")
 def refresh(post):
-    res = db("itcobkai").get_item(Key={"id": post["_id"]})
-    if "Item" in res and res["Item"]["secret"]["refresh"] == post["_refresh"]:
-        res["Item"]["secret"] = {
-            "access": id62(),
-            "refresh": id62(),
-            "expires_at": int(time()) + 604800
-        }
-        db("itcobkai").put_item(Item=res["Item"])
-        return res["Item"]["secret"]
+    res = db("itcobkai").get(post["_id"])
+    if res and res["secret"]["refresh"] == post["_refresh"]:
+        res["secret"] = generate_token()
+        db("itcobkai").put(res)
+        return res["secret"]
     else:
-        raise CustomError("無効なトークンです")
+        raise CustomError(401, "無効なトークンです")
 
 
-@app.api("/refresh/discord")
+@app.post("/refresh/discord")
 def refresh(post):
     return dc.refresh(post["_refresh"])
 
 
-@app.api("/signup")
+@app.post("/signup")
 def signup(post):
-    secret = {
-        "access": id62(),
-        "refresh": id62(),
-        "expiration": int(time()) + 604800
-    }
+    secret = generate_token()
     user = dc.user(post["_accessd"])
-    db("itcobkai").put_item( Item={ "id": user["id"], "profile": post["profile"], "secret": secret })
+    db("itcobkai").put({"id": user["id"], "profile": post["profile"], "secret": secret})
     return {"secret": secret}
 
 
-@app.api("/code")
+@app.post("/code")
 def convert_code(post):
     dc = Discord()
     d = dc.get_token(post["code"], post["redirect"])
     return {"discord":d, "user": dc.user(d["access"]), "guild": dc.guild(d["access"])}
-
-
-@app.api("/test")
-def test(post):
-    return {"post": post}
