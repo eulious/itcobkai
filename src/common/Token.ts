@@ -23,8 +23,10 @@ export default class Token {
         }
         if (tokens.expires_at < new Date().getTime() / 1000) {
             tokens = await this.fetch(auth, this.decode(tokens.refresh))
+            return tokens.access
+        } else {
+            return this.decode(tokens.access)
         }
-        return tokens.access
     }
 
     public save(auth: "discord" | "db", tokens: any) {

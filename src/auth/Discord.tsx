@@ -7,61 +7,71 @@ interface DiscordProps {
 }
 export default function Discord(props: DiscordProps) {
     const params = getParam()
+    const redirect = location.href.split("?")[0] + "?mode=auth"
     const [log, setLog] = useState("サーバからデータを取得中...")
     const [isEnable, setIsEnable] = useState(false)
 
     async function code2token() {
-        console.log("discord!!")
-        const res = await request("/code", {
-            code: params.code, redirect: location.href.split("?")[0]
+        const res = await request("POST", "/signup", "", {
+            code: params.code, redirect: redirect
         })
         if (res.status === "ng") {
             setLog(res.detail)
+            setTimeout(() => {
+                location.href = redirect
+            }, 3000)
             return
         }
-        const t = new Token().save("discord", res.discord)
-        localStorage.id = res.id
-        props.setValue({
-            name: res.user.name,
-            thumbnail: res.user.thumbnail,
-            group: res.group
-        })
+        const t = new Token()
+        t.save("discord", res.discord)
+        t.save("db", res.secret)
+        localStorage._id = res.id
+        props.setValue(res.profile)
     }
 
     async function fetchValue() {
-        const res = await request("/users/me")
+        const res = await request("GET", "/users/me", "db", {})
         props.setValue(res)
     }
 
-    function redirect() {
-        const url = encodeURIComponent(location.href.split("?")[0] + "?mode=auth")
-        location.href = `https://discord.com/api/oauth2/authorize?client_id=855739530749280276&redirect_uri=${url}&response_type=code&scope=identify%20guilds`
+    function getCode() {
+        location.href = "https://discord.com/api/oauth2/authorize"
+            + "?client_id=855739530749280276"
+            + `&redirect_uri=${encodeURIComponent(redirect)}`
+            + "&response_type=code&"
+            + "scope=identify%20guilds"
     }
 
     useEffect(() => {
-        if (params.code) {
-            setLog("Discordからユーザ情報を取得中...")
-            code2token()
-        } else if (localStorage._id) {
+        if (localStorage._id) {
             setLog("前回のユーザ情報を取得中...")
             fetchValue()
+        } else if (params.code) {
+            setLog("Discordからユーザ情報を取得中...")
+            code2token()
         } else {
-            setLog("Discordで認証をして下さい")
+            setLog("Discordで認証して下さい")
             setIsEnable(true)
         }
     }, [])
 
     return (
         <div>
-            {isEnable && <div onClick={redirect}><Logo /></div>}
+            {isEnable && <Logo onClick={getCode} />}
             <div>{log}</div>
+            {isEnable && <div>
+                <ul>
+                    <li>DiscordからID、ユーザ名、ユーザアイコン、所属しているサーバを取得します。</li>
+                    <li>所属サーバの情報はITCサーバに参加しているかどうか判断するために使用されます。</li>
+                </ul>
+            </div>}
         </div>
     )
 }
 
-function Logo() {
+function Logo(props: { onClick: Function }) {
     return (
-        <svg width="124" height="34" viewBox="0 0 124 34" className="discord_logo">
+        <svg onClick={(e) => props.onClick()} width="124" height="34" viewBox="0 0 124 34" className="discord_logo">
             <g fill="white">
                 <path d="M26.0015 6.9529C24.0021 6.03845 21.8787 5.37198 19.6623 5C19.3833 5.48048 19.0733 6.13144 18.8563 6.64292C16.4989 6.30193 14.1585 6.30193 11.8336 6.64292C11.6166 6.13144 11.2911 5.48048 11.0276 5C8.79575 5.37198 6.67235 6.03845 4.6869 6.9529C0.672601 12.8736 -0.41235 18.6548 0.130124 24.3585C2.79599 26.2959 5.36889 27.4739 7.89682 28.2489C8.51679 27.4119 9.07477 26.5129 9.55525 25.5675C8.64079 25.2265 7.77283 24.808 6.93587 24.312C7.15286 24.1571 7.36986 23.9866 7.57135 23.8161C12.6241 26.1255 18.0969 26.1255 23.0876 23.8161C23.3046 23.9866 23.5061 24.1571 23.7231 24.312C22.8861 24.808 22.0182 25.2265 21.1037 25.5675C21.5842 26.5129 22.1422 27.4119 22.7621 28.2489C25.2885 27.4739 27.8769 26.2959 30.5288 24.3585C31.1952 17.7559 29.4733 12.0212 26.0015 6.9529ZM10.2527 20.8402C8.73376 20.8402 7.49382 19.4608 7.49382 17.7714C7.49382 16.082 8.70276 14.7025 10.2527 14.7025C11.7871 14.7025 13.0425 16.082 13.0115 17.7714C13.0115 19.4608 11.7871 20.8402 10.2527 20.8402ZM20.4373 20.8402C18.9183 20.8402 17.6768 19.4608 17.6768 17.7714C17.6768 16.082 18.8873 14.7025 20.4373 14.7025C21.9717 14.7025 23.2271 16.082 23.1961 17.7714C23.1961 19.4608 21.9872 20.8402 20.4373 20.8402Z"> </path>
                 <path d="M41.2697 9.86615H47.8585C49.4394 9.86615 50.7878 10.1141 51.8883 10.6101C52.9887 11.1061 53.8102 11.7881 54.3527 12.6715C54.8951 13.555 55.1741 14.5624 55.1741 15.7094C55.1741 16.8253 54.8952 17.8328 54.3217 18.7472C53.7482 19.6462 52.8803 20.3746 51.7178 20.9016C50.5554 21.4286 49.1139 21.6921 47.3935 21.6921H41.2697V9.86615ZM47.316 18.6852C48.3854 18.6852 49.2069 18.4217 49.7804 17.8793C50.3539 17.3523 50.6484 16.6083 50.6484 15.6939C50.6484 14.8414 50.3849 14.1594 49.8734 13.648C49.3619 13.1365 48.587 12.873 47.5485 12.873H45.4871V18.6852H47.316Z"> </path>

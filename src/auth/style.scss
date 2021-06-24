@@ -69,6 +69,22 @@ body {
         outline: none;
     }
 
+    &__textarea {
+        background: #fafafa;
+        border: 1px solid #d9d9d9;
+        color: #666;
+        font-family: "Open Sans", sans-serif;
+        font-size: 1em;
+        margin-top: 10px;
+        height: 100px;
+        transition: border-color 0.3s;
+        width: 100%;
+        &:focus {
+            border: 1px solid #b0b0b0;
+            outline: none;
+        }
+    }
+
     &__button-panel {
         margin: 2em 0 0;
         width: 100%;
@@ -87,10 +103,18 @@ body {
         vertical-align: middle;
         transition: background 0.3s ease-in-out;
         width: 100%;
-    }
 
-    &__button:hover {
-        background: #62a7f1;
+        &:hover {
+            background: #62a7f1;
+        }
+
+        &--disable {
+            background: #b4b6bb;
+            cursor: auto;
+            &:hover {
+                background: #b4b6bb;
+            }
+        }
     }
 
     &__form-footer {

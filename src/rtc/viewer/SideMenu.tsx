@@ -1,19 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { Connection } from "./Connector"
-import PersonInfo from "./Person"
+import PersonInfo, { Person } from "./Person"
 
 interface SideMenuProps {
     conn?: Connection
+    player?: Person
 }
 export default function SideMenu(props: SideMenuProps) {
-    const [mode, setMode] = useState("all")
+    const [mode, setMode] = useState("talking")
     const [connect, setConnect] = useState<Set<string>>(new Set<string>())
 
     const players = useMemo(() => {
         const players: JSX.Element[] = []
-        if (!props.conn) return [<div key={0} />]
+        if (props.player) players.push(<PersonInfo key={-1} person={props.player} />)
+        if (!props.conn) return players
         props.conn.all.forEach((p, i) => {
-            if (mode === "talking" && !(p.id in connect)) return
+            if ((mode === "talking" && !(connect.has(p.id)))) return
             players.push(<PersonInfo key={i} person={p} />)
         })
         return players
@@ -23,12 +25,15 @@ export default function SideMenu(props: SideMenuProps) {
         if (!props.conn) return
         for (let id of props.conn.connect) {
             connect.add(id)
+            console.log("connect", id)
         }
         for (let id of props.conn.disconnect) {
-            if (!(id in connect)) continue
+            if (!(connect.has(id))) continue
             connect.delete(id)
+            console.log("delete", id)
         }
-        setConnect(new Set(...connect))
+        console.log(connect)
+        setConnect(new Set(connect))
     }, [mode, props])
 
     return (

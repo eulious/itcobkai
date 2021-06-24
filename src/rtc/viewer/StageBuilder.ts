@@ -5,6 +5,7 @@ import { Person } from "./Person";
 export default class StageBuilder {
     private canvas: HTMLCanvasElement
     private ctx: CanvasRenderingContext2D
+    private backImg = new Image()
     private fillColors: { [key: number]: string } = {
         1: "#F7B5F7",
         2: "#9BADD4",
@@ -22,8 +23,9 @@ export default class StageBuilder {
 
     public drawEnv(left: number, top: number) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        this.drawMap(left, top)
-        this.drawGrid()
+        this.drawBack(left, top)
+        // this.drawMap(left, top)
+        // this.drawGrid()
     }
 
     public canMove(x: number, y: number): boolean {
@@ -55,13 +57,23 @@ export default class StageBuilder {
     }
 
     public drawPerson(person: Person, i: number, j: number) {
-        let grid = this.canvas.width / CONFIG.OUTER;
+        const grid = this.canvas.width / CONFIG.OUTER;
         this.ctx.beginPath();
         this.ctx.arc(i * grid + grid / 2, j * grid + grid / 2, grid / 2, 0, Math.PI * 2, false)
         this.ctx.save()
         this.ctx.clip()
         this.ctx.drawImage(person.img, i * grid, j * grid, grid, grid)
         this.ctx.restore()
+    }
+
+    private drawBack(left: number, top: number) {
+        if (!this.backImg.src) this.backImg.src = "./assets/back.jpg"
+        const canvasGrid = this.canvas.width / map.length
+        const imgGrid = this.backImg.width / map.length
+        this.ctx.drawImage(this.backImg,
+            imgGrid * left, imgGrid * top, imgGrid * CONFIG.OUTER, imgGrid * CONFIG.OUTER,
+            0, 0, this.canvas.width, this.canvas.height
+        )
     }
 
     private drawGrid() {

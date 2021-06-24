@@ -1,7 +1,6 @@
 import React from "react";
 import { request } from "../common/Common";
 import { ClubCheckBox, SelectBox, TextArea, TextBox } from "./Component";
-import Discord from "./Discord";
 
 interface SignupFormProps {
     setValue: Function
@@ -14,22 +13,23 @@ export default function SignupForm(props: SignupFormProps) {
         && (value.member.dtm || value.member.cg || value.member.prog || value.member.mv)
 
     async function submit() {
-        value.password = await sha256(value.password)
-        request("/signup", value).then(res => {
+        request("POST", "/users/me", "db", {
+            profile: value,
+        }).then(res => {
             console.log("return", res)
             if (res.status === "ng") {
                 console.error(res.detail, false)
             } else {
                 console.error("登録完了")
-                localStorage.token = res.token
-                location.href = "./index.html"
+                location.href = location.href.split("?")[0] + "?mode=rtcViewer"
             }
         })
     }
 
     return (
         <div>
-            <TextBox placeholder="学科(英字)" value={value} setValue={setValue} form={"faculty"} />
+            <div className="auth__form-item"><h3>ログイン名: {props.value.name} </h3></div>
+            <TextBox placeholder="学科(英字)" value={value} setValue={setValue} form="faculty" />
             <SelectBox value={value} setValue={setValue} />
             <div className="auth__form-item">
                 所属:<br />
@@ -39,10 +39,11 @@ export default function SignupForm(props: SignupFormProps) {
                 <ClubCheckBox form="mv" value={value} setValue={setValue} />
             </div>
             <TextArea value={value} setValue={setValue} />
+            <img src={props.value.thumbnail ? `https://cdn.discordapp.com/avatars/${props.value.thumbnail}.png` : ""} />
             <div className="auth__button-panel">
                 {isFilled
                     ? <div onClick={submit} className="auth__button">Join Server</div>
-                    : <div className="auth__button auth__button--unable">Join Server</div>
+                    : <div className="auth__button auth__button--disable">Join Server</div>
                 }
             </div>
         </div>

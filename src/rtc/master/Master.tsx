@@ -5,6 +5,7 @@ import { request } from "../../common/Common";
 import ClientAudio from "./ClientAudio";
 import { RTCMaster } from "../rtc/skyway";
 import "./style.scss"
+import Background from "./Background";
 
 export default function Master() {
     const rtc = useMemo(() => new RTCMaster(), [])
@@ -12,7 +13,7 @@ export default function Master() {
     const [players, setPlayers] = useState<JSX.Element[]>()
 
     async function start() {
-        const res = await request("GET", "/init")
+        const res = await request("GET", "/init", "db")
         rtc.KEYS = res.keys
         const streams = await rtc.start(whenOpen, receive)
         mp.streams = streams
@@ -90,6 +91,7 @@ export default function Master() {
             <div className="btn-flat" onClick={() => rtc.stop}>停止</div>
             <div className="btn-flat" onClick={debug}>debug</div>
             {players}
+            <Background />
         </div>
     )
 }

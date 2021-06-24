@@ -10,16 +10,16 @@ class CustomError(Exception):
         self.code = code
     
     def __str__(self):
-        return self.arg
+        return str(self.arg)
     
     def __int__(self):
-        return self.code
+        return self.code if isinstance(self.code, int) else 500
 
 
-def try_get_me(post):
-    res = db("itcobkai").get(post["_id"])
-    if res and res["secret"]["access"] == post["_access"]:
-        return res["profile"]
+def try_get_me(id, access):
+    res = db("itcobkai").get(id)
+    if res and res["secret"]["access"] == access:
+        return res
     else:
         raise CustomError(401, "無効なトークンです")
 

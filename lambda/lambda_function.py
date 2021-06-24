@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from os import getenv
 from aws import db
 from keys import KEYS
 from utils import CustomError, generate_token, try_get_me
@@ -7,7 +8,7 @@ from discord import Discord
 from lambdaAPI import LambdaAPI
 
 app = LambdaAPI()
-dc = Discord()
+
 
 def lambda_handler(event, context):
     return app.request(event)
@@ -15,6 +16,7 @@ def lambda_handler(event, context):
 
 @app.get("/init")
 def init(post):
+    dc = Discord()
     user = dc.user(post["_access"])
     items = db("itcobkai").scan()
     profiles = {}
@@ -30,14 +32,25 @@ def init(post):
 
 @app.get("/users")
 def get_user(post):
-    try_get_me(post)
+    try_get_me(post["_id"], post["_access"])
     res = db("itcobkai").get(post["id"])
-    return res["profile"] if res else CustomError(500, "ユーザが存在しません")
+    if res:
+        return res["profile"]
+    else:
+        raise CustomError(500, "ユーザが存在しません")
 
 
 @app.get("/users/me")
 def get_user_me(post):
-    return try_get_me(post)
+    return try_get_me(post["_id"], post["_access"])["profile"]
+
+
+@app.post("/users/me")
+def post_user_me(post):
+    me = try_get_me(post["_id"], post["_access"])
+    me["profile"] = { **me["profile"], **post["profile"] }
+    db("itcobkai").put(me)
+    return {}
 
 
 @app.post("/refresh/db")
@@ -53,19 +66,30 @@ def refresh(post):
 
 @app.post("/refresh/discord")
 def refresh(post):
+    dc = Discord()
     return dc.refresh(post["_refresh"])
 
 
 @app.post("/signup")
-def signup(post):
-    secret = generate_token()
-    user = dc.user(post["_accessd"])
-    db("itcobkai").put({"id": user["id"], "profile": post["profile"], "secret": secret})
-    return {"secret": secret}
-
-
-@app.post("/code")
 def convert_code(post):
     dc = Discord()
-    d = dc.get_token(post["code"], post["redirect"])
-    return {"discord":d, "user": dc.user(d["access"]), "guild": dc.guild(d["access"])}
+    discord = dc.get_token(post["code"], post["redirect"])
+    user = dc.user(discord["access"])
+    guild = dc.guild(discord["access"])
+    secret = generate_token()
+    profile = {
+        "name": user["name"],
+        "year": 0,
+        "detail": "",
+        "faculty": "",
+        "thumbnail": user["thumbnail"],
+        "member": {
+            "dtm": False,
+            "cg": False,
+            "prog": False,
+            "mv": False
+        },
+        "guild": guild
+    }
+    db("itcobkai").put({"id": user["id"], "profile": profile, "secret": secret})
+    return { "id": user["id"], "discord": discord, "profile": profile, "secret": secret }

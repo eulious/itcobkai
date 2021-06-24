@@ -63,7 +63,7 @@ class Discord():
             if obj["id"] == self.itc_ob:
                 group.append("itc_ob")
         if group == []:
-            CustomError(402, f"サーバに参加する資格がありません")
+            raise CustomError(402, f"サーバに参加する資格がありません")
         return group
 
 
@@ -75,7 +75,7 @@ class Discord():
             return {
                 "id": id62(int(res["id"])),
                 "name": res["username"],
-                "thumbnail": res["avatar"]
+                "thumbnail": f'{res["id"]}/{res["avatar"]}'
             }
         except:
             raise CustomError(402, f"Discordの認証が失敗しました: {res}")

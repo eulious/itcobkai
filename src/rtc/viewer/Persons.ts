@@ -1,4 +1,5 @@
 import { request } from "../../common/Common";
+import { AVATAR_URL } from "../../common/Config";
 import { Person } from "./Person";
 
 export interface Profile {
@@ -22,14 +23,11 @@ export class Persons {
     public all: Person[] = [];
 
     constructor(profiles: { [key: string]: Profile }) {
-        const id = localStorage.token.substring(0, 8)
-        this.player = this.createPerson(profiles[id], id)
+        const myId = localStorage._id
+        this.player = this.createPerson(profiles[myId], myId)
         this.enable(this.player, 0, 0)
         Object.keys(profiles).forEach((id: string) => {
-            if (id !== localStorage.token.substring(0, 8)) {
-                // print(`ユーザ情報取得完了: ${profiles[id].name}`)
-                this.all.push(this.createPerson(profiles[id], id))
-            }
+            if (id !== myId) this.all.push(this.createPerson(profiles[id], id))
         })
     }
 
@@ -40,7 +38,7 @@ export class Persons {
             this.persons.push(persons[0])
             return persons[0]
         } else {
-            const profile = await request("POST", `/users?id=${id}`).then(res => res[0])
+            const profile = await request("POST", `/users?id=${id}`, "").then(res => res[0])
             const person = this.createPerson(profile, id)
             this.enable(person, x, y)
             this.persons.push(person)
@@ -84,7 +82,7 @@ export class Persons {
     }
 
     private enable(person: Person, x: number, y: number) {
-        person.img.src = `./assets/thumb/${person.profile.thumbnail}.jpg`;
+        person.img.src = `${AVATAR_URL}/${person.profile.thumbnail}.png`;
         person.x = x;
         person.y = y;
     }

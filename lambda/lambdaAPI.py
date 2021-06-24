@@ -3,6 +3,7 @@
 from os import getenv
 from json import loads, dumps
 from utils import CustomError
+from decimal import Decimal
 from traceback import format_exc
 
 
@@ -34,18 +35,23 @@ class LambdaAPI():
         post = self.__parse_params(event)
         try:
             if post["_api"] not in self.funcs \
-                or post["_method"] not in self.funcs[post.pop("_api")]:
+                or post["_method"] not in self.funcs[post["_api"]]:
                 raise CustomError(403, "API Not Found")
             body = self.funcs[post.pop("_api")][post.pop("_method")](post)
-            status_code = 200
+            return self.__response(200, body if body else {})
         except CustomError as e:
-            body = {"status": "ng", "detail": str(e)}
-            status_code = int(e)
+            return self.__response(int(e), {"status": "ng", "detail": str(e)})
         except:
-            body = {"status": "ng", "detail": format_exc()}
-            status_code = 500
             print(format_exc())
-            #body = {"status": "ng", "detail": "例外"}
+            return self.__response(500, {"status": "ng", "detail": format_exc()})
+            return self.__response(500, {"status": "ng", "detail": "例外"})
+    
+
+    def add(self, app):
+        pass
+
+
+    def __response(self, status_code, body):
         return {
             "isBase64Encoded" : False,
             "statusCode": status_code,
@@ -55,7 +61,7 @@ class LambdaAPI():
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
             },
-            "body": dumps(body, ensure_ascii=False)
+            "body": dumps(body, ensure_ascii=False, default=self.__default_dumps)
         }
 
 
@@ -67,6 +73,12 @@ class LambdaAPI():
         return post
 
 
+    def __default_dumps(self, obj):
+        if isinstance(obj, Decimal):
+            return int(obj)
+        raise TypeError(f"Object is not JSON serializable: {obj}")
+    
+
     def debug(self, method, api, post={}):
         if not getenv("AWS_LAMBDA_FUNCTION_VERSION"):
             body = self.funcs[api][method](post)
@@ -75,14 +87,4 @@ class LambdaAPI():
 
 
     def echo(self, event):
-        return {
-            "isBase64Encoded" : False,
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Headers" : "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-            },
-            "body": dumps(event, ensure_ascii=False)
-        }
+        self.__response(200, event)

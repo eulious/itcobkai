@@ -1,5 +1,6 @@
 import { Connection, Connector } from "./Connector";
 import Cropper, { Crop } from "./Cropper";
+import { Person } from "./Person";
 import { Persons, Profile } from "./Persons";
 import StageBuilder from "./StageBuilder";
 
@@ -11,8 +12,10 @@ export default class Controller {
 
     private message?: Function;
     private inThrottle = false
+    private isPersonChange = false
     private old: Crop;
     get id(): string { return this.prs!.player.id! }
+    get player(): Person | undefined { return this.prs?.player }
 
     constructor() {
         this.cropper = new Cropper(0, 0)
@@ -52,12 +55,13 @@ export default class Controller {
         if (!this.prs?.persons.length) return
         const now = this.cropper.get()
         const { isChange, state } = this.cn.update(now.x, now.y, this.prs!.persons)
-        if (isChange) {
+        if (isChange || this.isPersonChange) {
             this.message!({
                 action: "audio",
                 connect: state.connect,
                 disconnect: state.disconnect
             })
+            this.isPersonChange = false
             return state
         }
     }
@@ -82,6 +86,7 @@ export default class Controller {
 
 
     public join(id: string, x: number, y: number) {
+        this.isPersonChange = true
         this.prs!.add(id, x, y).then((person) => {
             // this.sm!.join(person)
             this.refresh()
@@ -93,6 +98,7 @@ export default class Controller {
         // this.sm!.leave(id)
         this.prs!.leave(id)
         this.refresh()
+        this.isPersonChange = true
     }
 
 

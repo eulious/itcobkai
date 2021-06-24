@@ -1,4 +1,5 @@
 import React from "react"
+import { AVATAR_URL } from "../../common/Config"
 import { Profile } from "./Persons"
 
 export interface Person {
@@ -19,7 +20,7 @@ export default function PersonInfo(props: PersonInfoProps) {
         <table className="user__contents">
             <tbody><tr>
                 <td className="user__img_box">
-                    <img className="user__thumbnail" src={`./assets/thumb/${profile.thumbnail}.jpg`} />
+                    <img className="user__thumbnail" src={`${AVATAR_URL}/${profile.thumbnail}.png`} />
                 </td>
                 <td className="user__profile">
                     <div> {profile.name} </div>

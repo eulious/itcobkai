@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Controller from "./Controller";
 import { request } from "../../common/Common";
-import { RTCViewer } from "../rtc/skyway";
-// import { RTCViewer } from "../rtc/kinesis";
+// import { RTCViewer } from "../rtc/skyway";
+import { RTCViewer } from "../rtc/kinesis";
 import { Connection } from "./Connector";
 import useInterval from "../../common/Hooks";
 import SideMenu from "./SideMenu";
@@ -33,15 +33,15 @@ export default function Viewer() {
 
     async function start() {
         // print("ユーザ情報を取得しています")
-        const res = await request("GET", "/init")
+        const res = await request("GET", "/init", "discord")
         rtc.KEYS = res.keys
-        // ct.init(res.profiles, console.log)
-        ct.init(res.profiles, rtc.message)
-        // print("サーバに接続しています")
-        rtc.start(ct.id, localAudio.current!, remoteAudio.current!, receive)
-        // ct.start(5, 4)
-        // ct.join("84bac632", 5, 4)
-        // ct.join("4002b9d3", 5, 1)
+        ct.init(res.profiles, console.log)
+        // ct.init(res.profiles, rtc.message)
+        // rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        ct.start(5, 4)
+        ct.join("WOzosMqMAy", 6, 7)
+        ct.join("ym4F1XcR8k", 5, 6)
+        setConn(ct.getConnection())
     }
 
     async function debug() {
@@ -72,7 +72,7 @@ export default function Viewer() {
                 // print("")
                 Object.keys(res.users).forEach((clientId: string) => {
                     const user = res.users[clientId]
-                    if (clientId === ct.id) {
+                    if (clientId === ct.player!.id) {
                         ct.start(user.x, user.y)
                     } else {
                         ct.join(clientId, user.x, user.y)
@@ -92,8 +92,6 @@ export default function Viewer() {
                 <tr>
                     <td>
                         <div className="viewer__token_box">
-                            Token:
-                            <input type="text" size={36} className="viewer__token" value={localStorage.token} onChange={() => { }} />
                             <span><a href="./signup.html">登録/修正</a></span>
                         </div>
                         <div id="print"></div>
@@ -108,7 +106,7 @@ export default function Viewer() {
                         <canvas ref={canvasRef} width="512" height="512"></canvas>
                     </td>
                     <td className="viewer__side_wrapper">
-                        <SideMenu conn={conn} />
+                        <SideMenu conn={conn} player={ct.player} />
                     </td>
                 </tr>
                 <tr>
