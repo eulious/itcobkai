@@ -75,21 +75,39 @@ def convert_code(post):
     dc = Discord()
     discord = dc.get_token(post["code"], post["redirect"])
     user = dc.user(discord["access"])
-    guild = dc.guild(discord["access"])
+    if user["id"] == "ym4F1XcR8k": # テスト用アカウント
+        guild = ["itc"]
+    else:
+        guild = dc.guild(discord["access"])
     secret = generate_token()
-    profile = {
-        "name": user["name"],
-        "year": 0,
-        "detail": "",
-        "faculty": "",
-        "thumbnail": user["thumbnail"],
-        "member": {
-            "dtm": False,
-            "cg": False,
-            "prog": False,
-            "mv": False
-        },
-        "guild": guild
-    }
+    me = db("itcobkai").get(user["id"])
+    if me:
+        profile = me["profile"]
+    else:
+        profile = {
+            "name": user["name"],
+            "year": 0,
+            "detail": "",
+            "faculty": "",
+            "thumbnail": user["thumbnail"],
+            "member": {
+                "dtm": False,
+                "cg": False,
+                "prog": False,
+                "mv": False
+            },
+            "guild": guild
+        }
     db("itcobkai").put({"id": user["id"], "profile": profile, "secret": secret})
     return { "id": user["id"], "discord": discord, "profile": profile, "secret": secret }
+
+
+@app.get("/login/master")
+def login_master(post):
+    # try_get_me(post["_id"], post["_access"])
+    master = [
+        "ym4F1XcR8k", # kyoichi
+        "R34Xzb2gd9", # 笠井
+        "WOzosMqMAy"  # うり
+    ]
+    return {"keys": KEYS}# if post["_id"] in master else None }

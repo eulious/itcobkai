@@ -51,7 +51,9 @@ export default function SideMenu(props: SideMenuProps) {
                 </tr>
                 <tr>
                     <td colSpan={2}>
-                        {players}
+                        <div className="viewer__side_contents">
+                            {players}
+                        </div>
                     </td>
                 </tr>
             </tbody>

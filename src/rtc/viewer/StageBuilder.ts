@@ -23,9 +23,9 @@ export default class StageBuilder {
 
     public drawEnv(left: number, top: number) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        this.drawBack(left, top)
-        // this.drawMap(left, top)
-        // this.drawGrid()
+        // this.drawBack(left, top)
+        this.drawMap(left, top)
+        this.drawGrid()
     }
 
     public canMove(x: number, y: number): boolean {
@@ -99,6 +99,7 @@ export default class StageBuilder {
         const maxWidth = window.innerWidth - 250 - 300;
         const maxHeight = window.innerHeight - 250;
         const size = Math.min(maxHeight, maxWidth)
+        console.log(size)
         this.canvas.width = size
         this.canvas.height = size
     }

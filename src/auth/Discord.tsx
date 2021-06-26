@@ -15,13 +15,6 @@ export default function Discord(props: DiscordProps) {
         const res = await request("POST", "/signup", "", {
             code: params.code, redirect: redirect
         })
-        if (res.status === "ng") {
-            setLog(res.detail)
-            setTimeout(() => {
-                location.href = redirect
-            }, 3000)
-            return
-        }
         const t = new Token()
         t.save("discord", res.discord)
         t.save("db", res.secret)

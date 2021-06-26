@@ -10,3 +10,5 @@ export const MAP = {
 }
 
 export default CONFIG
+
+export const RTC_CORE = "skyway"

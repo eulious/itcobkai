@@ -20,7 +20,6 @@ export default class Controller {
     constructor() {
         this.cropper = new Cropper(0, 0)
         this.old = this.cropper.get()
-        window.addEventListener("resize", () => this.refresh())
     }
 
     public init(profiles: { [key: string]: Profile }, message: Function) {
@@ -30,6 +29,10 @@ export default class Controller {
 
     public initSB(canvas: HTMLCanvasElement) {
         this.sb = new StageBuilder(canvas)
+        window.addEventListener("resize", () => {
+            this.sb!.resize()
+            this.refresh()
+        })
     }
 
     public start(x: number, y: number) {
@@ -102,7 +105,7 @@ export default class Controller {
     }
 
 
-    private refresh() {
+    public refresh() {
         const { x, y, top, left } = this.cropper.get()
         this.sb!.drawEnv(left, top)
         this.sb!.drawPlayer(this.prs!.player, x - left, y - top)

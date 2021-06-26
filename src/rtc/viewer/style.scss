@@ -31,7 +31,10 @@
 
         &_contents {
             @include scrollbar;
-            height: 100%;
+            overflow-y: scroll;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            height: calc(100vh - 300px);
         }
 
         &_table {

@@ -8,13 +8,19 @@ export async function request(method: "GET" | "POST", api: string, auth: "db" | 
     if (auth === "db") post._id = localStorage._id
     post._api = api
     post._method = method
-    console.log(post)
+    console.log(api, post)
     const res = await fetch(LAMBDA_URL, {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json", },
         body: JSON.stringify(post)
     });
+    if (res.status === 401 || res.status === 402) {
+        const d = await res.json();
+        window.alert(`認証に失敗しました: ${d.detail}`)
+        localStorage.removeItem("_id")
+        // location.href = location.href.split("?")[0] + "?mode=auth"
+    }
     const d = await res.json();
     console.log(d)
     if (d.status === "ng") console.error(d.detail, false);

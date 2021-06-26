@@ -1,22 +1,26 @@
 import React, { useMemo, useState } from "react"
-import Mapper from "./Mapper";
+import { RTC_CORE } from "../utils/Config";
 import { request } from "../../common/Common";
-// import { RTCMaster } from "../rtc/kinesis";
 import ClientAudio from "./ClientAudio";
-import { RTCMaster } from "../rtc/skyway";
-import "./style.scss"
 import Background from "./Background";
+import Mapper from "./Mapper";
+import RTC from "../rtc/rtc";
+import "./style.scss"
 
 export default function Master() {
-    const rtc = useMemo(() => new RTCMaster(), [])
+    const rtc = useMemo(() => new RTC(RTC_CORE).Master, [])
     const mp = useMemo(() => new Mapper(rtc.message), [])
     const [players, setPlayers] = useState<JSX.Element[]>()
 
     async function start() {
-        const res = await request("GET", "/init", "db")
-        rtc.KEYS = res.keys
-        const streams = await rtc.start(whenOpen, receive)
-        mp.streams = streams
+        const res = await request("GET", "/login/master", "db")
+        if (res.keys) {
+            rtc.KEYS = res.keys
+            const streams = await rtc.start(whenOpen, receive)
+            mp.streams = streams
+        } else {
+            console.error("実行権限がありません")
+        }
     }
 
     async function debug() {

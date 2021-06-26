@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Controller from "./Controller";
-import { request } from "../../common/Common";
-// import { RTCViewer } from "../rtc/skyway";
-import { RTCViewer } from "../rtc/kinesis";
 import { Connection } from "./Connector";
+import { RTC_CORE } from "../utils/Config";
+import { request } from "../../common/Common";
 import useInterval from "../../common/Hooks";
+import Controller from "./Controller";
 import SideMenu from "./SideMenu";
+import RTC from "../rtc/rtc";
 import "./style.scss"
 
 export default function Viewer() {
     const [conn, setConn] = useState<Connection>()
-    const rtc = useMemo(() => new RTCViewer(), [])
+    const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])
     const ct = useMemo(() => new Controller(), []);
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const localAudio = useRef<HTMLAudioElement>(null)
@@ -32,15 +32,14 @@ export default function Viewer() {
     }, [])
 
     async function start() {
-        // print("ユーザ情報を取得しています")
         const res = await request("GET", "/init", "discord")
         rtc.KEYS = res.keys
-        ct.init(res.profiles, console.log)
-        // ct.init(res.profiles, rtc.message)
-        // rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
-        ct.start(5, 4)
-        ct.join("WOzosMqMAy", 6, 7)
-        ct.join("ym4F1XcR8k", 5, 6)
+        // ct.init(res.profiles, console.log)
+        ct.init(res.profiles, rtc.message)
+        rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        // ct.start(5, 4)
+        // ct.join("WOzosMqMAy", 6, 7)
+        // ct.join("ym4F1XcR8k", 5, 6)
         setConn(ct.getConnection())
     }
 
@@ -49,6 +48,7 @@ export default function Viewer() {
     }
 
     useEffect(() => {
+        window.addEventListener("resize", () => ct.refresh())
         window.addEventListener('beforeunload', () => rtc.stop())
     }, [])
 

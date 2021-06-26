@@ -142,11 +142,11 @@ export class RTCViewer {
         });
     }
 
-    public stop() {
+    public async stop() {
         this.message({ action: "leave" })
-        this.mediaConnection!.close(true);
-        this.dataConnection!.close(true);
-        this.localStream!.getTracks().forEach(track => track.stop());
+        // this.mediaConnection!.close(true);
+        // this.dataConnection!.close(true);
+        // this.localStream!.getTracks().forEach(track => track.stop());
         // this.remoteStream.getTracks().forEach(track => track.stop());
     }
 
