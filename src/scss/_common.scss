@@ -1,0 +1,61 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-color: $black3;
+    color: $white1;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+.body {
+}
+
+// body {
+//     background-image: url("./assets/background.jpg");
+//     background-size: cover;
+//     background-color: rgba(255, 255, 255, 0.5);
+//     background-blend-mode: lighten;
+//     color: #5e5e5e;
+//     font: 400 87.5%/1.5em "Open Sans", sans-serif;
+// }
+
+.btn-flat {
+    display: inline-block;
+    padding: 0.3em 1em;
+    height: 1.4em;
+    vertical-align: middle;
+    text-decoration: none;
+    // color: $muiPrimary;
+    color: white;
+    background-color: rgb(70, 91, 247);
+    // border: solid 2px $muiPrimary;
+    border: solid 2px rgb(70, 91, 247);
+    border-radius: 3px;
+    margin: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+
+    &:hover {
+        transition: 0.4s;
+        background: $muiPrimary;
+        color: white;
+    }
+
+    &:active {
+        transition: 0s;
+        border: solid 2px white;
+    }
+
+    &--disable {
+        cursor: auto;
+        color: #aaa;
+        border: solid 2px #aaa;
+    }
+}

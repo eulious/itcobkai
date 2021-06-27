@@ -1,0 +1,20 @@
+@mixin scrollbar {
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+        // background: #fff;
+        // border-left: solid 1px #ececec;
+        background: $black3;
+        border-left: solid 1px $black2;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        // background: #aaa;
+        // box-shadow: inset 0 0 0 2px #fff;
+        border-radius: 10px;
+        background: $black3;
+        box-shadow: inset 0 0 0 2px rgb(99, 99, 99);
+    }
+}

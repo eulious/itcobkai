@@ -6,7 +6,6 @@ import useInterval from "../../common/Hooks";
 import Controller from "./Controller";
 import SideMenu from "./SideMenu";
 import RTC from "../rtc/rtc";
-import "./style.scss"
 
 export default function Viewer() {
     const [conn, setConn] = useState<Connection>()

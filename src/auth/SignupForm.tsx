@@ -1,6 +1,6 @@
 import React from "react";
 import { request } from "../common/Common";
-import { ClubCheckBox, SelectBox, TextArea, TextBox } from "./Component";
+import { ClubCheckBox, SelectBox, TextArea, TextBox } from "./Components";
 
 interface SignupFormProps {
     setValue: Function

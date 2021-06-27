@@ -1,7 +1,16 @@
 const path = require('path');
 const mode = process.env.NODE_ENV
 
-const moduleList = ["react", "react-dom", "dayjs"];
+// const moduleList = [
+//     "react",
+//     "react-dom",
+//     "dayjs",
+//     "skyway-js",
+//     "react-ace",
+//     "ace-builds",
+//     "react-markdown",
+//     "remark-gfm",
+// ];
 
 module.exports = {
     mode: mode,
@@ -23,9 +32,10 @@ module.exports = {
         splitChunks: {
             cacheGroups: {
                 vendor: {
-                    test: new RegExp(
-                        `[\\/]node_modules[\\/](${moduleList.join("|")})[\\/]`
-                    ),
+                    test: new RegExp(`[\\/]node_modules[\\/]`),
+                    // test: new RegExp(
+                    //     `[\\/]node_modules[\\/](${moduleList.join("|")})[\\/]`
+                    // ),
                     name: 'vendor',
                     chunks: 'initial',
                 }

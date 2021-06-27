@@ -61,16 +61,4 @@ export default class Token {
     private decode(s: string) {
         return Array.from(s).map(x => this.d[x] ? this.d[x] : x).join('')
     }
-
-    // lsSave(key: string, word: string) {
-    //     // const mm = CryptoJS.AES.encrypt(word, AES).toString()
-    //     const mm = Array.from(word).map(x => this.c[x] ? this.c[x] : x).join('')
-    //     localStorage[key] = mm
-    // }
-
-    // lsLoad(key: string): string | undefined {
-    //     const mm = localStorage[key] as string
-    //     if (mm) return Array.from(mm).map(x => this.d[x] ? this.d[x] : x).join('')
-    //     // if (mm) return CryptoJS.AES.decrypt(mm, AES).toString(CryptoJS.enc.Utf8)
-    // }
 }

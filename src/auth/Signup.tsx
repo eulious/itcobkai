@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Discord from "./Discord";
 import SignupForm from "./SignupForm";
-import "./style.scss"
 
 export default function Signup() {
     const [value, setValue] = useState<any>({})

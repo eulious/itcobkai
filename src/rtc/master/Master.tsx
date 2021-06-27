@@ -5,7 +5,6 @@ import ClientAudio from "./ClientAudio";
 import Background from "./Background";
 import Mapper from "./Mapper";
 import RTC from "../rtc/rtc";
-import "./style.scss"
 
 export default function Master() {
     const rtc = useMemo(() => new RTC(RTC_CORE).Master, [])

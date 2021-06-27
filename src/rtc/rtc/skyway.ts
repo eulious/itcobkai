@@ -1,11 +1,6 @@
-// import Peer, { DataConnection, MediaConnection } from "../../@types/skyway-js/skyway-js";
+import Peer, { DataConnection, MediaConnection } from "skyway-js";
 import { beep } from "../utils/Common";
 import { Streams } from "../utils/Schema";
-
-declare const Peer: any;
-type Peer = any
-type DataConnection = any;
-type MediaConnection = any;
 
 export class RTCMaster {
     public KEYS: any
