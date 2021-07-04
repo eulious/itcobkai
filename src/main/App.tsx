@@ -1,5 +1,5 @@
 import React, { useMemo, useReducer, useState } from "react";
-import Signup from "../auth/Signup";
+import Signup from "./Signup";
 import { getParam } from "../common/Common";
 import { Context, initState, reducer } from "../common/Context";
 import Note from "../note/Note";

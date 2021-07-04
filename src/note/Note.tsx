@@ -1,18 +1,15 @@
 import React, { useState } from "react";
+import Header from "../main/Header";
 import { EditorCore, Render, sample } from "./Components";
 
 export default function Note() {
     return (
         <div>
-            <header className="header">
-                <div className="left">
-                    <div className="title"> ITCOBKAI </div>
-                    <div className="toggle">KAI</div>
-                </div>
+            <Header mode="note">
                 <div className="right">
                     <div className="btn-flat"> 編集 </div>
                 </div>
-            </header>
+            </Header>
             <div className="wrapper">
                 <div className="nav">
                     <details open>

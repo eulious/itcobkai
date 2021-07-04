@@ -5,6 +5,7 @@ import { request } from "../../common/Common";
 import useInterval from "../../common/Hooks";
 import Controller from "./Controller";
 import SideMenu from "./SideMenu";
+import Header from "../../main/Header";
 import RTC from "../rtc/rtc";
 
 export default function Viewer() {
@@ -87,20 +88,17 @@ export default function Viewer() {
 
     return (
         <div>
-            <header className="header">
-                <div className="left">
-                    <div className="title"> ITCOBKAI </div>
-                    <div className="toggle">KAI</div>
-                </div>
-            </header>
+            <Header mode="rtc" />
             <table className="viewer__wrapper">
                 <tbody>
                     <tr>
                         <td>
-                            {/* <div className="viewer__token_box">
-                                <span><a href="./signup.html">登録/修正</a></span>
+                            <div className="debug">
+                                <audio ref={localAudio} muted autoPlay playsInline controls></audio>
+                                <audio ref={remoteAudio} autoPlay playsInline controls></audio>
+                                <button onClick={switchToken}>switch</button>
+                                <button onClick={debug}>debug</button>
                             </div>
-                            <div id="print"></div> */}
                         </td>
                         <td>
                             <div className="btn-flat" onClick={start}>接続</div>
@@ -115,20 +113,6 @@ export default function Viewer() {
                             <SideMenu conn={conn} player={ct.player} />
                         </td>
                     </tr>
-                    {/* <tr>
-                        <td>
-                            <div className="debug">
-                                <audio ref={localAudio} muted autoPlay playsInline controls></audio>
-                                <audio ref={remoteAudio} autoPlay playsInline controls></audio>
-                                <div className="hide"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <h4>Debug</h4>
-                            <button onClick={switchToken}>switch</button>
-                            <button onClick={debug}>debug</button>
-                        </td>
-                    </tr> */}
                 </tbody>
             </table>
         </div>

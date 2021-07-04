@@ -1,6 +1,6 @@
 import React from "react";
 import { createContext, Dispatch } from "react"
-import Signup from "../auth/Signup";
+import Signup from "../main/Signup";
 
 export interface Tab {
     index: number

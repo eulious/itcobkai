@@ -20,7 +20,7 @@ class LambdaAPI():
         return self.__api(url, "POST")
     
 
-    def lambda(self, uri):
+    def invoked(self, uri):
         return self.__api(uri, "LAMBDA")
 
 

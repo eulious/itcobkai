@@ -98,8 +98,8 @@ export default class StageBuilder {
     }
 
     public resize() {
-        const maxWidth = window.innerWidth - 250 - 300;
-        const maxHeight = window.innerHeight - 250;
+        const maxWidth = window.innerWidth - 400;
+        const maxHeight = window.innerHeight - 190;
         const size = Math.min(maxHeight, maxWidth)
         console.log(size)
         this.canvas.width = size
