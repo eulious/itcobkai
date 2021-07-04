@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from aws import db
 from time import time
 from random import randint, seed
 
@@ -16,12 +15,13 @@ class CustomError(Exception):
         return self.code if isinstance(self.code, int) else 500
 
 
-def try_get_me(id, access):
-    res = db("itcobkai").get(id)
-    if res and res["secret"]["access"] == access:
-        return res
-    else:
-        raise CustomError(401, "無効なトークンです")
+def auth(conn, id, access):
+    with conn() as cur:
+        res = cur.execute("""
+            SELECT id62 FROM users WHERE id62=? AND token=? AND expires_at>?
+            """, (id, access, int(time())))
+        if res == []:
+            raise CustomError(401, "無効なトークンです")
 
 
 def id62(num = 0):

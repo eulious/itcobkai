@@ -1,5 +1,5 @@
 .header {
-    position: fixed;
+    // position: fixed;
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -14,13 +14,13 @@
 
 .container {
     // margin: 0px -20px 0px;
-    padding-top: $PADDING_TOP;
+    // padding-top: $PADDING_TOP;
     width: 100%;
     display: table;
 }
 
 .wrapper {
-    padding-top: $PADDING_TOP;
+    // padding-top: $PADDING_TOP;
     display: flex;
 }
 
@@ -61,14 +61,13 @@
     top: $PADDING_TOP;
     height: calc(100vh - #{$PADDING_TOP} - #{$PADDING_BOTTOM});
     width: 20vw;
-    background-color: $black3;
     // border-right: solid 1px #eee;
 }
 
 .editor {
     display: table-cell;
     width: 50%;
-    top: -34px;
+    // top: -34px;
     height: calc(100vh - #{$PADDING_TOP} - #{$PADDING_BOTTOM});
 }
 
@@ -76,7 +75,7 @@
     @include scrollbar;
     background-color: white;
     color: black;
-    padding: 0px 20px 0px;
+    padding: 30px 20px 0px;
     width: unquote("max(50vw, 600px)");
     height: calc(100vh - #{$PADDING_TOP} - #{$PADDING_BOTTOM});
     box-sizing: border-box;
@@ -89,7 +88,9 @@
     padding: 0px 20px 0px;
     box-sizing: border-box;
     overflow-y: scroll;
-    background-color: $black1;
+    // background-color: $black1;
+    background-color: white;
+    color: #333;
     height: calc(100vh - #{$PADDING_TOP} - #{$PADDING_BOTTOM});
 }
 

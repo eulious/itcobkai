@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import AceEditor from "react-ace";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { propTypes } from "react-markdown";
 import gfm from 'remark-gfm'
 import "ace-builds/src-noconflict/mode-markdown";
 import "ace-builds/src-noconflict/theme-twilight";
+import { useDropzone } from "react-dropzone";
 
 export const sample = `
 ## これは何？
@@ -34,8 +35,14 @@ interface EditorProps {
     className?: string
 }
 export function EditorCore(props: EditorProps) {
-    function onChange(value: string | undefined) {
+    const [selector, setSelector] = useState([0, 0])
+
+    function onChange(value: string | undefined, e: any) {
         if (value) props.setValue(value)
+    }
+
+    function onSelectionChange(e: any) {
+        setSelector([e.cursor.row, e.cursor.column])
     }
 
     return (
@@ -48,6 +55,7 @@ export function EditorCore(props: EditorProps) {
                 theme="twilight"
                 name="ace-editor"
                 onChange={onChange}
+                onSelectionChange={onSelectionChange}
                 wrapEnabled={true}
                 fontSize={14}
                 showPrintMargin={true}
@@ -63,6 +71,39 @@ export function EditorCore(props: EditorProps) {
                 }} />
         </div>
     );
+}
+
+
+interface DropzoneProps {
+    value: string
+    setValue: Function
+    className?: string
+}
+function Dropzone(props: DropzoneProps) {
+    const [selector, setSelector] = useState([0, 0])
+
+    function onDrop(acceptedFiles: any) {
+        console.log(acceptedFiles)
+        const str = props.value.split("\n")[selector[0]]
+        str.slice(0, selector[1]) + "hoge" + str.slice(selector[1]);
+    }
+    const { getRootProps, isDragActive } = useDropzone({ onDrop })
+
+    let dom: JSX.Element
+    if (isDragActive) {
+        dom = (
+            <EditorCore value={props.value} setValue={props.setValue} />
+        );
+    } else {
+        dom = (
+            <EditorCore value={props.value} setValue={props.setValue} />
+        );
+    }
+    return (
+        <div {...getRootProps()}>
+            {dom}
+        </div>
+    )
 }
 
 

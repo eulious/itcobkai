@@ -5,7 +5,8 @@
     width: 1.1em;
     height: 1.1em;
     text-align: center;
-    color: #444;
+    // color: #444;
+    color: white;
 }
 
 .viewer {
@@ -15,9 +16,10 @@
     }
 
     &__wrapper {
-        // background: #fff;
-        background: #fafafa;
-        margin: 3em auto;
+        // background: #fafafa;
+        background: $black2;
+        // margin: 3em auto;
+        margin: 20px auto auto;
         padding: 0 1em;
     }
 
@@ -42,7 +44,7 @@
         }
     }
 
-    &__canvas {
+    &__canvas_wrapper {
         padding: 5px 20px;
     }
 
@@ -58,13 +60,14 @@
             &:hover {
                 color: #888;
             }
-            border-bottom: 3px solid #ddd;
-            // width: 100%;
+            // border-bottom: 3px solid #ddd;
+            border-bottom: 3px solid $black3;
             height: 2em;
             order: -1;
 
             &--select {
-                border-bottom: 3px solid #222;
+                // border-bottom: 3px solid #222;
+                border-bottom: 3px solid white;
             }
         }
 
@@ -86,26 +89,32 @@
         height: 50px;
     }
     &__contents {
-        border-bottom: 1px solid #ddd;
+        // border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid $black3;
         width: 250px;
         &:hover {
-            background-color: #eee;
+            // background-color: #eee;
+            background-color: $black2;
         }
     }
     &__dtm {
         @include member;
-        background-color: #c2efff;
+        // background-color: #c2efff;
+        background-color: #4cadd0;
     }
     &__cg {
         @include member;
-        background-color: #8ce9bc;
+        // background-color: #8ce9bc;
+        background-color: #45bf84;
     }
     &__prog {
         @include member;
-        background-color: #f7cfbe;
+        // background-color: #f7cfbe;
+        background-color: #c16b47;
     }
     &__mv {
         @include member;
-        background-color: #fff5c2;
+        // background-color: #fff5c2;
+        background-color: #baa643;
     }
 }

@@ -33,12 +33,12 @@ export default function Viewer() {
     async function start() {
         const res = await request("GET", "/init", "discord")
         rtc.KEYS = res.keys
-        // ct.init(res.profiles, console.log)
-        ct.init(res.profiles, rtc.message)
-        rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
-        // ct.start(5, 4)
-        // ct.join("WOzosMqMAy", 6, 7)
-        // ct.join("ym4F1XcR8k", 5, 6)
+        // ct.init(res.profiles, rtc.message)
+        // rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        ct.init(res.profiles, console.log)
+        ct.start(5, 4)
+        ct.join("WOzosMqMAy", 6, 7)
+        ct.join("ym4F1XcR8k", 5, 6)
         setConn(ct.getConnection())
     }
 
@@ -86,43 +86,51 @@ export default function Viewer() {
 
 
     return (
-        <table className="viewer__wrapper">
-            <tbody>
-                <tr>
-                    <td>
-                        <div className="viewer__token_box">
-                            <span><a href="./signup.html">登録/修正</a></span>
-                        </div>
-                        <div id="print"></div>
-                    </td>
-                    <td>
-                        <div className="btn-flat" onClick={start}>接続</div>
-                        <div className="btn-flat" onClick={() => rtc.stop()}>体積</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td className="viewer__canvas_wrapper">
-                        <canvas ref={canvasRef} width="512" height="512"></canvas>
-                    </td>
-                    <td className="viewer__side_wrapper">
-                        <SideMenu conn={conn} player={ct.player} />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div className="debug">
-                            <audio ref={localAudio} muted autoPlay playsInline controls></audio>
-                            <audio ref={remoteAudio} autoPlay playsInline controls></audio>
-                            <div className="hide"></div>
-                        </div>
-                    </td>
-                    <td>
-                        <h4>Debug</h4>
-                        <button onClick={switchToken}>switch</button>
-                        <button onClick={debug}>debug</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div>
+            <header className="header">
+                <div className="left">
+                    <div className="title"> ITCOBKAI </div>
+                    <div className="toggle">KAI</div>
+                </div>
+            </header>
+            <table className="viewer__wrapper">
+                <tbody>
+                    <tr>
+                        <td>
+                            {/* <div className="viewer__token_box">
+                                <span><a href="./signup.html">登録/修正</a></span>
+                            </div>
+                            <div id="print"></div> */}
+                        </td>
+                        <td>
+                            <div className="btn-flat" onClick={start}>接続</div>
+                            <div className="btn-flat" onClick={() => rtc.stop()}>体積</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="viewer__canvas_wrapper">
+                            <canvas className="viewer__canvas" ref={canvasRef} width="512" height="512"></canvas>
+                        </td>
+                        <td className="viewer__side_wrapper">
+                            <SideMenu conn={conn} player={ct.player} />
+                        </td>
+                    </tr>
+                    {/* <tr>
+                        <td>
+                            <div className="debug">
+                                <audio ref={localAudio} muted autoPlay playsInline controls></audio>
+                                <audio ref={remoteAudio} autoPlay playsInline controls></audio>
+                                <div className="hide"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <h4>Debug</h4>
+                            <button onClick={switchToken}>switch</button>
+                            <button onClick={debug}>debug</button>
+                        </td>
+                    </tr> */}
+                </tbody>
+            </table>
+        </div>
     )
 }

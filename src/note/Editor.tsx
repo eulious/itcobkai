@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { EditorCore, Render, sample } from "./Components";
 
-export default function Note() {
+export default function Editor() {
     const [value, setValue] = useState(sample);
-
     return (
         <div>
             <header className="header">

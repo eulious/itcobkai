@@ -23,9 +23,9 @@ export default class StageBuilder {
 
     public drawEnv(left: number, top: number) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        // this.drawBack(left, top)
-        this.drawMap(left, top)
-        this.drawGrid()
+        this.drawBack(left, top)
+        // this.drawMap(left, top)
+        // this.drawGrid()
     }
 
     public canMove(x: number, y: number): boolean {
@@ -33,6 +33,8 @@ export default class StageBuilder {
     }
 
     private drawMap(left: number, top: number) {
+        this.ctx.fillStyle = "white";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         let grid = this.canvas.width / CONFIG.OUTER;
         for (let i = 0; i < CONFIG.OUTER; ++i) {
             for (let j = 0; j < CONFIG.OUTER; ++j) {

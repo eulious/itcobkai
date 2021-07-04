@@ -1,70 +1,73 @@
 #!/usr/bin/env python3
 
-from json import dumps, loads
+from os import remove
 from boto3 import resource
-from base64 import b64decode
-from os.path import splitext
-from inspect import getmembers, ismethod
-
-class DynamoDB():
-    def __init__(self, tablename):
-        self.db = resource('dynamodb').Table(tablename)
-
-    def get(self, id):
-        res = self.db.get_item(Key={"id": id})
-        return res["Item"] if "Item" in res else None
-
-    def put(self, data):
-        self.db.put_item(Item=data)
-
-    def scan(self):
-        return self.db.scan()["Items"]
-
-    def query():
-        pass
+from random import random, seed
+from sqlite3 import connect
 
 
-class S3():
+class Cursor:
+    remote_db = "itcobkai.db"
+    local_db = f"{seed()}{str(random())[2:]}.db"
+    bucket = resource('s3').Bucket("itcobkai-internal")
+
+
     def __init__(self):
-        self.bucket = resource('s3').Bucket("public.test.s3")
-        self.method_str = [x[0] for x in getmembers(self, ismethod)]
-    
-    def get(self, key):
-        ext = splitext(key)[1][1:]
-        if "get_" + ext in self.method_str:
-            exec(f"self.get_{ext}(key)")
+        Cursor.bucket.download_file(Cursor.remote_db, Cursor.local_db)
 
-    def put(self, key, obj):
-        ext = splitext(key)[1][1:]
-        if "get_" + ext in self.method_str:
-            exec(f"self.put_{ext}(key, obj)")
     
-    def get_json(self, key):
-        return loads(self.bucket.get(key)['Body'].read().decode('utf-8'))
+    def __call__(self):
+        return self.__Cursor(self.local_db)
+    
 
-    def put_jpg(self, key, obj):
-        self.s3.put_object(
-            Key=key,
-            ACL="public-read",
-            Body=b64decode(obj.encode("UTF-8")),
-            ContentType='image/jpg',
-        )
-    
-    def put_json(self, key, obj):
-        self.bucket.put_object(
-            Key=key,
-            Body=dumps(obj, indent=2, ensure_ascii=False)
-        )
-    
-    def put_txt(self, key, obj):
-        self.bucket.put_object(
-            Key=key,
-            Body=obj
-        )
-    
-    def put_md(self, key, obj):
-        self.put_txt(key, obj)
+    def save(self):
+        Cursor.bucket.upload_file(Cursor.local_db, Cursor.remote_db)
+        remove(Cursor.local_db)
 
 
-db = lambda x: DynamoDB(x)
-s3 = S3
+    def close(self):
+        remove(Cursor.local_db)
+
+
+    class __Cursor:
+        def __init__(self, dbname):
+            self.conn = connect(dbname)
+            self.cur = self.conn.cursor()
+            self.is_open = True
+        
+
+        def __enter__(self):
+            return self
+
+
+        def __del__(self):
+            self.close()
+
+
+        def __exit__(self, *args):
+            self.close()
+        
+
+        def close(self):
+            if self.is_open:
+                self.conn.commit()
+                self.conn.close()
+                self.is_open = False
+        
+
+        def execute(self, query, params=[]):
+            if len(params) == 0:
+                self.cur.execute(query)
+            else:
+                self.cur.execute(query, params)
+            return self.cur.fetchall()
+
+
+        def executemany(self, query, params=[]):
+            self.cur.executemany(query, params)
+            return self.cur.fetchall()
+        
+
+        def executein(self, query, array):
+            self.cur.execute(query%','.join('?'*len(array)), array)
+            return self.cur.fetchall()

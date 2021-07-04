@@ -16,10 +16,10 @@ export default function Note() {
             <div className="wrapper">
                 <div className="nav">
                     <details open>
-                        <summary>ここをクリックすれば折りたためます</summary>
-                        <div>折りたたむ内容</div>
-                        <div>折りたたむ内容</div>
-                        <div>折りたたむ内容</div>
+                        <summary>折りたたみ</summary>
+                        <div>内容</div>
+                        <div>内容</div>
+                        <div>内容</div>
                     </details>
                 </div>
                 <div className="container2">

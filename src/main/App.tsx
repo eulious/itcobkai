@@ -7,6 +7,7 @@ import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
 import Main from "./Main";
 import "../scss/style.scss"
+import Editor from "../note/Editor";
 
 export default function App() {
     const [state, dispatch] = useReducer(reducer, initState)
@@ -22,6 +23,8 @@ export default function App() {
                 return <Signup />
             case "note":
                 return <Note />
+            case "edit":
+                return <Editor />
             default:
                 return (<Main />)
         }

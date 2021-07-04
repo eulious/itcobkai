@@ -4,7 +4,7 @@ from json import load, dump
 from boto3 import resource
 from hashlib import md5
 
-bucket = resource('s3').Bucket("public.test.s3")
+bucket = resource('s3').Bucket("itcobkai")
 jsonfile = "./assets/deploy.json"
 
 ctype = {

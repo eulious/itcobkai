@@ -18,6 +18,10 @@ class LambdaAPI():
 
     def post(self, url):
         return self.__api(url, "POST")
+    
+
+    def lambda(self, uri):
+        return self.__api(uri, "LAMBDA")
 
 
     def __api(self, url, method):
@@ -32,8 +36,8 @@ class LambdaAPI():
 
 
     def request(self, event):
-        post = self.__parse_params(event)
         try:
+            post = self.__parse_params(event)
             if post["_api"] not in self.funcs \
                 or post["_method"] not in self.funcs[post["_api"]]:
                 raise CustomError(403, "API Not Found")
@@ -66,10 +70,15 @@ class LambdaAPI():
 
 
     def __parse_params(self, event):
-        if event["body"] and type(event["body"]) == dict:
+        if "body" not in event:
+            post = {"_method": "LAMBDA", **event}
+        elif event["body"] and type(event["body"]) == dict:
             post = event["body"]
         elif event["body"] and type(event["body"]) == str:
             post = loads(event["body"])
+
+        if post["_method"] == "LAMBDA" and "body" in event:
+            raise CustomError(403, "許可されていないメソッドです")
         return post
 
 
