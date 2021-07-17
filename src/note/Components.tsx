@@ -84,27 +84,19 @@ interface DropzoneProps {
 }
 export function Dropzone(props: DropzoneProps) {
     const [selector, setSelector] = useState([0, 0])
+    const { getRootProps, isDragActive } = useDropzone({ onDrop })
 
     function onDrop(acceptedFiles: any) {
         console.log(acceptedFiles)
         const str = props.value.split("\n")[selector[0]]
         str.slice(0, selector[1]) + "hoge" + str.slice(selector[1]);
     }
-    const { getRootProps, isDragActive } = useDropzone({ onDrop })
 
-    let dom: JSX.Element
-    if (isDragActive) {
-        dom = (
-            <EditorCore value={props.value} setValue={props.setValue} />
-        );
-    } else {
-        dom = (
-            <EditorCore value={props.value} setValue={props.setValue} />
-        );
-    }
     return (
         <div {...getRootProps()}>
-            {dom}
+            {isDragActive
+                ? (<div />)
+                : <EditorCore value={props.value} setValue={props.setValue} />}
         </div>
     )
 }

@@ -25,7 +25,7 @@ export default function PersonInfo(props: PersonInfoProps) {
                 <td className="user__profile">
                     <div> {profile.name} </div>
                     <div>
-                        <span >{profile.year}期生, {profile.faculty}科</span>
+                        <span >{profile.year}, {profile.faculty}科</span>
                         {profile.member.dtm ? <span className="user__dtm">D</span> : <span />}
                         {profile.member.prog ? <span className="user__prog">P</span> : <span />}
                         {profile.member.cg ? <span className="user__cg">C</span> : <span />}

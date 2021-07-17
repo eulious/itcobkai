@@ -1,3 +1,4 @@
+import { ASSETS } from "../../common/Config";
 import CONFIG from "../utils/Config";
 import { map } from "../utils/Map";
 import { Person } from "./Person";
@@ -69,7 +70,7 @@ export default class StageBuilder {
     }
 
     private drawBack(left: number, top: number) {
-        if (!this.backImg.src) this.backImg.src = "./assets/back.jpg"
+        if (!this.backImg.src) this.backImg.src = `${ASSETS}/back.jpg`
         const canvasGrid = this.canvas.width / map.length
         const imgGrid = this.backImg.width / map.length
         this.ctx.drawImage(this.backImg,

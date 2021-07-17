@@ -69,7 +69,6 @@ export default function Viewer() {
                 ct.leave(res.id)
                 break;
             case "users":
-                // print("")
                 Object.keys(res.users).forEach((clientId: string) => {
                     const user = res.users[clientId]
                     if (clientId === ct.player!.id) {
@@ -93,12 +92,12 @@ export default function Viewer() {
                 <tbody>
                     <tr>
                         <td>
-                            <div className="debug">
+                            {/* <div className="debug">
                                 <audio ref={localAudio} muted autoPlay playsInline controls></audio>
                                 <audio ref={remoteAudio} autoPlay playsInline controls></audio>
                                 <button onClick={switchToken}>switch</button>
                                 <button onClick={debug}>debug</button>
-                            </div>
+                            </div> */}
                         </td>
                         <td>
                             <div className="btn-flat" onClick={start}>接続</div>

@@ -22,12 +22,12 @@ export default function Note() {
         <div>
             {onEdit && <Editor setOnEdit={setOnEdit} />}
             <Header mode="note">
-                <div className="right">
+                <div className="header__right">
                     <div className="btn-flat" onClick={edit}> 編集 </div>
                 </div>
             </Header>
-            <div className="wrapper">
-                <div className="nav">
+            <div className="note__wrapper">
+                <div className="note__nav">
                     <details open>
                         <summary>折りたたみ</summary>
                         <div>内容</div>
@@ -35,10 +35,10 @@ export default function Note() {
                         <div>内容</div>
                     </details>
                 </div>
-                <div className="container2">
-                    <Render className="article" value={sample} />
+                <div className="note__container">
+                    <Render className="note__article" value={sample} />
                 </div>
-                <div className="side">
+                <div className="note__side">
                     <div>更新日</div>
                     <span>{dayjs().tz("Asia/Tokyo").format('YYYY/MM/DD, ')}</span>
                     <span>{dayjs().tz("Asia/Tokyo").format('HH:mm')}</span>
@@ -50,7 +50,7 @@ export default function Note() {
                     <div>編集可能</div>
                     <br />
                     <br />
-                    <div>ここに目次</div>
+                    <div>目次</div>
                 </div>
             </div>
         </div>

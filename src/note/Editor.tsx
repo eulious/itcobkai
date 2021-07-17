@@ -14,13 +14,13 @@ export default function Editor(props: EditorProps) {
     }
 
     return (
-        <div className="modal">
-            <div className="container">
+        <div className="editor__modal">
+            <div className="editor__container">
                 <header className="editor__header">
-                    <div className="left">
-                        <div className="title"> ITCOBKAI </div>
+                    <div className="header__left">
+                        <div className="header__title"> ITCOBKAI </div>
                     </div>
-                    <div className="right" style={{ display: "flex" }}>
+                    <div className="header__right" style={{ display: "flex" }}>
                         <Toggle mode="確認"
                             modes={["確認", "設定"]}
                             setMode={() => { }}></Toggle>
@@ -29,8 +29,8 @@ export default function Editor(props: EditorProps) {
                         </div>
                     </div>
                 </header>
-                <EditorCore className="editor" value={value} setValue={setValue} />
-                <Render className="render" value={value} />
+                <EditorCore className="editor__editor" value={value} setValue={setValue} />
+                <Render className="editor__render" value={value} />
             </div>
         </div>
     );

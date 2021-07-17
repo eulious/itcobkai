@@ -6,7 +6,6 @@ import Note from "../note/Note";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
 import "../scss/style.scss"
-import Editor from "../note/Editor";
 import { ErrorBoundary } from 'react-error-boundary'
 
 export default function App() {
@@ -15,9 +14,9 @@ export default function App() {
 
     const dom = useMemo(() => {
         switch (params.mode) {
-            case "rtcViewer":
+            case "rtc":
                 return <Viewer />
-            case "rtcMaster":
+            case "master":
                 return <Master />
             case "auth":
                 return <Signup />
@@ -32,9 +31,7 @@ export default function App() {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} >
             <Context.Provider value={{ state, dispatch }}>
-                <div className="body">
-                    {dom}
-                </div>
+                {dom}
             </Context.Provider>
         </ErrorBoundary >
     )

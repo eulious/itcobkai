@@ -9,35 +9,21 @@ export default function Header(props: HeaderProps) {
         location.href = `${location.href.split('?')[0]}?mode=${mode}`
     }
 
-    const dom = useMemo(() => {
-        switch (props.mode) {
-            case "rtc":
-                return (
-                    <tr>
-                        <td className="td_select">RTC</td>
-                        <td className="td_unselect" onClick={() => onClick("note")}>NOTE</td>
-                    </tr>
-                )
-            case "note":
-                return (
-                    <tr>
-                        <td className="td_unselect" onClick={() => onClick("rtcViewer")}>RTC</td>
-                        <td className="td_select">NOTE</td>
-                    </tr>
-                )
-        }
-    }, [props.mode])
-
     return (
-        <header className="header">
-            <div className="left">
-                <div className="title">ITCOBKAI</div>
-                {props.mode && <table className="toggle"><tbody>{dom}</tbody></table>}
+        <header className="header__header">
+            <div className="header__left">
+                <div className="header__title">ITCOBKAI</div>
+                {props.mode && <Toggle
+                    mode={props.mode}
+                    modes={["rtc", "note"]}
+                    setMode={onClick}
+                />}
             </div>
             {props.children}
         </header>
     )
 }
+
 
 interface ToggleProps {
     mode: string
@@ -46,7 +32,6 @@ interface ToggleProps {
 }
 export function Toggle(props: ToggleProps) {
     function onClick(i: number) {
-        // location.href = `${location.href.split('?')[0]}?mode=${mode}`
         props.setMode(props.modes[i])
     }
 
@@ -54,22 +39,22 @@ export function Toggle(props: ToggleProps) {
         if (props.modes.indexOf(props.mode)) {
             return (
                 <tr>
-                    <td className="td_select">{props.modes[0].toUpperCase()}</td>
-                    <td className="td_unselect" onClick={() => onClick(1)}>{props.modes[1].toUpperCase()}</td>
+                    <td className="header__td_unselect" onClick={() => onClick(0)}>{props.modes[0].toUpperCase()}</td>
+                    <td className="header__td_select">{props.modes[1].toUpperCase()}</td>
                 </tr>
             )
         } else {
             return (
                 <tr>
-                    <td className="td_select" onClick={() => onClick(0)}>{props.modes[0].toUpperCase()}</td>
-                    <td className="td_unselect">{props.modes[1].toUpperCase()}</td>
+                    <td className="header__td_select">{props.modes[0].toUpperCase()}</td>
+                    <td className="header__td_unselect" onClick={() => onClick(1)}>{props.modes[1].toUpperCase()}</td>
                 </tr>
             )
         }
     }, [props.mode])
 
     return (
-        <table className="toggle">
+        <table className="header__toggle">
             <tbody>{dom}</tbody>
         </table>
     )
