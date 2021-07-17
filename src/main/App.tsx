@@ -5,9 +5,9 @@ import { Context, initState, reducer } from "../common/Context";
 import Note from "../note/Note";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
-import Main from "./Main";
 import "../scss/style.scss"
 import Editor from "../note/Editor";
+import { ErrorBoundary } from 'react-error-boundary'
 
 export default function App() {
     const [state, dispatch] = useReducer(reducer, initState)
@@ -23,18 +23,30 @@ export default function App() {
                 return <Signup />
             case "note":
                 return <Note />
-            case "edit":
-                return <Editor />
             default:
-                return (<Main />)
+                return <Viewer />
         }
     }, [location.search])
 
+
     return (
-        <Context.Provider value={{ state, dispatch }}>
-            <div className="body">
-                {dom}
-            </div>
-        </Context.Provider>
+        <ErrorBoundary FallbackComponent={ErrorFallback} >
+            <Context.Provider value={{ state, dispatch }}>
+                <div className="body">
+                    {dom}
+                </div>
+            </Context.Provider>
+        </ErrorBoundary >
+    )
+}
+
+
+function ErrorFallback({ error, resetErrorBoundary }: { error: any, resetErrorBoundary: any }) {
+    return (
+        <div role="alert">
+            <p>{error.message}</p>
+            <pre style={{ fontSize: "16px" }}>{error.stack}</pre>
+            <button onClick={resetErrorBoundary}>Try again</button>
+        </div>
     )
 }

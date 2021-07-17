@@ -43,8 +43,10 @@ def lambda_handler(event, _):
         status_code = res["statusCode"]
     except:
         print(format_exc())
-        body = {"status": "ng", "detail": format_exc()}
+        body = dumps({"status": "ng", "detail": format_exc()}, ensure_ascii=False)
         status_code = 500
+    print(body)
+    print(status_code)
     return {
         "isBase64Encoded" : False,
         "statusCode": status_code,
@@ -54,5 +56,5 @@ def lambda_handler(event, _):
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
         },
-        "body": dumps(body, ensure_ascii=False)
+        "body": body
     }

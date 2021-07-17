@@ -38,7 +38,7 @@ export class Persons {
             this.persons.push(persons[0])
             return persons[0]
         } else {
-            const profile = await request("POST", `/users?id=${id}`, "").then(res => res[0])
+            const profile = await request("GET", "/user", { id: id }).then(res => res[0])
             const person = this.createPerson(profile, id)
             this.enable(person, x, y)
             this.persons.push(person)

@@ -32,14 +32,14 @@ export default function Viewer() {
     }, [])
 
     async function start() {
-        const res = await request("GET", "/init", "discord")
+        const res = await request("GET", "/users")
         rtc.KEYS = res.keys
         // ct.init(res.profiles, rtc.message)
         // rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
         ct.init(res.profiles, console.log)
         ct.start(5, 4)
         ct.join("WOzosMqMAy", 6, 7)
-        ct.join("ym4F1XcR8k", 5, 6)
+        // ct.join("ym4F1XcR8k", 5, 6)
         setConn(ct.getConnection())
     }
 

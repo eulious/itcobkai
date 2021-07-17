@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo } from "react";
 
 interface HeaderProps {
-    mode: "rtc" | "note" | undefined
+    mode?: "rtc" | "note"
     children?: ReactNode
 }
 export default function Header(props: HeaderProps) {
@@ -36,5 +36,41 @@ export default function Header(props: HeaderProps) {
             </div>
             {props.children}
         </header>
+    )
+}
+
+interface ToggleProps {
+    mode: string
+    modes: [string, string]
+    setMode: Function
+}
+export function Toggle(props: ToggleProps) {
+    function onClick(i: number) {
+        // location.href = `${location.href.split('?')[0]}?mode=${mode}`
+        props.setMode(props.modes[i])
+    }
+
+    const dom = useMemo(() => {
+        if (props.modes.indexOf(props.mode)) {
+            return (
+                <tr>
+                    <td className="td_select">{props.modes[0].toUpperCase()}</td>
+                    <td className="td_unselect" onClick={() => onClick(1)}>{props.modes[1].toUpperCase()}</td>
+                </tr>
+            )
+        } else {
+            return (
+                <tr>
+                    <td className="td_select" onClick={() => onClick(0)}>{props.modes[0].toUpperCase()}</td>
+                    <td className="td_unselect">{props.modes[1].toUpperCase()}</td>
+                </tr>
+            )
+        }
+    }, [props.mode])
+
+    return (
+        <table className="toggle">
+            <tbody>{dom}</tbody>
+        </table>
     )
 }

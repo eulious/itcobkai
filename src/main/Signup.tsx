@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { getParam } from "../common/Common"
 import { LAMBDA_URL } from "../common/Config"
 import Token from "../common/Token"
+import Header from "./Header"
 
 
 export default function Signup() {
@@ -9,16 +10,19 @@ export default function Signup() {
     const redirect = location.href.split("?")[0] + "?mode=auth"
 
     return (
-        <div className="auth__form-wrapper">
-            <h1 className="auth__h1">ITCOBKAI</h1>
-            {params.code
-                ? <PleaseWait code={params.code} redirect={redirect} />
-                : <Discord redirect={redirect} />
-            }
-            <div className="auth__form-footer">
-                制作: 笠井@eulious
-                <br />
-                協力: kyoichi
+        <div>
+            <Header />
+            <div className="auth__form-wrapper">
+                <h1 className="auth__h1">LOGIN</h1>
+                {params.code
+                    ? <PleaseWait code={params.code} redirect={redirect} />
+                    : <Discord redirect={redirect} />
+                }
+                <div className="auth__form-footer">
+                    制作: 笠井@eulious
+                    <br />
+                    協力: kyoichi
+                </div>
             </div>
         </div>
     )
@@ -38,11 +42,9 @@ function PleaseWait(props: { code: string, redirect: string }) {
         const d = await res.json();
         if (res.status === 200) {
             const t = new Token()
-            console.log(d)
             t.save(d.secret)
             localStorage._id = d.id
-            console.log(d)
-            // location.href = location.href.split("?")[0] + "?mode=auth"
+            location.href = location.href.split("?")[0]
         } else {
             window.alert(`認証に失敗しました: ${d.detail}`)
             location.href = location.href.split("?")[0] + "?mode=auth"

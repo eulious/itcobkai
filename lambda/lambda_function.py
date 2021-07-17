@@ -55,7 +55,7 @@ def get_user(post):
     auth(cur, post["_id"], post["_access"])
     res = cur.execute("SELECT * FROM users WHERE id=?", (post["id"],))
     cur.delete()
-    if res:
+    if res and res[0][1]:
         [(_, name, thumbnail)] = res
         profile = {"name": name, "thumbnail": thumbnail}
         return profile
