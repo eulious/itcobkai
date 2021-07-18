@@ -2,6 +2,7 @@
 
 from time import time
 from random import randint, seed
+from hashlib import blake2b
 
 class CustomError(Exception):
     def __init__(self, code=200, arg=""):
@@ -41,3 +42,7 @@ def generate_token():
         "refresh": id62(),
         "expires_at": int(time()) + 604800
     }
+
+
+def blake(text):
+    return id62(int(blake2b(text.encode(), digest_size=9).hexdigest(), 16))

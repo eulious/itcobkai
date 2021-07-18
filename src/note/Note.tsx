@@ -6,13 +6,15 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ja"
+import NoteList from "./NoteList";
 
 dayjs.extend(timezone);
 dayjs.extend(utc);
 dayjs.locale('ja');
 
+
 export default function Note() {
-    const [onEdit, setOnEdit] = useState(false)
+    const [onEdit, setOnEdit] = useState(true)
 
     function edit() {
         setOnEdit(true)
@@ -27,16 +29,10 @@ export default function Note() {
                 </div>
             </Header>
             <div className="note__wrapper">
-                <div className="note__nav">
-                    <details open>
-                        <summary>折りたたみ</summary>
-                        <div>内容</div>
-                        <div>内容</div>
-                        <div>内容</div>
-                    </details>
-                </div>
+
+                <NoteList />
                 <div className="note__container">
-                    <Render className="note__article" value={sample} />
+                    <Render className="note__article" value={onEdit ? "" : sample} />
                 </div>
                 <div className="note__side">
                     <div>更新日</div>

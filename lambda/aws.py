@@ -18,10 +18,10 @@ class Cursor:
         self.cur = self.conn.cursor()
     
 
-    def save(self):
+    def save(self, is_remove=True):
         self.conn.commit()
         self.conn.close()
-        if self.is_lambda:
+        if self.is_lambda and is_remove:
             self.bucket.upload_file(self.local_db, self.remote_db)
             remove(self.local_db)
 

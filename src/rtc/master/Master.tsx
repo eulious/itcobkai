@@ -12,7 +12,7 @@ export default function Master() {
     const [players, setPlayers] = useState<JSX.Element[]>()
 
     async function start() {
-        const res = await request("GET", "/login/master", "db")
+        const res = await request("GET", "/login/master")
         if (res.keys) {
             rtc.KEYS = res.keys
             const streams = await rtc.start(whenOpen, receive)

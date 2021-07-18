@@ -2,17 +2,20 @@ import { createContext, Dispatch } from "react"
 
 export interface State {
     footerText: string
+    roles: { [key: string]: string[] };
 }
 
-export type Type = "FOOTER"
+export type Type = "FOOTER" | "ROLES"
 
 export interface Action {
     type: Type
-    text: string
+    text?: string
+    roles?: { [key: string]: string[] };
 }
 
 export const initState: State = {
-    footerText: ""
+    footerText: "",
+    roles: {}
 }
 
 export const Context = createContext({} as {
@@ -24,6 +27,8 @@ export function reducer(state: State, action: Action): State {
     switch (action.type) {
         case "FOOTER":
             return footer(state, action.text!);
+        case "ROLES":
+            return roles(state, action.roles!);
         default:
             return state
     }
@@ -31,5 +36,10 @@ export function reducer(state: State, action: Action): State {
 
 function footer(state: State, text: string) {
     state.footerText = text;
+    return { ...state }
+}
+
+function roles(state: State, roles: { [key: string]: string[] }) {
+    state.roles = roles
     return { ...state }
 }

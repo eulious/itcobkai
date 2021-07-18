@@ -32,7 +32,7 @@ export default function Viewer() {
     }, [])
 
     async function start() {
-        const res = await request("GET", "/users")
+        const res = await request("GET", "/rtc/init")
         rtc.KEYS = res.keys
         // ct.init(res.profiles, rtc.message)
         // rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
