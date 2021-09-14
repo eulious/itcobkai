@@ -23,7 +23,7 @@ export class Connector {
         const reds: Person[] = []
         const whites: Person[] = []
         others.forEach(p => {
-            if (map[p.y][p.x] === MAP.AREA) reds.push(p)
+            if (map[p.y][p.x] === MAP.AREA || map[p.y][p.x] === MAP.AREA_BLOCK) reds.push(p)
             else whites.push(p)
         })
         const group = (map[y][x] == MAP.PLAIN)
@@ -64,7 +64,7 @@ export class Connector {
         function checkCell(x: number, y: number) {
             if (checkeds.has(x * 1000 + y)) return;
             if (x < 0 || map.length <= x || y < 0 || map.length <= y) return;
-            if (map[y][x] !== MAP.AREA) return
+            if (map[y][x] !== MAP.AREA && map[y][x] !== MAP.AREA_BLOCK) return
             checkeds.add(x * 1000 + y)
             stack.push(x * 1000 + y)
             reds.add(x * 1000 + y)
@@ -95,7 +95,7 @@ export class Connector {
             const address = x * 1000 + y
             if (checkeds.has(address)) return;
             if (x < 0 || map.length <= x || y < 0 || map.length <= y) return;
-            if (map[y][x] === MAP.AREA) return;
+            if (map[y][x] === MAP.AREA || map[y][x] === MAP.AREA_BLOCK) return;
 
             checkeds.add(address)
             if (address in dict) {

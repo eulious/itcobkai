@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react"
 import PersonInfo, { Person } from "./Person"
 import { Connection } from "./Connector"
 import classnames from "classnames"
-import useInterval from "../../common/Hooks"
 
 interface SideMenuProps {
     conn?: Connection
@@ -10,16 +9,8 @@ interface SideMenuProps {
     mutes: Set<string>
 }
 export default function SideMenu(props: SideMenuProps) {
+    const [mode, setMode] = useState("talking")
     const [connect, setConnect] = useState<Set<string>>(new Set<string>())
-
-    // useInterval(() => {
-    //     props.conn?.all.sort((a, b) => {
-    //         const to_a = (props.player!.x - a.x) ** 2 + (props.player!.y - a.y) ** 2
-    //         const to_b = (props.player!.x - b.x) ** 2 + (props.player!.y - b.y) ** 2
-    //         return to_a - to_b
-    //     })
-    //     console.log(props.conn?.all.map(x => x.id))
-    // }, 1000)
 
     const players = useMemo(() => {
         const players: JSX.Element[] = []
@@ -32,8 +23,9 @@ export default function SideMenu(props: SideMenuProps) {
             )
         }
         if (!props.conn) return players
+        // props.conn.all.map(p => (props.player!.x - p.x)**2+(props.player!.y - p.y)**2).sort()
         props.conn.all.forEach((p, i) => {
-            if (!(connect.has(p.id))) return
+            if ((mode === "talking" && !(connect.has(p.id)))) return
             players.push(
                 <PersonInfo
                     key={i}
@@ -42,22 +34,7 @@ export default function SideMenu(props: SideMenuProps) {
             )
         })
         return players
-    }, [props, connect, props.mutes])
-
-    const others = useMemo(() => {
-        const others: JSX.Element[] = []
-        if (!props.conn) return others
-        props.conn.all.forEach((p, i) => {
-            if (connect.has(p.id)) return
-            others.push(
-                <PersonInfo
-                    key={i}
-                    profile={p.profile}
-                    muted={props.mutes.has(p.id)} />
-            )
-        })
-        return others
-    }, [props, connect, props.mutes])
+    }, [mode, props, connect, props.mutes])
 
     useEffect(() => {
         if (!props.conn) return
@@ -71,17 +48,35 @@ export default function SideMenu(props: SideMenuProps) {
             console.log("disconnect", id)
         }
         setConnect(new Set(connect))
-    }, [props])
+    }, [mode, props])
 
     return (
-        <div className="viewer__tab-wrap">
-            <div className="viewer__side_contents">
-                通話中
-                {players}
-                <br />
-                オンライン
-                {others}
-            </div>
-        </div>
+        <table className="viewer__tab-wrap">
+            <tbody>
+                <tr>
+                    <td onClick={() => setMode("talking")}
+                        className={classnames({
+                            "viewer__tab-switch": true,
+                            "viewer__tab-switch--select": mode === "talking"
+                        })} >
+                        通話中
+                    </td>
+                    <td onClick={() => setMode("all")}
+                        className={classnames({
+                            "viewer__tab-switch": true,
+                            "viewer__tab-switch--select": mode === "all"
+                        })} >
+                        オンライン
+                    </td>
+                </tr>
+                <tr>
+                    <td colSpan={2}>
+                        <div className="viewer__side_contents">
+                            {players}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     )
 }

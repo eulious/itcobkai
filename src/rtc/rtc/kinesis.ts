@@ -1,5 +1,6 @@
 import { beep } from "../utils/Common"
 import { Streams } from "../utils/Schema"
+import { Profile } from "../viewer/Persons"
 import startMaster from "./kinesisMaster"
 import startViewer from "./kinesisViewer"
 
@@ -42,9 +43,11 @@ export class RTCViewer {
         this.viewer.dataChannel.send(JSON.stringify(d));
     }
 
-    public async start(id: string, localAudio: HTMLAudioElement, remoteAudio: HTMLAudioElement, receive: Function) {
+    // public async start(id: string, localAudio: HTMLAudioElement, remoteAudio: HTMLAudioElement, receive: Function) {
+    public async start(profile: Profile, id: string, localAudio: HTMLAudioElement, remoteAudio: HTMLAudioElement, receive: Function) {
         beep()
-        this.viewer = await startViewer(this.KEYS, localAudio, remoteAudio, id, receive)
+        // this.viewer = await startViewer(this.KEYS, localAudio, remoteAudio, id, receive)
+        this.viewer = await startViewer(this.KEYS, localAudio, remoteAudio, profile, id, receive)
     }
 
     public stop() {

@@ -24,18 +24,21 @@ export default function Viewer() {
     }, 500)
 
     useEffect(() => {
-        ct.initSB(canvasRef.current!)
+        ct.initSB(canvasRef.current!);
+        (window as any).reload = (text: string) => ct.alert(text, true);
+        (window as any).message = (text: string) => ct.alert(text, false);
     }, [])
 
     async function start() {
         const res = await request("GET", "/rtc/init")
         rtc.KEYS = res.keys
-        ct.init(res.profiles, rtc.message)
-        rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
-        // ct.init(res.profiles, console.log)
-        // ct.start(5, 4)
-        // ct.join("WOzosMqMAy", 6, 7) // 響一
-        // ct.join("ym4F1XcR8k", 5, 6) // うり
+        // ct.init(res.profiles, rtc.message)
+        // rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        //// rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        ct.init(res.profiles, console.log)
+        ct.start(5, 4)
+        ct.join(res.profiles["WOzosMqMAy"], "WOzosMqMAy", 6, 7) // 響一
+        ct.join(res.profiles["ym4F1XcR8k"], "ym4F1XcR8k", 6, 6) // うり
         setConn(ct.getConnection())
     }
 
@@ -48,10 +51,13 @@ export default function Viewer() {
         const res = e.data ? JSON.parse(e.data) : JSON.parse(e);
         console.log("[[[receive]]]: ", res)
         switch (res.action) {
-            case "chat":
+            case "alert":
+                window.alert(res.text)
+                if (res.reload) location.reload()
                 break;
             case "join":
-                ct.join(res.id, res.x, res.y)
+                // ct.join(res.id, res.x, res.y)
+                ct.join(res.profile, res.id, res.x, res.y)
                 break;
             case "move":
                 ct.moveOther(res.poss)
@@ -74,7 +80,8 @@ export default function Viewer() {
                     if (clientId === ct.player!.id) {
                         ct.start(user.x, user.y)
                     } else {
-                        ct.join(clientId, user.x, user.y)
+                        // ct.join(clientId, user.x, user.y)
+                        ct.join(user.profile, clientId, user.x, user.y)
                     }
                 });
                 break;

@@ -66,6 +66,12 @@ export default class Controller {
                 connect: state.connect,
                 disconnect: state.disconnect
             })
+            state.all.sort((a, b) => {
+                const to_a = (now.x - a.x) ** 2 + (now.y - a.y) ** 2
+                const to_b = (now.x - b.x) ** 2 + (now.y - b.y) ** 2
+                console.log(to_a, to_b)
+                return to_a - to_b
+            })
             this.isPersonChange = false
             return state
         }
@@ -89,12 +95,17 @@ export default class Controller {
         return true
     }
 
+    // public join(id: string, x: number, y: number) {
+    //     this.isPersonChange = true
+    //     this.prs!.add(id, x, y).then((person) => {
+    //         this.refresh()
+    //     })
+    // }
 
-    public join(id: string, x: number, y: number) {
+    public join(profile: Profile, id: string, x: number, y: number) {
         this.isPersonChange = true
-        this.prs!.add(id, x, y).then((person) => {
-            this.refresh()
-        })
+        this.prs!.add(profile, id, x, y)
+        this.refresh()
     }
 
 
@@ -109,7 +120,10 @@ export default class Controller {
         const { x, y, top, left } = this.cropper.get()
         this.sb!.drawEnv(left, top)
         this.sb!.drawPlayer(this.prs!.player, x - left, y - top)
-        this.sb!.drawOthers(this.prs!.persons, left, top)
+        const players = this.prs!.persons.filter(x => this.cn.connectings.has(x.id))
+        const others = this.prs!.persons.filter(x => !this.cn.connectings.has(x.id))
+        this.sb!.drawOthers(players, left, top, true)
+        this.sb!.drawOthers(others, left, top, false)
         this.sb!.drawTop(left, top)
     }
 
@@ -124,5 +138,10 @@ export default class Controller {
         if (!clientId) this.message!({ action: "mute", enabled: enabled })
         this.prs!.mute(enabled, clientId)
         this.refresh()
+    }
+
+
+    public alert(text: string, reload: boolean) {
+        this.message!({ action: "alert", reload: reload, text: text })
     }
 }

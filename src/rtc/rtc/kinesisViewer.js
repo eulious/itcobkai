@@ -1,6 +1,7 @@
 const viewer = {};
 
-export default async function startViewer(keys, localView, remoteView, clientId, onRemoteDataMessage) {
+// export default async function startViewer(keys, localView, remoteView, clientId, onRemoteDataMessage) {
+export default async function startViewer(keys, localView, remoteView, profile, clientId, onRemoteDataMessage) {
     viewer.localView = localView;
     viewer.remoteView = remoteView;
 

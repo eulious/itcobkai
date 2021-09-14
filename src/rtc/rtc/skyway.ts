@@ -2,6 +2,7 @@ import Peer, { DataConnection, MediaConnection } from "skyway-js";
 import { id62 } from "../../common/Common";
 import { beep } from "../utils/Common";
 import { Streams } from "../utils/Schema";
+import { Profile } from "../viewer/Persons";
 
 export class RTCMaster {
     public KEYS: any
@@ -112,7 +113,8 @@ export class RTCViewer {
         this.dataConnection!.send(JSON.stringify(d));
     }
 
-    public async start(id: string, localView: HTMLAudioElement, remoteView: HTMLAudioElement, receive: Function) {
+    // public async start(id: string, localView: HTMLAudioElement, remoteView: HTMLAudioElement, receive: Function) {
+    public async start(profile: Profile, id: string, localView: HTMLAudioElement, remoteView: HTMLAudioElement, receive: Function) {
         beep()
         this.id = id
         this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -134,7 +136,8 @@ export class RTCViewer {
             this.dataConnection = this.peer!.connect("master");
             this.dataConnection.on('data', receive);
             this.dataConnection.once('open', () => {
-                this.dataConnection!.send(JSON.stringify({ action: "join", id: id }))
+                // this.dataConnection!.send(JSON.stringify({ action: "join", id: id }))
+                this.dataConnection!.send(JSON.stringify({ action: "join", profile: profile, id: id }))
             });
             this.dataConnection.once('close', () => {
                 // 何か処理を書く

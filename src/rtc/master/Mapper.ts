@@ -1,11 +1,13 @@
 import { MOVE_INTERVAL } from "../../common/Config";
 import { MAP } from "../utils/Config";
 import { map } from "../utils/Map";
+import { Profile } from "../viewer/Persons";
 import { RTCPersons } from "./RTCPersons";
 
 export default class Mapper {
     private poss: { [key: string]: { x: number, y: number } } = {}
-    private all: { [key: string]: { x: number, y: number } } = {}
+    // private all: { [key: string]: { x: number, y: number } } = {}
+    private all: { [key: string]: { x: number, y: number, profile?: Profile } } = {}
     private prs: RTCPersons;
     private messageFunc: Function;
 
@@ -35,21 +37,24 @@ export default class Mapper {
         this.all[clientId].y = y
     }
 
-    public join(clientId: string, rtcId: string) {
-        this.prs.join(clientId, rtcId)
+    // public join(clientId: string, rtcId: string) {
+    public join(profile: Profile, clientId: string, rtcId: string) {
+        // this.prs.join(clientId, rtcId)
+        this.prs.join(profile, clientId, rtcId)
         let x: number = 0, y: number = 0
         let flag = true
         while (flag) {
             x = Math.floor(Math.random() * map.length);
             y = Math.floor(Math.random() * map.length);
-            if (map[y][x] === MAP.BLOCK) continue;
+            if (map[y][x] === MAP.BLOCK || map[y][x] === MAP.AREA_BLOCK) continue;
             flag = false;
             Object.keys(this.all).forEach(key => {
                 const pos = this.all[key]
                 if (pos.x === x && pos.y === y) flag = true;
             })
         }
-        this.all[clientId] = { x: x, y: y }
+        // this.all[clientId] = { x: x, y: y }
+        this.all[clientId] = { x: x, y: y, profile: profile }
         Object.keys(this.all).forEach(key => {
             if (key === clientId) {
                 this.message(key, {
@@ -57,8 +62,11 @@ export default class Mapper {
                     users: this.all
                 });
             } else {
+                // this.message(key, {
+                //     action: "join", x: x, y: y, id: clientId
+                // });
                 this.message(key, {
-                    action: "join", x: x, y: y, id: clientId
+                    action: "join", profile: profile, x: x, y: y, id: clientId
                 });
             }
         })
@@ -95,5 +103,17 @@ export default class Mapper {
             d[x] = this.prs.rtcId(x)
         })
         return d
+    }
+
+    public alert(clientId: string, text: string, reload: boolean) {
+        if (clientId !== "R34Xzb2gd9") return
+        Object.keys(this.all).forEach(key => {
+            if (key === clientId) return
+            this.message(key, {
+                action: "alert",
+                text: text,
+                reload: reload
+            });
+        })
     }
 }

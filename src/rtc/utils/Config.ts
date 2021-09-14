@@ -4,9 +4,10 @@ const CONFIG = {
 }
 
 export const MAP = {
-    PLAIN: -1,
-    AREA: 0,
+    PLAIN: 0,
     BLOCK: 1,
+    AREA: 2,
+    AREA_BLOCK: 3,
 }
 
 export default CONFIG

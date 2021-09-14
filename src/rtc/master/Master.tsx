@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { RTCPersons } from "./RTCPersons";
 import { RTC_CORE } from "../utils/Config";
 import { request } from "../../common/Common";
@@ -14,6 +14,11 @@ export default function Master() {
     const prs = useMemo(() => new RTCPersons(), [])
     const mp = useMemo(() => new Mapper(rtc.message, prs), [])
     const [players, setPlayers] = useState<JSX.Element[]>()
+
+    useEffect(() => {
+        (window as any).reload = (text: string) => mp.alert("R34Xzb2gd9", text, true);
+        (window as any).message = (text: string) => mp.alert("R34Xzb2gd9", text, false);
+    }, [])
 
     async function start() {
         const res = await request("GET", "/rtc/init")
@@ -54,13 +59,15 @@ export default function Master() {
         const clientId = res.id
         console.log(`[[[receive]]]: ${clientId}`, res)
         switch (res.action) {
-            case "chat":
+            case "alert":
+                mp.alert(clientId, res.text, res.reload)
                 break;
             case "move":
                 mp.move(clientId, res.x, res.y)
                 break;
             case "join":
-                mp.join(clientId, rtcId)
+                // mp.join(clientId, rtcId)
+                mp.join(res.profile, clientId, rtcId)
                 makePlayers()
                 break;
             case "leave":

@@ -26,30 +26,30 @@ export default class StageBuilder {
     public drawEnv(left: number, top: number) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.drawBack(left, top)
-        this.drawGrid()
     }
 
     public canMove(x: number, y: number): boolean {
-        return map[y][x] !== MAP.BLOCK
+        return map[y][x] !== MAP.BLOCK && map[y][x] !== MAP.AREA_BLOCK
     }
 
     public drawPlayer(player: Person, i: number, j: number) {
-        this.drawPerson(player, i, j)
+        this.drawPerson(player, i, j, true)
     }
 
-    public drawOthers(persons: Person[], left: number, top: number) {
+    public drawOthers(persons: Person[], left: number, top: number, inside: boolean) {
         for (let person of persons) {
             if (person.x - left < 0 || CONFIG.OUTER <= person.x - left) continue
             if (person.y - top < 0 || CONFIG.OUTER <= person.y - top) continue
-            this.drawPerson(person, person.x - left, person.y - top)
+            this.drawPerson(person, person.x - left, person.y - top, inside)
         }
     }
 
-    private drawPerson(person: Person, i: number, j: number) {
+    private drawPerson(person: Person, i: number, j: number, inside: boolean) {
         const grid = this.canvas.width / CONFIG.OUTER;
         this.ctx.beginPath();
         this.ctx.arc(i * grid + grid / 2, j * grid + grid / 2, grid / 2, 0, Math.PI * 2, false)
         this.ctx.save()
+        this.ctx.globalAlpha = inside ? 1 : 0.4
         this.ctx.clip()
         this.ctx.drawImage(person.img, i * grid, j * grid, grid, grid)
         if (person.mute) {
@@ -67,6 +67,7 @@ export default class StageBuilder {
             imgGrid * left, imgGrid * top, imgGrid * CONFIG.OUTER, imgGrid * CONFIG.OUTER,
             0, 0, this.canvas.width, this.canvas.height
         )
+        this.drawGrid()
     }
 
     private drawBack(left: number, top: number) {

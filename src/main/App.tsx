@@ -48,3 +48,5 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: any, resetErrorBo
         </div>
     )
 }
+
+setInterval(() => console.clear(), 15 * 60 * 1000)

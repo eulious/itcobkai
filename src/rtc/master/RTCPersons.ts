@@ -10,15 +10,20 @@ export class RTCPersons {
         this.profiles = profiles
     }
 
-    public async join(clientId: string, rtcId: string): Promise<Profile> {
+    // public async join(clientId: string, rtcId: string): Promise<Profile> {
+    //     this.rtcIds[clientId] = rtcId
+    //     if (this.profiles[clientId]) {
+    //         return this.profiles[clientId]
+    //     } else {
+    //         const profile = await request("GET", "/user", { id: clientId }).then(res => res[0])
+    //         this.profiles[clientId] = profile
+    //         return profile
+    //     }
+    // }
+
+    public join(profile: Profile, clientId: string, rtcId: string) {
         this.rtcIds[clientId] = rtcId
-        if (this.profiles[clientId]) {
-            return this.profiles[clientId]
-        } else {
-            const profile = await request("GET", "/user", { id: clientId }).then(res => res[0])
-            this.profiles[clientId] = profile
-            return profile
-        }
+        this.profiles[clientId] = profile
     }
 
     public mute(clientId: string, enable: boolean) {
