@@ -6,7 +6,7 @@ export default class Token {
 
     public async get(): Promise<string> {
         if (!(localStorage.expires_at && localStorage.access && localStorage.refresh)) {
-            window.alert("認証して下さい")
+            window.alert("ログインに失敗しました")
             location.href = location.href.split("?")[0] + "?mode=auth"
         }
         if (localStorage.expires_at < new Date().getTime() / 1000) {
@@ -30,7 +30,6 @@ export default class Token {
     }
 
     public save(secret: any) {
-        console.log(localStorage, secret)
         localStorage.access = this.encode(secret.access);
         localStorage.refresh = this.encode(secret.refresh);
         localStorage.expires_at = secret.expires_at

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-from boto3 import resource
 from aws import Cursor
 from keys import KEYS, S3_INTERNAL, S3_PUBLIC
 from time import time
+from boto3 import resource
 from utils import CustomError, auth, generate_token, id62, blake
 from base64 import b64decode
 from lambdaAPI import LambdaAPI
+from get_notes import get_notes
 
 app = LambdaAPI()
 
@@ -49,7 +50,13 @@ def init(post):
         elif "MV" in role:
             profiles[id]["member"]["mv"] = True
     cur.delete()
-    return { "profiles": profiles, "keys": KEYS }
+
+    master = post["_id"] in [
+        "ym4F1XcR8k", # kyoichi
+        "R34Xzb2gd9", # 笠井
+        "WOzosMqMAy"  # うり
+    ]
+    return { "profiles": profiles, "keys": KEYS, "master": master }
 
 
 @app.get("/user")
@@ -108,114 +115,59 @@ def discord(post):
     return { "id": id, "secret": secret }
 
 
-@app.get("/login/master")
-def login_master(post):
-    master = [
-        "ym4F1XcR8k", # kyoichi
-        "R34Xzb2gd9", # 笠井
-        "WOzosMqMAy"  # うり
-    ]
-    return {"keys": KEYS if post["_id"] in master else None }
-
-
 @app.get("/notes/init")
-def get_notes(post):
-    cur = Cursor()
-    auth(cur, post["_id"], post["_access"])
-    res = cur.execute("SELECT role, attribute FROM roles")
-    res = cur.execute("SELECT role, attribute FROM roles")
-    cur.delete()
-    roles = {}
-    for role, attr in res:
-        if attr not in roles:
-            roles[attr] = []
-        roles[attr].append(role)
-    return {"roles": roles}
-
-
-@app.get("/notes")
-def get_notes(post):
-    cur = Cursor()
-    auth(cur, post["_id"], post["_access"])
-
-    res = cur.execute("""
-        SELECT notes.id, users.name, notes.title
-        FROM notes
-        INNER JOIN users ON users.id = notes.user_id
-        ORDER BY updated_at DESC
-        """)
-    cur.delete()
-    d = {}
-    users = []
-    for id, user, title, updated_at in res:
-        if user not in d:
-            d[user] = []
-            users.append(user)
-        d[user].append({
-            "id": id,
-            "title": title,
-            "isUpdated": False
-        })
-    out = []
-    for user in users:
-        out.append({
-            "name": user,
-            "notes": d[user]
-        })
-    return d
+def get_roles(post):
+    return get_notes(post)
 
 
 @app.get("/notes/contents")
 def get_note(post):
     cur = Cursor()
     auth(cur, post["_id"], post["_access"])
-    roles = set()
-    res = cur.execute("SELECT role_id FROM profiles WHERE user_id=?", (post["_id"],))
-    for role_id in res:
-        roles.add(role_id)
-    res = cur.execute("SELECT role_id, operation FROM permission WHERE note_id=?", (post["note"],))
-
-    or_flag = True
-    for role_id, oper in res:
-        if oper == "or" and role_id not in roles:
-            or_flag = False
-        elif oper == "and" and role_id not in roles:
-            raise CustomError(500, "アクセス権限がありません")
-    cur.delete()
-    if or_flag:
-        raise CustomError(500, "アクセス権限がありません")
-
+    cur.execute("DELETE FROM unreads WHERE note_id=? AND user_id=?",
+        (post["note_id"], post["_id"],))
+    [(id, user_id, title, updated_at)] = cur.execute("""
+        SELECT id, user_id, title, updated_at FROM notes WHERE id=?
+        """, (post["note_id"],))
+    cur.save()
     s3 = resource('s3').Bucket(S3_INTERNAL)
-    value = s3.Object(f'note/{post["note"]}.md').get()['Body'].read()
+    obj = s3.Object(f'md/{post["note_id"]}.md')
+    content = obj.get()['Body'].read().decode('utf-8')
+    return {
+        "permission": [],
+        "content": content,
+        "info": {
+            "id": id,
+            "updated_at": updated_at,
+            "title": title,
+            "unread": False,
+            "editable": user_id == post["_id"],
+        }
+    }
 
 
 @app.post("/notes/contents")
 def post_note(post):
     cur = Cursor()
-    note_id = post["note_id"] if "note_id" in post else id62()
     auth(cur, post["_id"], post["_access"])
-    cur.execute("DELETE FROM notes WHERE id=?", (post["note_id"],))
-    cur.execute("INSERT INTO notes VALUES (?, ?, ?, ?)",
-        (note_id, post["_id"], post["title"], int(time())))
+    info = post["info"]
+    cur.execute("""
+        UPDATE notes
+        SET title=?, updated_at=?
+        WHERE id=?
+        """, (info["title"], int(time()), info["id"]))
 
-    if "images" in post and post["images"]:
-        images_query = []
-        for image_id in post["images"]:
-            images_query.append((note_id, image_id))
-        cur.execute("DELETE FROM images WHERE note_id=?", (post["note_id"],))
-        cur.executemany("INSERT INTO permission VALUES (?, ?)", images_query)
-
-    permission_query = []
-    res = cur.executein("SELECT role_id FROM roles WHERE name=(%s)", post["permission"])
-    for role_id in res:
-        permission_query.append((post["note_id"], role_id, "or"))
-    cur.execute("DELETE FROM permission WHERE note_id=?", (post["note_id"],))
-    cur.executemany("INSERT INTO permission VALUES (?, ?, ?)", permission_query)
+    # permission_query = []
+    # res = cur.executein("SELECT role_id FROM roles WHERE name=(%s)", post["permission"])
+    # for role_id in res:
+    #     permission_query.append((post["note_id"], role_id, "or"))
+    # cur.execute("DELETE FROM permission WHERE note_id=?", (post["note_id"],))
+    # cur.executemany("INSERT INTO permission VALUES (?, ?, ?)", permission_query)
     cur.save()
 
     resource('s3').Bucket(S3_INTERNAL).put_object(
-        Key=f'md/{post["id"]}.md',
-        Body=b64decode(post["base64"].encode("UTF-8")),
+        Key=f'md/{info["id"]}.md',
+        Body=post["content"],
         ContentType='text/plain',
     )
 
@@ -243,3 +195,38 @@ def upload_img(post):
             ContentType='audio/mp3',
         )
     return {"asset_id": asset_id}
+
+
+@app.get("/notes/add")
+def add_note(post):
+    cur = Cursor()
+    auth(cur, post["_id"], post["_access"])
+    note_id = id62()
+    cur.execute("INSERT INTO notes VALUES (?, ?, ?, ?)",
+        (note_id, post["_id"], "名称未設定", int(time())))
+
+    res = cur.execute("SELECT id FROM users WHERE name IS NOT NULL")
+    unread_query = []
+    for user_id in res:
+        if user_id == post["_id"]:
+            unread_query.append((user_id, note_id))
+    if len(unread_query):
+        cur.executemany("INSERT INTO unreads VALUES (?, ?)", unread_query)
+    cur.save()
+
+    resource('s3').Bucket(S3_INTERNAL).put_object(
+        Key=f'md/{note_id}.md',
+        Body="",
+        ContentType='text/plain',
+    )
+    return {"note_id": note_id}
+
+
+@app.get("/notes/remove")
+def remove_note(post):
+    cur = Cursor()
+    auth(cur, post["_id"], post["_access"])
+    cur.execute("DELETE FROM notes WHERE id=?", (post["note_id"],))
+    cur.execute("DELETE FROM unreads WHERE note_id=?", (post["note_id"],))
+    cur.save()
+    resource("s3").Object(S3_INTERNAL, f"md/{post['note_id']}.md").delete()

@@ -393,6 +393,7 @@
 
     & table th {
         font-weight: 600;
+        background-color: #eee;
     }
 
     & table td,
@@ -408,7 +409,7 @@
 
     & table tr:nth-child(2n) {
         background-color: #f6f8fa;
-        background-color: $black2;
+        background-color: #eee;
     }
 
     & img {

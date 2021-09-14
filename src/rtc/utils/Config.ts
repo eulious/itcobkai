@@ -1,12 +1,12 @@
 const CONFIG = {
-    OUTER: 11,
+    OUTER: 13,
     INNER: 2,
 }
 
 export const MAP = {
-    PLAIN: 0,
-    AREA: 6,
-    BLOCK: 7,
+    PLAIN: -1,
+    AREA: 0,
+    BLOCK: 1,
 }
 
 export default CONFIG

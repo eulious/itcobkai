@@ -4,6 +4,7 @@ import { Profile } from "./Persons"
 
 export interface Person {
     img: HTMLImageElement
+    mute: boolean
     profile: Profile
     x: number
     y: number
@@ -11,25 +12,25 @@ export interface Person {
 }
 
 interface PersonInfoProps {
-    person: Person;
+    profile: Profile;
+    muted?: boolean;
 }
 export default function PersonInfo(props: PersonInfoProps) {
-    const profile = props.person.profile
-
     return (
         <table className="user__contents">
             <tbody><tr>
                 <td className="user__img_box">
-                    <img className="user__thumbnail" src={`${AVATAR_URL}/${profile.thumbnail}.png`} />
+                    <img className={"user__thumbnail " + (props.muted ? "user__thumbnail--muted" : "")}
+                        src={`${AVATAR_URL}/${props.profile.thumbnail}.png`} />
                 </td>
                 <td className="user__profile">
-                    <div> {profile.name} </div>
+                    <div> {props.profile.name} </div>
                     <div>
-                        <span >{profile.year}, {profile.faculty}科</span>
-                        {profile.member.dtm ? <span className="user__dtm">D</span> : <span />}
-                        {profile.member.prog ? <span className="user__prog">P</span> : <span />}
-                        {profile.member.cg ? <span className="user__cg">C</span> : <span />}
-                        {profile.member.mv ? <span className="user__mv">M</span> : <span />}
+                        <span >{props.profile.year}, {props.profile.faculty}</span>
+                        {props.profile.member.dtm ? <span className="user__dtm">D</span> : <span />}
+                        {props.profile.member.prog ? <span className="user__prog">P</span> : <span />}
+                        {props.profile.member.cg ? <span className="user__cg">C</span> : <span />}
+                        {props.profile.member.mv ? <span className="user__mv">M</span> : <span />}
                     </div> </td>
             </tr></tbody>
         </table>

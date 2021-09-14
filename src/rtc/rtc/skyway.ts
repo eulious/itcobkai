@@ -1,4 +1,5 @@
 import Peer, { DataConnection, MediaConnection } from "skyway-js";
+import { id62 } from "../../common/Common";
 import { beep } from "../utils/Common";
 import { Streams } from "../utils/Schema";
 
@@ -23,12 +24,12 @@ export class RTCMaster {
 
     public keys = () => Object.keys(this.dataConnections)
 
-    public message = (clientId: string, d: any) => {
-        console.log(`[[[send]]]: ${clientId}`, d)
-        this.dataConnections[clientId].send(d.length ? d : JSON.stringify(d));
+    public message = (rtcId: string, d: any) => {
+        console.log(`[[[send]]]: ${d.id}`, d)
+        this.dataConnections[rtcId].send(d.length ? d : JSON.stringify(d));
     }
 
-    public async start(whenOpen: Function, receive: Function): Promise<Streams> {
+    public async start(receive: Function): Promise<Streams> {
         this.peer = new Peer("master", {
             key: this.KEYS.SKYWAY,
             debug: 3,
@@ -64,9 +65,6 @@ export class RTCMaster {
             const id = dataConnection.remoteId
             this.dataConnections[id] = dataConnection
             dataConnection.on('data', (data: any) => receive(data, id));
-            dataConnection.once('open', async () => {
-                dataConnection.send(JSON.stringify(whenOpen(id)))
-            });
             dataConnection.once('close', () => {
                 // 何か処理
             });
@@ -81,6 +79,7 @@ export class RTCMaster {
     }
 
     public stop() {
+        console.log("stop")
         this.keys().forEach(clientId => {
             this.dataConnections[clientId].close(true)
             this.mediaConnections[clientId].close(true);
@@ -105,17 +104,20 @@ export class RTCViewer {
     private localStream?: MediaStream
     private mediaConnection?: MediaConnection
     private dataConnection?: DataConnection
+    private id?: string
 
     public message = (d: any) => {
         console.log("[[[send]]]", d)
+        d.id = this.id;
         this.dataConnection!.send(JSON.stringify(d));
     }
 
     public async start(id: string, localView: HTMLAudioElement, remoteView: HTMLAudioElement, receive: Function) {
         beep()
+        this.id = id
         this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true })
         localView.srcObject = this.localStream;
-        this.peer = new Peer(id, {
+        this.peer = new Peer(id62(), {
             key: this.KEYS.SKYWAY,
             debug: 3,
         });
@@ -131,6 +133,9 @@ export class RTCViewer {
             });
             this.dataConnection = this.peer!.connect("master");
             this.dataConnection.on('data', receive);
+            this.dataConnection.once('open', () => {
+                this.dataConnection!.send(JSON.stringify({ action: "join", id: id }))
+            });
             this.dataConnection.once('close', () => {
                 // 何か処理を書く
             });
@@ -145,8 +150,4 @@ export class RTCViewer {
         // this.remoteStream.getTracks().forEach(track => track.stop());
     }
 
-    public mute(enabled: boolean) {
-        this.localStream!.getAudioTracks()[0].enabled = enabled
-        this.message({ action: "mute", enabled: enabled })
-    }
 }

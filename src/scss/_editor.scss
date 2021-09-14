@@ -10,6 +10,29 @@
         align-items: center;
     }
 
+    &__title {
+        vertical-align: middle;
+        font-size: 28px;
+        padding: 5px 10px 10px 20px;
+        font-weight: bold;
+        color: #ddd;
+
+        &--edit {
+            vertical-align: middle;
+            font-size: 28px;
+            padding: 4px 9px 9px 19px;
+            background-color: $black1;
+            font-weight: bold;
+            color: #ddd;
+            border: none;
+            width: 70vw;
+
+            &:focus {
+                outline: solid 1px $black1;
+            }
+        }
+    }
+
     &__container {
         width: 98%;
         display: grid;
@@ -35,7 +58,7 @@
         @include scrollbar;
         grid-row: 2 / 3;
         grid-column: 2 / 3;
-        padding: 0px 20px 0px;
+        padding: 10px 20px 10px;
         box-sizing: border-box;
         overflow-y: scroll;
         background-color: white;

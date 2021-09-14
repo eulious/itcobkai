@@ -15,7 +15,7 @@ export function beep() {
     const ctx = new AudioContext()
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    gain.gain.value = 0.01;
+    gain.gain.value = 0.1;
     osc.connect(gain)
     gain.connect(ctx.destination)
     osc.start()

@@ -20,10 +20,11 @@ class Cursor:
 
     def save(self, is_remove=True):
         self.conn.commit()
-        self.conn.close()
-        if self.is_lambda and is_remove:
-            self.bucket.upload_file(self.local_db, self.remote_db)
-            remove(self.local_db)
+        if is_remove:
+            self.conn.close()
+            if self.is_lambda:
+                self.bucket.upload_file(self.local_db, self.remote_db)
+                remove(self.local_db)
 
 
     def delete(self):

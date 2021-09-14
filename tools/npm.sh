@@ -5,5 +5,5 @@ npm install -D webpack webpack-cli webpack-dev-server \
 
 npm install -S react react-dom react-error-boundary
 
-npm install -D @types/crypto-js
-npm install -S crypto-js dayjs 
+npm install -D @types/aes-js
+npm install -S aes-js dayjs 

@@ -1,25 +1,30 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Toggle } from "../main/Header";
-import { EditorCore, Render, sample } from "./Components";
+import { EditorCore, Render } from "./Components";
 import { NoteSetting } from "./Settings";
-
-interface Note {
-    title: string
-    permission: string[]
-    value: string
-}
-
+import { NoteDetail } from "./Note";
+import { Toggle } from "../main/Header";
+import { request } from "../common/Common";
 
 interface EditorProps {
-    setOnEdit: Function;
+    detail?: NoteDetail
+    setDetail: Function
+    setOnEdit: Function
 }
 export default function Editor(props: EditorProps) {
-    const [value, setValue] = useState(sample);
     const [mode, setMode] = useState("確認")
-    const [title, setTitle] = useState("名称未設定")
+    const [value, setValue] = useState(props.detail ? props.detail.content : "")
+    const [title, setTitle] = useState(props.detail ? props.detail.info.title : "")
 
     function finish() {
         props.setOnEdit(false)
+        props.detail!.info.title = title ? title : "名称未設定"
+        props.detail!.content = value
+        props.setDetail({ ...props.detail! })
+        request("POST", "/notes/contents", props.detail)
+    }
+
+    function titleChange(e: ChangeEvent<HTMLInputElement>) {
+        setTitle(e.target.value)
     }
 
     return (
@@ -27,12 +32,17 @@ export default function Editor(props: EditorProps) {
             <div className="editor__container">
                 <header className="editor__header">
                     <div className="header__left">
-                        <Title title={title} setTitle={setTitle} />
+                        <input
+                            type="text"
+                            className="editor__title--edit"
+                            value={title}
+                            onChange={titleChange} />
                     </div>
                     <div className="header__right" style={{ display: "flex" }}>
-                        <Toggle mode={mode}
+                        <Toggle
+                            mode={mode}
                             modes={["確認", "設定"]}
-                            setMode={setMode}></Toggle>
+                            setMode={setMode} />
                         <div>
                             <div className="btn-flat" onClick={finish}>編集完了</div>
                         </div>
@@ -41,7 +51,9 @@ export default function Editor(props: EditorProps) {
                 <EditorCore value={value} setValue={setValue} />
                 {mode == "確認"
                     ? <Render className="editor__render" value={value} />
-                    : <NoteSetting />
+                    : <NoteSetting
+                        detail={props.detail}
+                        setDetail={props.setDetail} />
                 }
             </div>
         </div>
@@ -76,17 +88,17 @@ function Title(props: TitleProps) {
     useEffect(() => {
         ref.current?.focus();
         ref.current?.select();
-    })
+    }, [onEdit])
 
     return (
         <div>
             {onEdit
                 ? <input type="text" ref={ref}
-                    className="header__title--edit"
+                    className="editor__title--edit"
                     value={props.title}
                     onBlur={() => setOnEdit(false)}
                     onChange={onChange} />
-                : <div className="header__title"
+                : <div className="editor__title"
                     onClick={() => setOnEdit(true)}>
                     {props.title}</div>
             }

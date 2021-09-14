@@ -1,13 +1,13 @@
-import React, { useState, ReactNode, useMemo, useDebugValue } from "react";
-import AceEditor from "react-ace";
+import React, { useState, ReactNode, useMemo } from "react";
+import { useDropzone } from "react-dropzone";
 import ReactMarkdown from "react-markdown";
+import { request } from "../common/Common";
+import { S3_URL } from "../common/Config";
+import AceEditor from "react-ace";
+import rehypeRaw from 'rehype-raw'
 import gfm from 'remark-gfm'
 import "ace-builds/src-noconflict/mode-markdown";
 import "ace-builds/src-noconflict/theme-twilight";
-import { useDropzone } from "react-dropzone";
-import rehypeRaw from 'rehype-raw'
-import { S3_URL } from "../common/Config";
-import { request } from "../common/Common";
 
 interface EditorProps {
     value?: string
@@ -119,13 +119,13 @@ function Dropzone(props: DropzoneProps) {
 
 
 interface RenderProps {
-    value: string
+    value?: string
     className?: string
 }
 export function Render(props: RenderProps) {
     const value = useMemo(() => {
         let value = ""
-        props.value.split("\n").forEach((line) => {
+        props.value?.split("\n").forEach((line) => {
             if (line.match(/\ *@import-jpg/)) {
                 const d = parse(line.replace(/\ *@import-jpg/, ""))
                 value += `<img src="${S3_URL}/note/jpg/${d.id}.jpg" height="${d.height}" width="${d.width}"></img>\n`
@@ -158,32 +158,3 @@ export function Render(props: RenderProps) {
         </div>
     )
 }
-
-export const sample = `
-テストテスト
-@import-jpg{"id":"hakase", "width":"100%", "height":"20px"}
-@import-mp3{"id":"sample"}
-`
-
-// export const sample = `
-// ## これは何？
-// ボイスチャットです。
-// - いつやるかわから無いけど次回OB会は人数が多くなりそう
-// - gather.townの制限(25人)を超える可能性が高い
-// - 人数無制限の有料版はクソ高い
-// - じゃあ自前で実装すれば良いのでは...？
-
-// という考えで作ってるやつです。OB会が企画された頃にはコロナ禍終わってて普通に対面でできるかもしれないが...
-
-// ## いまできること
-// - 動き回れる系のボイスチャット(PCのスペック次第だけど人数無制限)
-// - DiscordのITCサーバに入ってる人のみアクセス可能なログイン機能
-// - AWS使ってるから無料ではないけど安い（月額50円くらいのはず）
-
-// ## で、この画面は何？
-// ついでに実装してみたマークダウンエディタ
-
-// ## 最後に
-// 何か文字が入力されてないと画面がバグります助けて  
-// いい感じのテクスチャを作りたい...
-// `

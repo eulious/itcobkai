@@ -1,8 +1,8 @@
 import { Connection, Connector } from "./Connector";
-import Cropper, { Crop } from "./Cropper";
-import { Person } from "./Person";
 import { Persons, Profile } from "./Persons";
+import Cropper, { Crop } from "./Cropper";
 import StageBuilder from "./StageBuilder";
+import { Person } from "./Person";
 
 export default class Controller {
     private cropper: Cropper;
@@ -22,10 +22,12 @@ export default class Controller {
         this.old = this.cropper.get()
     }
 
+
     public init(profiles: { [key: string]: Profile }, message: Function) {
         this.prs = new Persons(profiles)
         this.message = message;
     }
+
 
     public initSB(canvas: HTMLCanvasElement) {
         this.sb = new StageBuilder(canvas)
@@ -35,8 +37,8 @@ export default class Controller {
         })
     }
 
+
     public start(x: number, y: number) {
-        // this.prs!.player.enable(1, 0)
         document.addEventListener("keydown", e => {
             if (e.key === "a") this.move(-1, 0)
             else if (e.key === "w") this.move(0, -1)
@@ -55,7 +57,7 @@ export default class Controller {
 
 
     public getConnection(): Connection | undefined {
-        if (!this.prs?.persons.length) return
+        if (!this.prs?.persons) return
         const now = this.cropper.get()
         const { isChange, state } = this.cn.update(now.x, now.y, this.prs!.persons)
         if (isChange || this.isPersonChange) {
@@ -91,14 +93,12 @@ export default class Controller {
     public join(id: string, x: number, y: number) {
         this.isPersonChange = true
         this.prs!.add(id, x, y).then((person) => {
-            // this.sm!.join(person)
             this.refresh()
         })
     }
 
 
     public leave(id: string) {
-        // this.sm!.leave(id)
         this.prs!.leave(id)
         this.refresh()
         this.isPersonChange = true
@@ -110,11 +110,19 @@ export default class Controller {
         this.sb!.drawEnv(left, top)
         this.sb!.drawPlayer(this.prs!.player, x - left, y - top)
         this.sb!.drawOthers(this.prs!.persons, left, top)
+        this.sb!.drawTop(left, top)
     }
 
 
     public moveOther(users: { [key: string]: { x: number, y: number } }) {
         this.prs!.moves(users)
+        this.refresh()
+    }
+
+
+    public mute(enabled: boolean, clientId?: string) {
+        if (!clientId) this.message!({ action: "mute", enabled: enabled })
+        this.prs!.mute(enabled, clientId)
         this.refresh()
     }
 }

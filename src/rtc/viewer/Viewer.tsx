@@ -8,19 +8,15 @@ import SideMenu from "./SideMenu";
 import Header from "../../main/Header";
 import RTC from "../rtc/rtc";
 
+
 export default function Viewer() {
     const [conn, setConn] = useState<Connection>()
     const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])
+    const [mutes, setMutes] = useState<Set<string>>(new Set())
     const ct = useMemo(() => new Controller(), []);
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const localAudio = useRef<HTMLAudioElement>(null)
     const remoteAudio = useRef<HTMLAudioElement>(null)
-
-    function switchToken() {
-        if (localStorage.token === localStorage.token1) localStorage.token = localStorage.token2
-        else localStorage.token = localStorage.token1
-        start()
-    }
 
     useInterval(() => {
         const conn = ct.getConnection()
@@ -34,17 +30,13 @@ export default function Viewer() {
     async function start() {
         const res = await request("GET", "/rtc/init")
         rtc.KEYS = res.keys
-        // ct.init(res.profiles, rtc.message)
-        // rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
-        ct.init(res.profiles, console.log)
-        ct.start(5, 4)
-        ct.join("WOzosMqMAy", 6, 7)
-        // ct.join("ym4F1XcR8k", 5, 6)
+        ct.init(res.profiles, rtc.message)
+        rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        // ct.init(res.profiles, console.log)
+        // ct.start(5, 4)
+        // ct.join("WOzosMqMAy", 6, 7) // 響一
+        // ct.join("ym4F1XcR8k", 5, 6) // うり
         setConn(ct.getConnection())
-    }
-
-    async function debug() {
-        rtc.message({ action: "join" });
     }
 
     useEffect(() => {
@@ -57,7 +49,6 @@ export default function Viewer() {
         console.log("[[[receive]]]: ", res)
         switch (res.action) {
             case "chat":
-                // $("#viewer .local-message")[0].innerText += `[${res.clientId}]: ${res.message}\n`
                 break;
             case "join":
                 ct.join(res.id, res.x, res.y)
@@ -65,8 +56,17 @@ export default function Viewer() {
             case "move":
                 ct.moveOther(res.poss)
                 break;
+            case "mute":
+                if (res.enabled) mutes.add(res.id)
+                else mutes.delete(res.id)
+                setMutes(new Set(mutes))
+                ct.mute(res.enabled, res.id)
+                break;
             case "leave":
                 ct.leave(res.id)
+                break;
+            case "alert":
+                window.alert(res.text)
                 break;
             case "users":
                 Object.keys(res.users).forEach((clientId: string) => {
@@ -84,6 +84,13 @@ export default function Viewer() {
         }
     }
 
+    function mute(enabled: boolean) {
+        const id = ct.player!.id
+        if (enabled) mutes.add(id)
+        else mutes.delete(id)
+        setMutes(new Set(mutes))
+        ct.mute(enabled)
+    }
 
     return (
         <div>
@@ -92,16 +99,15 @@ export default function Viewer() {
                 <tbody>
                     <tr>
                         <td>
-                            {/* <div className="debug">
-                                <audio ref={localAudio} muted autoPlay playsInline controls></audio>
-                                <audio ref={remoteAudio} autoPlay playsInline controls></audio>
-                                <button onClick={switchToken}>switch</button>
-                                <button onClick={debug}>debug</button>
-                            </div> */}
+                            <div className="debug">
+                                <audio ref={localAudio} muted autoPlay playsInline controls={false}></audio>
+                                <audio ref={remoteAudio} autoPlay playsInline controls={false}></audio>
+                            </div>
                         </td>
                         <td>
                             <div className="btn-flat" onClick={start}>接続</div>
-                            <div className="btn-flat" onClick={() => rtc.stop()}>体積</div>
+                            <div className="btn-flat" onClick={() => window.location.reload()}>退席</div>
+                            <Checkbox label="消音" onChange={mute} />
                         </td>
                     </tr>
                     <tr>
@@ -109,11 +115,28 @@ export default function Viewer() {
                             <canvas className="viewer__canvas" ref={canvasRef} width="512" height="512"></canvas>
                         </td>
                         <td className="viewer__side_wrapper">
-                            <SideMenu conn={conn} player={ct.player} />
+                            <SideMenu conn={conn} player={ct.player} mutes={mutes} />
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+    )
+}
+
+
+function Checkbox(props: { label: string, onChange: Function }) {
+    const [checked, setChecked] = useState(false)
+
+    function onChange() {
+        props.onChange(!checked)
+        setChecked(!checked)
+    }
+
+    return (
+        <span onClick={onChange}>
+            <input type="checkbox" checked={checked} onChange={() => { }} />
+            {props.label}
+        </span>
     )
 }

@@ -1,12 +1,13 @@
-import React, { useMemo, useReducer, useState } from "react";
-import Signup from "./Signup";
-import { getParam } from "../common/Common";
+import React, { useMemo, useReducer } from "react";
 import { Context, initState, reducer } from "../common/Context";
-import Note from "../note/Note";
+import { ErrorBoundary } from 'react-error-boundary'
+import { getParam } from "../common/Common";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
+import Signup from "./Signup";
+import Note from "../note/Note";
 import "../scss/style.scss"
-import { ErrorBoundary } from 'react-error-boundary'
+
 
 export default function App() {
     const [state, dispatch] = useReducer(reducer, initState)
@@ -23,7 +24,7 @@ export default function App() {
             case "note":
                 return <Note />
             default:
-                return <Viewer />
+                return <Note />
         }
     }, [location.search])
 

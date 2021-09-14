@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from "react";
+import { Profile } from "../viewer/Persons";
+import PersonInfo from "../viewer/Person";
 
 interface ClientAudioProps {
-    clientId: string
+    profile: Profile
     audio: HTMLAudioElement
 }
 export default function ClientAudio(props: ClientAudioProps) {
@@ -12,8 +14,8 @@ export default function ClientAudio(props: ClientAudioProps) {
     }, [props])
 
     return (
-        <div>
-            {props.clientId}
+        <div style={{ display: "flex" }}>
+            <PersonInfo profile={props.profile} />
             <audio ref={ref} muted autoPlay playsInline controls></audio>
         </div>
     )

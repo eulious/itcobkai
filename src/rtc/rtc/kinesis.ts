@@ -13,8 +13,8 @@ export class RTCMaster {
         this.master.dataChannelByClientId[clientId].send(d.length ? d : JSON.stringify(d));
     }
 
-    public async start(whenOpen: Function, receive: Function): Promise<Streams> {
-        const res = await startMaster(this.KEYS, whenOpen, receive)
+    public async start(receive: Function): Promise<Streams> {
+        const res = await startMaster(this.KEYS, () => { }, receive)
         this.master = res.master
         return res.streams
     }

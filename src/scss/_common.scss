@@ -43,5 +43,16 @@ body {
         cursor: auto;
         color: #aaa;
         border: solid 2px #aaa;
+
+        display: inline-block;
+        padding: 0.3em 1em;
+        height: 1.4em;
+        vertical-align: middle;
+        text-decoration: none;
+        border-radius: 3px;
+        margin: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }

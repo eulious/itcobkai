@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Connection } from "./Connector"
 import PersonInfo, { Person } from "./Person"
+import { Connection } from "./Connector"
+import classnames from "classnames"
 
 interface SideMenuProps {
     conn?: Connection
     player?: Person
+    mutes: Set<string>
 }
 export default function SideMenu(props: SideMenuProps) {
     const [mode, setMode] = useState("talking")
@@ -12,14 +14,27 @@ export default function SideMenu(props: SideMenuProps) {
 
     const players = useMemo(() => {
         const players: JSX.Element[] = []
-        if (props.player) players.push(<PersonInfo key={-1} person={props.player} />)
+        if (props.player) {
+            players.push(
+                <PersonInfo
+                    key={-1}
+                    profile={props.player.profile}
+                    muted={props.mutes.has(props.player.id)} />
+            )
+        }
         if (!props.conn) return players
+        // props.conn.all.map(p => (props.player!.x - p.x)**2+(props.player!.y - p.y)**2).sort()
         props.conn.all.forEach((p, i) => {
             if ((mode === "talking" && !(connect.has(p.id)))) return
-            players.push(<PersonInfo key={i} person={p} />)
+            players.push(
+                <PersonInfo
+                    key={i}
+                    profile={p.profile}
+                    muted={props.mutes.has(p.id)} />
+            )
         })
         return players
-    }, [mode, props, connect])
+    }, [mode, props, connect, props.mutes])
 
     useEffect(() => {
         if (!props.conn) return
@@ -30,9 +45,8 @@ export default function SideMenu(props: SideMenuProps) {
         for (let id of props.conn.disconnect) {
             if (!(connect.has(id))) continue
             connect.delete(id)
-            console.log("delete", id)
+            console.log("disconnect", id)
         }
-        console.log(connect)
         setConnect(new Set(connect))
     }, [mode, props])
 
@@ -41,11 +55,17 @@ export default function SideMenu(props: SideMenuProps) {
             <tbody>
                 <tr>
                     <td onClick={() => setMode("talking")}
-                        className={"viewer__tab-switch " + (mode === "talking" ? "viewer__tab-switch--select" : "")}>
+                        className={classnames({
+                            "viewer__tab-switch": true,
+                            "viewer__tab-switch--select": mode === "talking"
+                        })} >
                         通話中
                     </td>
                     <td onClick={() => setMode("all")}
-                        className={"viewer__tab-switch " + (mode === "all" ? "viewer__tab-switch--select" : "")}>
+                        className={classnames({
+                            "viewer__tab-switch": true,
+                            "viewer__tab-switch--select": mode === "all"
+                        })} >
                         オンライン
                     </td>
                 </tr>

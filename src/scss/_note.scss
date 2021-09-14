@@ -7,9 +7,14 @@
         padding: 3vw;
     }
 
+    &__details {
+        padding-bottom: 15px;
+    }
+
     &__nav {
         border-top: solid 1px #000;
-        padding: 50px;
+        padding: 40px;
+        padding-top: 50px;
         box-sizing: border-box;
         top: $PADDING_TOP;
         height: calc(100vh - #{$PADDING_TOP} - #{$PADDING_BOTTOM});
@@ -20,11 +25,82 @@
         @include scrollbar;
         background-color: white;
         color: black;
-        padding: 30px 20px 0px;
+        padding: 30px 20px 30px;
         width: unquote("max(50vw, 600px)");
         height: calc(100vh - #{$PADDING_TOP} - #{$PADDING_BOTTOM});
         box-sizing: border-box;
         overflow-y: scroll;
+    }
+
+    &__absolute {
+        position: absolute;
+        margin-top: -40px;
+        margin-left: 0px;
+
+        cursor: pointer;
+        width: 100px;
+        height: 10px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        padding: 5px 10px 10px 20px;
+        color: #ddd;
+    }
+
+    &__absolute_button {
+        text-align: center;
+        border: solid 1px $white1;
+        transition: background 0.3s ease-in-out;
+        &:hover {
+            background-color: #666;
+        }
+    }
+
+    &__card {
+        cursor: pointer;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        &--select {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &--unread {
+            color: white;
+            font-weight: bold;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        &--unselect {
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+}
+
+.note-side {
+    &__hr {
+        margin: 2px;
+        border: none;
+        border-bottom: 1px solid #999;
+    }
+
+    &__index {
+        color: #ddd;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #555;
+        }
+
+        &:active {
+            background-color: #666;
+        }
     }
 }
 

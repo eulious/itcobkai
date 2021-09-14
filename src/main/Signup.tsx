@@ -33,12 +33,19 @@ function PleaseWait(props: { code: string, redirect: string }) {
     useEffect(() => { code2token() }, [])
 
     async function code2token() {
-        const res = await fetch(`${LAMBDA_URL}/discord`, {
-            method: "POST",
-            mode: "cors",
-            headers: { "Content-Type": "application/json", },
-            body: JSON.stringify(props)
-        });
+        let res: any
+        try {
+            res = await fetch(`${LAMBDA_URL}/discord`, {
+                method: "POST",
+                mode: "cors",
+                headers: { "Content-Type": "application/json", },
+                body: JSON.stringify(props)
+            });
+        } catch (error) {
+            console.error(error)
+            window.alert(`認証に失敗しました。もう一度やり直して下さい。`)
+            location.href = location.href.split("?")[0] + "?mode=auth"
+        }
         const d = await res.json();
         if (res.status === 200) {
             const t = new Token()

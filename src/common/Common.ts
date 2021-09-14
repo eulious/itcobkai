@@ -50,3 +50,11 @@ export function throttle(func: Function, limit: number): Function {
         }
     }
 }
+
+
+export function id62(DIGITS: number = 12) {
+    // BigIntの仕様でPythonのようなことはできない
+    const range = (a: number, b: number) => [...Array(b - a).keys()].map(x => x + a)
+    const A = [...range(48, 58), ...range(65, 91), ...range(97, 123)].map(x => String.fromCharCode(x))
+    return Array(DIGITS + 1).fill("").reduce((a, b) => a + A[Math.floor(Math.random() * 62)])
+}

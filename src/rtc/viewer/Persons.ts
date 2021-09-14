@@ -56,7 +56,7 @@ export class Persons {
     }
 
     public leave(id: string) {
-        this.persons = this.all.filter(p => p.id !== id)
+        this.persons = this.persons.filter(p => p.id !== id)
     }
 
     public canMove(x: number, y: number): boolean {
@@ -71,9 +71,20 @@ export class Persons {
         return persons.length ? persons[0] : undefined
     }
 
+    public mute(enabled: boolean, clientId?: string) {
+        if (!clientId) this.player.mute = enabled
+        else this.persons.forEach((person, i) => {
+            if (person.id === clientId) {
+                console.log(0, enabled)
+                this.persons[i].mute = enabled
+            }
+        })
+    }
+
     private createPerson(profile: Profile, id: string): Person {
         return ({
             img: new Image(),
+            mute: false,
             profile: profile,
             x: 0,
             y: 0,

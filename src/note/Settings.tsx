@@ -1,13 +1,13 @@
-
-import React, { useState, ReactNode, useContext, useEffect, ChangeEvent } from "react";
+import React, { useState, useContext, ChangeEvent } from "react";
 import { Context } from "../common/Context";
-import { request } from "../common/Common";
+import { NoteDetail } from "./Note";
 
 interface NoteSettingProps {
+    detail?: NoteDetail
+    setDetail: Function
 }
 export function NoteSetting(props: NoteSettingProps) {
     const [roles, setRoles] = useState<string[]>([])
-    console.log(roles)
 
     function addRole(role: string) {
         if (roles.indexOf(role) >= 0) return
@@ -31,17 +31,9 @@ interface RoleSelectProps {
     addRole: Function
 }
 export function RoleSelect(props: RoleSelectProps) {
-    const { state, dispatch } = useContext(Context)
+    const { state } = useContext(Context)
     const [attr, setAttr] = useState("部門")
     const [role, setRole] = useState("現役CG部")
-
-    useEffect(() => {
-        if (state.roles.length) return
-        request("GET", "/notes/init").then(res => {
-            console.log(res)
-            dispatch({ type: "ROLES", roles: res.roles })
-        })
-    }, [])
 
     function selectAttr(e: ChangeEvent<HTMLSelectElement>) {
         setAttr(e.currentTarget.value)
