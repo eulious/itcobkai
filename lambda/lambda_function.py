@@ -103,14 +103,14 @@ def discord(post):
         (id, secret["access"], secret["expires_at"]))
     cur.execute("INSERT INTO tokens VALUES (?, ?, ?)",
         (id, secret["refresh"], None))
-
-    res = cur.execute("SELECT * FROM roles WHERE role=? AND attribute='個人'", (post["name"],))
-    if res == []:
-        [(max_role_id,)] = cur.execute("SELECT max(id) FROM roles")
-        cur.execute("INSERT INTO roles VALUES (?, ?, ?, ?)",
-            (max_role_id+1, post["name"], "個人", 0))
-        cur.execute("INSERT INTO profiles VALUES (?, ?)",
-            (id, max_role_id+1))
+    
+    # res = cur.execute("SELECT * FROM roles WHERE role=? AND attribute='個人'", (post["name"],))
+    # if res == []:
+    #     [(max_role_id,)] = cur.execute("SELECT max(id) FROM roles")
+    #     cur.execute("INSERT INTO roles VALUES (?, ?, ?, ?)",
+    #         (max_role_id+1, post["name"], "個人", 0))
+    #     cur.execute("INSERT INTO profiles VALUES (?, ?)",
+    #         (id, max_role_id+1))
     cur.save()
     return { "id": id, "secret": secret }
 

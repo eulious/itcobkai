@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import PersonInfo, { Person } from "./Person"
 import { Connection } from "./Connector"
 import classnames from "classnames"
@@ -11,15 +11,7 @@ interface SideMenuProps {
 }
 export default function SideMenu(props: SideMenuProps) {
     const [connect, setConnect] = useState<Set<string>>(new Set<string>())
-
-    // useInterval(() => {
-    //     props.conn?.all.sort((a, b) => {
-    //         const to_a = (props.player!.x - a.x) ** 2 + (props.player!.y - a.y) ** 2
-    //         const to_b = (props.player!.x - b.x) ** 2 + (props.player!.y - b.y) ** 2
-    //         return to_a - to_b
-    //     })
-    //     console.log(props.conn?.all.map(x => x.id))
-    // }, 1000)
+    const ref = useRef<HTMLDivElement>(null)
 
     const players = useMemo(() => {
         const players: JSX.Element[] = []
@@ -75,7 +67,7 @@ export default function SideMenu(props: SideMenuProps) {
 
     return (
         <div className="viewer__tab-wrap">
-            <div className="viewer__side_contents">
+            <div className="viewer__side_contents" ref={ref}>
                 通話中
                 {players}
                 <br />

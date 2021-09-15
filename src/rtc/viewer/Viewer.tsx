@@ -32,13 +32,14 @@ export default function Viewer() {
     async function start() {
         const res = await request("GET", "/rtc/init")
         rtc.KEYS = res.keys
-        // ct.init(res.profiles, rtc.message)
-        // rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        ct.init(res.profiles, rtc.message)
+        rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
         //// rtc.start(ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
-        ct.init(res.profiles, console.log)
-        ct.start(5, 4)
-        ct.join(res.profiles["WOzosMqMAy"], "WOzosMqMAy", 6, 7) // 響一
-        ct.join(res.profiles["ym4F1XcR8k"], "ym4F1XcR8k", 6, 6) // うり
+        // ct.init(res.profiles, console.log)
+        // ct.start(5, 4)
+        // Object.keys(res.profiles).forEach(key => { ct.join(res.profiles[key], key, Math.floor(Math.random() * 24), Math.floor(Math.random() * 24)) })
+        // ct.join(res.profiles["WOzosMqMAy"], "WOzosMqMAy", 6, 7) // 響一
+        // ct.join(res.profiles["ym4F1XcR8k"], "ym4F1XcR8k", 6, 6) // うり
         setConn(ct.getConnection())
     }
 

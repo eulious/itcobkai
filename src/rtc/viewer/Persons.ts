@@ -1,5 +1,4 @@
-import { request } from "../../common/Common";
-import { AVATAR_URL } from "../../common/Config";
+import { avator, request } from "../../common/Common";
 import { Person } from "./Person";
 
 export interface Profile {
@@ -101,7 +100,7 @@ export class Persons {
     }
 
     private enable(person: Person, x: number, y: number) {
-        person.img.src = `${AVATAR_URL}/${person.profile.thumbnail}.png`;
+        person.img.src = avator(person.profile.thumbnail);
         person.x = x;
         person.y = y;
     }

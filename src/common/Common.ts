@@ -1,4 +1,4 @@
-import { LAMBDA_URL } from "./Config";
+import { AVATAR_URL, LAMBDA_URL } from "./Config";
 import Token from "./Token";
 
 const t = new Token()
@@ -49,6 +49,13 @@ export function throttle(func: Function, limit: number): Function {
             setTimeout(() => (inThrottle = false), limit)
         }
     }
+}
+
+
+export function avator(thumbnail: string) {
+    return thumbnail.length > 10
+        ? `${AVATAR_URL}/avatars/${thumbnail}`
+        : `${AVATAR_URL}/embed/avatars/${thumbnail}`
 }
 
 

@@ -30,6 +30,7 @@
 
         &_contents {
             @include scrollbar;
+            color: #ccc;
             overflow-y: scroll;
             box-sizing: border-box;
             overflow-x: hidden;
