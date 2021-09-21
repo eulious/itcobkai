@@ -10,6 +10,8 @@ dayjs.extend(utc);
 dayjs.locale('ja');
 
 
+// ノート画面のサイドメニュー
+// 親コンポーネント: note.Note
 interface SideMenuProps {
     detail?: NoteDetail
 }
@@ -41,6 +43,7 @@ export default function SideMenu(props: SideMenuProps) {
 }
 
 
+// 目次を作成
 function Index(props: { detail?: NoteDetail }) {
     let codeFlag = false;
 

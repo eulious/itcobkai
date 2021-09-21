@@ -4,6 +4,7 @@ import Token from "./Token";
 const t = new Token()
 
 export async function request(method: "GET" | "POST", api: string, post: any = {}, auth = true): Promise<any> {
+    // Lambdaと通信
     if (auth) {
         post._access = await t.get()
         post._id = localStorage._id
@@ -30,6 +31,7 @@ export async function request(method: "GET" | "POST", api: string, post: any = {
 
 
 export function getParam(): { [key: string]: string } {
+    // Getパラメータ解析。react-router導入後に削除予定
     const obj: { [key: string]: string } = {};
     location.search.substring(1).split("&")
         .map(s => s.split("="))
@@ -39,6 +41,7 @@ export function getParam(): { [key: string]: string } {
 
 
 export function throttle(func: Function, limit: number): Function {
+    // 関数の実行回数を制限する。多分使われていないので削除予定
     let inThrottle: boolean;
     return function (this: any): any {
         const args = arguments;
@@ -53,6 +56,7 @@ export function throttle(func: Function, limit: number): Function {
 
 
 export function avator(thumbnail: string) {
+    // DiscordアイコンのURLを生成
     return thumbnail.length > 10
         ? `${AVATAR_URL}/avatars/${thumbnail}`
         : `${AVATAR_URL}/embed/avatars/${thumbnail}`

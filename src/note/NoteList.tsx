@@ -8,7 +8,8 @@ interface Author {
     notes: NoteInfo[]
 }
 
-
+// ノート画面の左側の作者とタイトルのリスト
+// 親コンポーネント: note.Note
 interface NoteListProps {
     note?: NoteInfo
     setNote: Function
@@ -107,6 +108,7 @@ export default function NoteList(props: NoteListProps) {
 }
 
 
+// ノート名
 interface CardProps {
     note: NoteInfo
     isSelect: boolean
@@ -137,6 +139,8 @@ function Card(props: CardProps) {
 }
 
 
+// 新規と削除ボタン
+// 無理やり位置合わせ
 interface AbsoluteButtonProps {
     canDelete: boolean
     add: () => void

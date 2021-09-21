@@ -1,5 +1,7 @@
 import React, { ReactNode, useMemo } from "react";
 
+// ヘッダ部
+// 親コンポーネント: main.Main
 interface HeaderProps {
     mode?: "rtc" | "note"
     children?: ReactNode
@@ -25,6 +27,8 @@ export default function Header(props: HeaderProps) {
 }
 
 
+// ２つの状態を切り替えるトグルボタン
+// NOTEとRTCなど
 interface ToggleProps {
     mode: string
     modes: [string, string]

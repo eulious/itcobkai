@@ -2,6 +2,8 @@ import React, { useState, useContext, ChangeEvent } from "react";
 import { Context } from "../common/Context";
 import { NoteDetail } from "./Note";
 
+// ノートの権限設定
+// 親コンポーネント: note.Editor
 interface NoteSettingProps {
     detail?: NoteDetail
     setDetail: Function
@@ -27,6 +29,8 @@ export function NoteSetting(props: NoteSettingProps) {
 }
 
 
+// 設定画面のロールのセレクトボックス
+// 親コンポーネント: note.Editor
 interface RoleSelectProps {
     addRole: Function
 }
@@ -73,6 +77,7 @@ export function RoleSelect(props: RoleSelectProps) {
 }
 
 
+// 選択されたロールを表示
 interface RoleListProps {
     deleteRole: Function;
     roles: string[];

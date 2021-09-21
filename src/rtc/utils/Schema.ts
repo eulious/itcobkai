@@ -1,3 +1,4 @@
+// プレイヤー全員の音声を格納
 export interface Streams {
     ctx: AudioContext
     raw: { [key: string]: HTMLMediaElement }

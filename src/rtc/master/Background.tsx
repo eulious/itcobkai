@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 
+// 現在未使用、削除予定
 export default function Background() {
     const ref = useRef<HTMLCanvasElement>(null)
     const [gridNum, setGridNum] = useState(16)

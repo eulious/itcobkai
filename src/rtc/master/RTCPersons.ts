@@ -1,6 +1,7 @@
 import { request } from "../../common/Common";
 import { Profile } from "../viewer/Persons";
 
+// プレイヤーの情報を管理するクラス
 export class RTCPersons {
     private rtcIds: { [key: string]: string } = {}
     private profiles: { [key: string]: Profile } = {};
@@ -9,17 +10,6 @@ export class RTCPersons {
     public set(profiles: { [key: string]: Profile }) {
         this.profiles = profiles
     }
-
-    // public async join(clientId: string, rtcId: string): Promise<Profile> {
-    //     this.rtcIds[clientId] = rtcId
-    //     if (this.profiles[clientId]) {
-    //         return this.profiles[clientId]
-    //     } else {
-    //         const profile = await request("GET", "/user", { id: clientId }).then(res => res[0])
-    //         this.profiles[clientId] = profile
-    //         return profile
-    //     }
-    // }
 
     public join(profile: Profile, clientId: string, rtcId: string) {
         this.rtcIds[clientId] = rtcId

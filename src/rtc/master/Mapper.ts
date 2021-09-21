@@ -1,12 +1,12 @@
 import { MOVE_INTERVAL } from "../../common/Config";
+import { RTCPersons } from "./RTCPersons";
+import { Profile } from "../viewer/Persons";
 import { MAP } from "../utils/Config";
 import { map } from "../utils/Map";
-import { Profile } from "../viewer/Persons";
-import { RTCPersons } from "./RTCPersons";
 
+// プレイヤーの座標情報を管理するクラス
 export default class Mapper {
     private poss: { [key: string]: { x: number, y: number } } = {}
-    // private all: { [key: string]: { x: number, y: number } } = {}
     private all: { [key: string]: { x: number, y: number, profile?: Profile } } = {}
     private prs: RTCPersons;
     private messageFunc: Function;
@@ -37,9 +37,7 @@ export default class Mapper {
         this.all[clientId].y = y
     }
 
-    // public join(clientId: string, rtcId: string) {
     public join(profile: Profile, clientId: string, rtcId: string) {
-        // this.prs.join(clientId, rtcId)
         this.prs.join(profile, clientId, rtcId)
         let x: number = 0, y: number = 0
         let flag = true
@@ -53,7 +51,6 @@ export default class Mapper {
                 if (pos.x === x && pos.y === y) flag = true;
             })
         }
-        // this.all[clientId] = { x: x, y: y }
         this.all[clientId] = { x: x, y: y, profile: profile }
         Object.keys(this.all).forEach(key => {
             if (key === clientId) {
@@ -62,9 +59,6 @@ export default class Mapper {
                     users: this.all
                 });
             } else {
-                // this.message(key, {
-                //     action: "join", x: x, y: y, id: clientId
-                // });
                 this.message(key, {
                     action: "join", profile: profile, x: x, y: y, id: clientId
                 });

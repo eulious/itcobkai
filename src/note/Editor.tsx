@@ -5,6 +5,8 @@ import { NoteDetail } from "./Note";
 import { Toggle } from "../main/Header";
 import { request } from "../common/Common";
 
+// 「編集」を押すと表示される画面
+// 親コンポーネント: note.Note
 interface EditorProps {
     detail?: NoteDetail
     setDetail: Function
@@ -61,6 +63,8 @@ export default function Editor(props: EditorProps) {
 }
 
 
+// ノートのタイトルを表示
+// 編集可能で更新されたらAPIを叩く
 interface TitleProps {
     title: string
     setTitle: Function

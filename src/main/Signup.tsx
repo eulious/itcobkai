@@ -4,7 +4,8 @@ import { LAMBDA_URL } from "../common/Config"
 import Token from "../common/Token"
 import Header from "./Header"
 
-
+// Discord連携を促す画面
+// 親コンポーネント: main.Main
 export default function Signup() {
     const params = getParam()
     const redirect = location.href.split("?")[0] + "?mode=auth"
@@ -29,6 +30,7 @@ export default function Signup() {
 }
 
 
+// Discordの認証の処理を行うコンポーネント
 function PleaseWait(props: { code: string, redirect: string }) {
     useEffect(() => { code2token() }, [])
 
@@ -62,6 +64,7 @@ function PleaseWait(props: { code: string, redirect: string }) {
 }
 
 
+// Discordボタン
 function Discord(props: { redirect: string }) {
     function onClick() {
         location.href = "https://discord.com/api/oauth2/authorize"

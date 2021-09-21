@@ -16,7 +16,8 @@ export interface Profile {
     }
 }
 
-
+// プレイヤーの情報を管理するクラス
+// 自分自身の座標情報だけはCropperで管理している
 export class Persons {
     public player: Person
     public persons: Person[] = [];

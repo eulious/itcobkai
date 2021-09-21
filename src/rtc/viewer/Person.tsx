@@ -11,6 +11,8 @@ export interface Person {
     id: string
 }
 
+// サイドバーに表示されるプレイヤー
+// 親コンポーネント: rtc.viewer.SideMenu, rtc.Master.ClientAudio
 interface PersonInfoProps {
     profile: Profile;
     muted?: boolean;

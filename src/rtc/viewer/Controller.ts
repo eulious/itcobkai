@@ -4,6 +4,7 @@ import Cropper, { Crop } from "./Cropper";
 import StageBuilder from "./StageBuilder";
 import { Person } from "./Person";
 
+// Viewerの肥大化を防ぐため処理部分を全てこちらに分離
 export default class Controller {
     private cropper: Cropper;
     private prs?: Persons;

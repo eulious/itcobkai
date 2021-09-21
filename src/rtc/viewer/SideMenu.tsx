@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import PersonInfo, { Person } from "./Person"
 import { Connection } from "./Connector"
 
+// サイドメニュー
+// 親コンポーネント: rtc.viewer.Viewer
 interface SideMenuProps {
     conn?: Connection
     player?: Person

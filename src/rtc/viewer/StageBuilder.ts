@@ -3,6 +3,7 @@ import { ASSETS } from "../../common/Config";
 import { Person } from "./Person";
 import { map } from "../utils/Map";
 
+// Canvasにマップや人物を描画するクラス
 export default class StageBuilder {
     private canvas: HTMLCanvasElement
     private ctx: CanvasRenderingContext2D

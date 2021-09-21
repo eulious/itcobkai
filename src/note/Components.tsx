@@ -9,6 +9,9 @@ import gfm from 'remark-gfm'
 import "ace-builds/src-noconflict/mode-markdown";
 import "ace-builds/src-noconflict/theme-twilight";
 
+// マークダウンエディタ
+// ACEをラップしたようなコンポーネント
+// 親コンポーネント: note.Editor
 interface EditorProps {
     value?: string
     setValue: Function
@@ -62,6 +65,8 @@ export function EditorCore(props: EditorProps) {
 }
 
 
+// マークダウンエディタにファイルをドラッグすると表示される
+// 親コンポーネント: note.Editor
 interface DropzoneProps {
     children?: ReactNode
     className?: string
@@ -118,6 +123,8 @@ function Dropzone(props: DropzoneProps) {
 }
 
 
+// mdをレンダリングして表示
+// 親コンポーネント: note.Editor, note.Note
 interface RenderProps {
     value?: string
     className?: string

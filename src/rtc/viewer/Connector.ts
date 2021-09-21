@@ -14,6 +14,7 @@ export interface Connection {
     all: Person[]
 }
 
+// 音声の 接続/切断 命令を生成するクラス
 export class Connector {
     public connectings: Set<string> = new Set()
     public onChange: Function | undefined;

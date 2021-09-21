@@ -9,6 +9,8 @@ import RTC from "../rtc/rtc";
 
 let streams: Streams
 
+// マスター画面
+// 親コンポーネント: main.Main
 export default function Master() {
     const rtc = useMemo(() => new RTC(RTC_CORE).Master, [])
     const prs = useMemo(() => new RTCPersons(), [])

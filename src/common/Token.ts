@@ -2,6 +2,8 @@ import { LAMBDA_URL } from "./Config"
 import aesjs from "aes-js"
 
 export default class Token {
+    // 認証トークンを保存するクラス
+    // アクセストークンとリフレッシュトークンを使う
     private key = aesjs.utils.utf8.toBytes("ITCOBKAI_EULIOUS")
 
     public async get(): Promise<string> {

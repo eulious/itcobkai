@@ -1,5 +1,6 @@
 import { Streams } from "../utils/Schema"
 
+// プレイヤーの音声を管理するクラス
 export default class Mixer {
     private streams: Streams
 

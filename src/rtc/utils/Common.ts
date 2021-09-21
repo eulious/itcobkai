@@ -1,4 +1,5 @@
 export function throttle(func: Function, limit: number): Function {
+    // 多分使ってない
     let inThrottle: boolean;
     return function (this: any): any {
         const args = arguments;
@@ -12,6 +13,7 @@ export function throttle(func: Function, limit: number): Function {
 }
 
 export function beep() {
+    // 動作確認用の音を鳴らす
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext);
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();

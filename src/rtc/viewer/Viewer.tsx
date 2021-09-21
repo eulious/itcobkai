@@ -8,7 +8,8 @@ import SideMenu from "./SideMenu";
 import Header from "../../main/Header";
 import RTC from "../rtc/rtc";
 
-
+// ボイスチャット画面
+// 親コンポーネント: main.Main
 export default function Viewer() {
     const [conn, setConn] = useState<Connection>()
     const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])

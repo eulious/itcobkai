@@ -1,5 +1,10 @@
 import { createContext, Dispatch } from "react"
 
+/*
+useContextによる状態管理
+ノート機能が充実してきたらがっつり使う予定
+*/
+
 export interface State {
     footerText: string
     roles: { [key: string]: string[] };

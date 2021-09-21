@@ -6,13 +6,15 @@ import SideMenu from "./SideMenu";
 import Header from "../main/Header";
 import Editor from "./Editor";
 
-
+// 権限管理するオブジェクト
+// まだ本格的に使ってない
 export interface NoteDetail {
     permission: string[]
     content: string
     info: NoteInfo
 }
 
+// ノートのメタ情報
 export interface NoteInfo {
     id: string
     updated_at?: number
@@ -21,6 +23,8 @@ export interface NoteInfo {
     editable: boolean
 }
 
+// ノート画面の最上位コンポーネント
+// 親コンポーネント: main.Main
 export default function Note() {
     const [onEdit, setOnEdit] = useState(false)
     const [note, setNote] = useState<NoteInfo>()

@@ -2,6 +2,12 @@ import React from "react";
 import { createContext, Dispatch } from "react"
 import Signup from "../main/Signup";
 
+/*
+useContextによる状態管理
+タブ機能に関わる部分のみ抽出
+多分使わない
+*/
+
 export interface Tab {
     index: number
     elms: JSX.Element[]

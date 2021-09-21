@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from "react";
 import { Profile } from "../viewer/Persons";
 import PersonInfo from "../viewer/Person";
 
+// Master画面のプロフィール欄
+// 親コンポーネント: rtc.master.Master
 interface ClientAudioProps {
     profile: Profile
     audio: HTMLAudioElement

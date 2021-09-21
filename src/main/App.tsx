@@ -8,7 +8,8 @@ import Signup from "./Signup";
 import Note from "../note/Note";
 import "../scss/style.scss"
 
-
+// 最上位クラス
+// 親コンポーネント: 無し
 export default function App() {
     const [state, dispatch] = useReducer(reducer, initState)
     const params = getParam()
@@ -39,6 +40,7 @@ export default function App() {
 }
 
 
+// React関連のエラー時にエラーを表示
 function ErrorFallback({ error, resetErrorBoundary }: { error: any, resetErrorBoundary: any }) {
     return (
         <div role="alert">

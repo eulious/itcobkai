@@ -8,6 +8,8 @@ export interface Crop {
     left: number;
 }
 
+// プレイヤーの存在するマス周辺を切り出すクラス
+// プレイヤーの座標情報はこのクラスで管理
 export default class Cropper {
     private OUTER = CONFIG.OUTER;
     private INNER = CONFIG.INNER;
