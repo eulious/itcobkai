@@ -97,8 +97,8 @@ def discord(post):
     res = cur.execute("SELECT * FROM users WHERE id=?", (id,))
     if res == []:
         raise CustomError(401, "無効なユーザーです")
-    cur.execute("UPDATE users SET name=?, thumbnail=? WHERE id=?",
-        (post["name"], post["thumbnail"], id))
+    # cur.execute("UPDATE users SET name=?, thumbnail=? WHERE id=?",
+    #     (post["name"], post["thumbnail"], id))
     cur.execute("INSERT INTO tokens VALUES (?, ?, ?)",
         (id, secret["access"], secret["expires_at"]))
     cur.execute("INSERT INTO tokens VALUES (?, ?, ?)",

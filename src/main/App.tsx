@@ -24,7 +24,7 @@ export default function App() {
             case "note":
                 return <Note />
             default:
-                return <Note />
+                return <Viewer />
         }
     }, [location.search])
 

@@ -37,7 +37,6 @@ export default function Note() {
 
     useEffect(() => {
         if (!note) return
-        console.log(note)
         request("GET", "/notes/contents", { note_id: note.id }).then(setDetail)
     }, [note?.id])
 

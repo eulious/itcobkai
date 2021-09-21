@@ -44,7 +44,14 @@
         }
     }
 
+    &__canvas {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
     &__canvas_wrapper {
+        -webkit-user-select: none;
+        user-select: none;
         padding: 5px 20px;
     }
 

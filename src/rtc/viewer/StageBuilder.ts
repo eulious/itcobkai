@@ -8,14 +8,6 @@ export default class StageBuilder {
     private ctx: CanvasRenderingContext2D
     private backImg = new Image()
     private topImg = new Image()
-    private fillColors: { [key: number]: string } = {
-        1: "#F7B5F7",
-        2: "#9BADD4",
-        3: "#B7EBC9",
-        4: "#D4CF9B",
-        6: "#F8C3A4",
-        7: "#888888"
-    }
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -49,7 +41,7 @@ export default class StageBuilder {
         this.ctx.beginPath();
         this.ctx.arc(i * grid + grid / 2, j * grid + grid / 2, grid / 2, 0, Math.PI * 2, false)
         this.ctx.save()
-        this.ctx.globalAlpha = inside ? 1 : 0.4
+        this.ctx.globalAlpha = inside ? 1 : 0.6
         this.ctx.clip()
         this.ctx.drawImage(person.img, i * grid, j * grid, grid, grid)
         if (person.mute) {
@@ -81,7 +73,7 @@ export default class StageBuilder {
     }
 
     private drawGrid() {
-        this.ctx.strokeStyle = 'rgba(200,200,200,0.4)';
+        this.ctx.strokeStyle = 'rgba(200,200,200,0.2)';
         let grid = this.canvas.width / CONFIG.OUTER;
         for (var i = 0; i <= this.canvas.height / grid; ++i) {
             this.ctx.beginPath();
@@ -107,17 +99,35 @@ export default class StageBuilder {
         this.canvas.height = size
     }
 
-    private drawMap(left: number, top: number) {
-        this.ctx.fillStyle = "white";
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        let grid = this.canvas.width / CONFIG.OUTER;
-        for (let i = 0; i < CONFIG.OUTER; ++i) {
-            for (let j = 0; j < CONFIG.OUTER; ++j) {
-                if (map[i + top][j + left] === 0) continue
-                const color = map[i + top][j + left]
-                this.ctx.fillStyle = this.fillColors[color]
-                this.ctx.fillRect(j * grid, i * grid, grid, grid)
-            }
+    public touchAction(move: Function) {
+        let touching = false;
+        let direction = [0, 0];
+
+        function touched(e: TouchEvent) {
+            touching = false
+            if (!e.target) return
+            const dom = e.target as HTMLElement
+            if (dom.className !== "viewer__canvas") return
+            e.preventDefault();
+            touching = true
+            const rect = dom.getClientRects()[0]
+            const client = e.changedTouches[0]
+            const x = client.clientX - (rect.right + rect.left) / 2
+            const y = client.clientY - (rect.bottom + rect.top) / 2
+            if (Math.abs(x) <= y) direction = [0, 1] // 下
+            else if (Math.abs(y) <= x) direction = [1, 0] // 右
+            else if (Math.abs(x) <= -y) direction = [0, -1] // 上
+            else if (Math.abs(y) <= -x) direction = [-1, 0] // 左
         }
+
+        setInterval(() => { if (touching) move(...direction) }, 100)
+        window.addEventListener("touchstart", e => touched(e))
+        window.addEventListener("touchmove", e => touched(e))
+        window.addEventListener("touchend", () => touching = false)
+        this.canvas.oncontextmenu = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        };
     }
 }

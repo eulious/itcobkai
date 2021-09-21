@@ -31,6 +31,7 @@ export default class Controller {
 
     public initSB(canvas: HTMLCanvasElement) {
         this.sb = new StageBuilder(canvas)
+        this.sb!.touchAction((xx: number, yy: number) => this.move(xx, yy))
         window.addEventListener("resize", () => {
             this.sb!.resize()
             this.refresh()
@@ -69,7 +70,6 @@ export default class Controller {
             state.all.sort((a, b) => {
                 const to_a = (now.x - a.x) ** 2 + (now.y - a.y) ** 2
                 const to_b = (now.x - b.x) ** 2 + (now.y - b.y) ** 2
-                console.log(to_a, to_b)
                 return to_a - to_b
             })
             this.isPersonChange = false
@@ -88,19 +88,13 @@ export default class Controller {
     private canMove(xx: number, yy: number): boolean {
         if (this.inThrottle) return false
         this.inThrottle = true;
-        setTimeout(() => (this.inThrottle = false), 250)
+        setTimeout(() => (this.inThrottle = false), 100)
         const { x, y, top, left } = this.cropper.get()
         if (!this.cropper.canMove(x + xx, y + yy)) return false
         else if (!this.sb!.canMove(x + xx, y + yy)) return false
         return true
     }
 
-    // public join(id: string, x: number, y: number) {
-    //     this.isPersonChange = true
-    //     this.prs!.add(id, x, y).then((person) => {
-    //         this.refresh()
-    //     })
-    // }
 
     public join(profile: Profile, id: string, x: number, y: number) {
         this.isPersonChange = true
@@ -119,11 +113,11 @@ export default class Controller {
     public refresh() {
         const { x, y, top, left } = this.cropper.get()
         this.sb!.drawEnv(left, top)
-        this.sb!.drawPlayer(this.prs!.player, x - left, y - top)
         const players = this.prs!.persons.filter(x => this.cn.connectings.has(x.id))
         const others = this.prs!.persons.filter(x => !this.cn.connectings.has(x.id))
         this.sb!.drawOthers(players, left, top, true)
         this.sb!.drawOthers(others, left, top, false)
+        this.sb!.drawPlayer(this.prs!.player, x - left, y - top)
         this.sb!.drawTop(left, top)
     }
 

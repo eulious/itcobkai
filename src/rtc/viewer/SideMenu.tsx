@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import PersonInfo, { Person } from "./Person"
 import { Connection } from "./Connector"
-import classnames from "classnames"
-import useInterval from "../../common/Hooks"
 
 interface SideMenuProps {
     conn?: Connection
@@ -48,6 +46,7 @@ export default function SideMenu(props: SideMenuProps) {
                     muted={props.mutes.has(p.id)} />
             )
         })
+        resize()
         return others
     }, [props, connect, props.mutes])
 
@@ -64,6 +63,12 @@ export default function SideMenu(props: SideMenuProps) {
         }
         setConnect(new Set(connect))
     }, [props])
+
+    function resize() {
+        const dom = document.getElementsByClassName("viewer__canvas")[0]
+        const height = (dom as HTMLCanvasElement).height
+        ref.current!.style.height = `${height}px`
+    }
 
     return (
         <div className="viewer__tab-wrap">

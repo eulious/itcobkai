@@ -12,7 +12,7 @@ export function throttle(func: Function, limit: number): Function {
 }
 
 export function beep() {
-    const ctx = new AudioContext()
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext);
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     gain.gain.value = 0.1;

@@ -110,6 +110,7 @@ export class Connector {
             i++
             if (i > 1000) window.alert("white stop!!!")
             const p = stack.pop()!
+            checkCell(p.x, p.y);
             checkCell(p.x + 1, p.y + 1);
             checkCell(p.x + 1, p.y - 1);
             checkCell(p.x - 1, p.y + 1);

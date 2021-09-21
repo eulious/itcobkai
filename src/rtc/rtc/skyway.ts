@@ -14,7 +14,7 @@ export class RTCMaster {
 
     constructor() {
         this.streams = {
-            ctx: new AudioContext(),
+            ctx: new (window.AudioContext || (window as any).webkitAudioContext),
             medias: {},
             dests: {},
             gains: {},

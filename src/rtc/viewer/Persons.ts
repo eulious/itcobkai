@@ -1,4 +1,5 @@
 import { avator, request } from "../../common/Common";
+import { HAKASE } from "../../common/Config";
 import { Person } from "./Person";
 
 export interface Profile {
@@ -29,23 +30,6 @@ export class Persons {
             if (id !== myId) this.all.push(this.createPerson(profiles[id], id))
         })
     }
-
-    // public async add(id: string, x: number, y: number): Promise<Person> {
-    //     // 同一ユーザ追加時の対応が必要
-    //     const persons = this.all.filter(p => p.id === id)
-    //     if (persons.length) {
-    //         this.enable(persons[0], x, y)
-    //         this.persons.push(persons[0])
-    //         return persons[0]
-    //     } else {
-    //         const profile = await request("GET", "/user", { id: id }).then(res => res[0])
-    //         const person = this.createPerson(profile, id)
-    //         this.enable(person, x, y)
-    //         this.persons.push(person)
-    //         this.all.push(person)
-    //         return person
-    //     }
-    // }
 
     public add(profile: Profile, id: string, x: number, y: number) {
         if (this.persons.filter(x => x.id === id).length) return
@@ -82,7 +66,6 @@ export class Persons {
         if (!clientId) this.player.mute = enabled
         else this.persons.forEach((person, i) => {
             if (person.id === clientId) {
-                console.log(0, enabled)
                 this.persons[i].mute = enabled
             }
         })
@@ -101,6 +84,7 @@ export class Persons {
 
     private enable(person: Person, x: number, y: number) {
         person.img.src = avator(person.profile.thumbnail);
+        person.img.onerror = () => person.img.src = HAKASE
         person.x = x;
         person.y = y;
     }

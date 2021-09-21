@@ -17,7 +17,7 @@ function dummyNoise(ctx) {
 }
 
 const streams = {
-    ctx: new AudioContext(),
+    ctx: new (window.AudioContext || window.webkitAudioContext),
     osc: null,
     medias: {},
     dests: {},
