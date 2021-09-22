@@ -1,4 +1,5 @@
 import React, { ReactNode, useMemo } from "react";
+import { useHistory } from "react-router";
 
 // ヘッダ部
 // 親コンポーネント: main.Main
@@ -7,8 +8,10 @@ interface HeaderProps {
     children?: ReactNode
 }
 export default function Header(props: HeaderProps) {
+    const history = useHistory()
+
     function onClick(mode: string) {
-        location.href = `${location.href.split('?')[0]}?mode=${mode}`
+        history.push(`${location.pathname}?mode=${mode}`)
     }
 
     return (

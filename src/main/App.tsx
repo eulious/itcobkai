@@ -1,39 +1,25 @@
-import React, { useMemo, useReducer } from "react";
+import React, { useReducer } from "react";
+import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { Context, initState, reducer } from "../common/Context";
 import { ErrorBoundary } from 'react-error-boundary'
-import { getParam } from "../common/Common";
-import Master from "../rtc/master/Master";
-import Viewer from "../rtc/viewer/Viewer";
-import Signup from "./Signup";
-import Note from "../note/Note";
+import Main from "./Main";
 import "../scss/style.scss"
 
-// 最上位クラス
+// 最上位コンポーネント
 // 親コンポーネント: 無し
 export default function App() {
     const [state, dispatch] = useReducer(reducer, initState)
-    const params = getParam()
-
-    const dom = useMemo(() => {
-        switch (params.mode) {
-            case "rtc":
-                return <Viewer />
-            case "master":
-                return <Master />
-            case "auth":
-                return <Signup />
-            case "note":
-                return <Note />
-            default:
-                return <Viewer />
-        }
-    }, [location.search])
-
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} >
             <Context.Provider value={{ state, dispatch }}>
-                {dom}
+                <BrowserRouter>
+                    <Switch>
+                        <Route>
+                            <Main />
+                        </Route>
+                    </Switch>
+                </BrowserRouter>
             </Context.Provider>
         </ErrorBoundary >
     )

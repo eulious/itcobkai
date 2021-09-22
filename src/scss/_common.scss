@@ -12,6 +12,15 @@ body {
     overflow: hidden;
 }
 
+.main {
+    &__component {
+        display: none;
+        &--active {
+            display: block;
+        }
+    }
+}
+
 .btn-flat {
     display: inline-block;
     padding: 0.3em 1em;
