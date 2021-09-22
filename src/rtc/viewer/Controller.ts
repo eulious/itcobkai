@@ -46,6 +46,10 @@ export default class Controller {
             else if (e.key === "w") this.move(0, -1)
             else if (e.key === "s") this.move(0, 1)
             else if (e.key === "d") this.move(1, 0)
+            else if (e.key === "ArrowLeft") this.move(-1, 0)
+            else if (e.key === "ArrowUp") this.move(0, -1)
+            else if (e.key === "ArrowDown") this.move(0, 1)
+            else if (e.key === "ArrowRight") this.move(1, 0)
         })
         setInterval(() => {
             const now = this.cropper.get()

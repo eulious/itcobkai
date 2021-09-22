@@ -6,6 +6,7 @@ from time import time
 from boto3 import resource
 from utils import CustomError, auth, generate_token, id62, blake
 from base64 import b64decode
+from random import randint
 from lambdaAPI import LambdaAPI
 from get_notes import get_notes
 
@@ -89,6 +90,14 @@ def refresh(post):
     return secret
 
 
+@app.get("/external/rtc/status")
+def refresh(post):
+    return {
+        "status": True,
+        "counts": randint(0, 30)
+    }
+
+
 @app.invoked("/discord")
 def discord(post):
     secret = generate_token()
@@ -97,14 +106,12 @@ def discord(post):
     res = cur.execute("SELECT * FROM users WHERE id=?", (id,))
     if res == []:
         raise CustomError(401, "無効なユーザーです")
-    # cur.execute("UPDATE users SET name=?, thumbnail=? WHERE id=?",
-    #     (post["name"], post["thumbnail"], id))
     cur.execute("INSERT INTO tokens VALUES (?, ?, ?)",
         (id, secret["access"], secret["expires_at"]))
     cur.execute("INSERT INTO tokens VALUES (?, ?, ?)",
         (id, secret["refresh"], None))
-    
-    # res = cur.execute("SELECT * FROM roles WHERE role=? AND attribute='個人'", (post["name"],))
+
+    # res = cur.execute("SELECT * FROM roles WHERE role=? AND attribute='個人'", (name,))
     # if res == []:
     #     [(max_role_id,)] = cur.execute("SELECT max(id) FROM roles")
     #     cur.execute("INSERT INTO roles VALUES (?, ?, ?, ?)",

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useHistory } from "react-router";
 import { Connection } from "./Connector";
 import { RTC_CORE } from "../utils/Config";
 import { request } from "../../common/Common";
@@ -58,7 +57,6 @@ export default function Viewer() {
                 if (res.reload) location.reload()
                 break;
             case "join":
-                // ct.join(res.id, res.x, res.y)
                 ct.join(res.profile, res.id, res.x, res.y)
                 break;
             case "move":
@@ -82,7 +80,6 @@ export default function Viewer() {
                     if (clientId === ct.player!.id) {
                         ct.start(user.x, user.y)
                     } else {
-                        // ct.join(clientId, user.x, user.y)
                         ct.join(user.profile, clientId, user.x, user.y)
                     }
                 });
