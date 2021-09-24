@@ -1,8 +1,35 @@
 #!/usr/bin/env python3
 
 from time import time
+from boto3 import resource
 from random import randint, seed
 from hashlib import blake2b
+
+class DynamoDB():
+    def __init__(self, tablename):
+        self.db = resource('dynamodb').Table(f"itcobkai_{tablename}")
+
+    def get(self, key, consistency=False):
+        res = self.db.get_item(Key=key, ConsistentRead=consistency)
+        return res["Item"] if "Item" in res else None
+
+    def put(self, item):
+        self.db.put_item(Item=item)
+
+    def puts(self, items):
+        with self.db.batch_writer() as batch:
+            for item in items:
+                batch.put_item(Item=item)
+    
+    def delete(self, key):
+        self.db.delete_item(Key=key)
+
+    def scan(self):
+        return self.db.scan()["Items"]
+
+    def query():
+        pass
+
 
 class CustomError(Exception):
     def __init__(self, code=200, arg=""):
@@ -16,11 +43,11 @@ class CustomError(Exception):
         return self.code if isinstance(self.code, int) else 500
 
 
-def auth(cur, id, access):
-    res = cur.execute("""
-        SELECT * FROM tokens WHERE user_id=? AND token=? AND expires_at>?
-        """, (id, access, int(time())))
-    if res == []:
+def auth(access, consistency=False):
+    res = DynamoDB("tokens").get({"token": access}, consistency)
+    if res and "expired_at" in res and res["token"] == access:
+        return res["user_id"]
+    else:
         raise CustomError(401, "無効なトークンです")
 
 

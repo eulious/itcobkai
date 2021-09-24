@@ -34,8 +34,6 @@ def lambda_handler(event, _):
             Payload=dumps({
                 "_api": "/discord",
                 "id": res["id"],
-                "name": res["username"],
-                "thumbnail": f'{res["id"]}/{res["avatar"]}'
             })
         )
         res = loads(res["Payload"].read())

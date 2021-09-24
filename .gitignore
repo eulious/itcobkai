@@ -1,5 +1,4 @@
 node_modules/
-node_modules
 __pycache__/
 build/
 assets/
@@ -7,6 +6,7 @@ test.*
 keys.*
 *.pem
 package-lock.json
+profiles.py
 .DS_Store
 @types/
 local/

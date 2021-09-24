@@ -65,7 +65,7 @@ class LambdaAPI():
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
             },
-            "body": dumps(body, ensure_ascii=False, default=self.__default_dumps)
+            "body": dumps(body, ensure_ascii=False, separators=(",", ":"), default=self.__default_dumps)
         }
 
 
