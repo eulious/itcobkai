@@ -23,9 +23,6 @@ for key, [date, old_h] in d.items():
     new_h = md5(open(key).read().encode()).hexdigest()
     if old_h != new_h:
         d[key] = [now, new_h]
-        bucket.upload_file(key, key, ExtraArgs={"ContentType": ctype[key.split(".")[-1]], 'ACL':'public-read'})
-        print(f"upload: {key}")
-dump(d, open(jsonfile, "wt"), ensure_ascii=False, indent=2)
 
 open("index.html", "wt").write(f"""
 <!DOCTYPE html>
@@ -33,6 +30,7 @@ open("index.html", "wt").write(f"""
     <head>
         <meta charset="utf-8">
         <title>itcobkai</title>
+        <link rel="icon" href="assets/favicon.png">
         <script src="build/vendor.js?d={d['build/vendor.js'][0]}"></script>
         <script src="build/main.js?d={d['build/main.js'][0]}"></script>
         <script src="https://unpkg.com/amazon-kinesis-video-streams-webrtc/dist/kvs-webrtc.min.js" async></script>
