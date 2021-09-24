@@ -1,19 +1,30 @@
-import React, { useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from 'react-router-dom';
-import { getParam } from "../common/Common";
+import { getParam, request } from "../common/Common";
+import { Context } from "../common/Context";
 import classNames from "classnames";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
 import Signup from "./Signup";
+import dayjs from "dayjs";
 import Note from "../note/Note";
 import "../scss/style.scss"
 
 // 最上位コンポーネント
 // 親コンポーネント: main.App
 export default function Main() {
+    const { dispatch } = useContext(Context)
     const history = useHistory()
-    const loc = useLocation()
     const params = getParam()
+    const loc = useLocation()
+
+    useEffect(() => {
+        sessionStorage.disable = dayjs().add(1, "minutes")
+        request("GET", "/init").then(res => {
+            dispatch({ type: "INIT", init: res })
+            sessionStorage.disable = 0
+        })
+    }, [])
 
     const makeClass = (mode?: string) => classNames({
         "main__component": true,

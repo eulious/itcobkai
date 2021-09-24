@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
+import Note, { NoteInfo } from "./Note";
 import { request } from "../common/Common";
 import { Context } from "../common/Context";
-import Note, { NoteInfo } from "./Note";
 
-interface Author {
+export interface Author {
     name: string
     notes: NoteInfo[]
 }
@@ -17,21 +17,14 @@ interface NoteListProps {
 }
 export default function NoteList(props: NoteListProps) {
     const [authors, setAuthors] = useState<Author[]>([])
-    const [myName, setMyName] = useState("")
     const [loading, setLoading] = useState(false)
-    const { dispatch } = useContext(Context)
-
+    const { state } = useContext(Context)
 
     useEffect(() => {
-        setLoading(true)
-        request("GET", "/notes/init").then(res => {
-            setMyName(res.name)
-            setAuthors(res.authors)
-            dispatch({ type: "ROLES", roles: res.roles[0] })
-            setLoading(false)
-        })
-    }, [])
-
+        // loadingがtrueになる問題が起きるかも
+        if (state.authors.length) setLoading(false)
+        else setLoading(true)
+    }, [state])
 
     useEffect(() => {
         let flag = false
@@ -53,7 +46,7 @@ export default function NoteList(props: NoteListProps) {
         const res = await request("GET", "/notes/add")
         const new_note = { id: res.note_id, title: "名称未設定", unread: false, editable: true }
         authors.forEach(author => {
-            if (author.name === myName) {
+            if (author.name === state.profiles[localStorage._id].name) {
                 author.notes.push(new_note)
             }
         })

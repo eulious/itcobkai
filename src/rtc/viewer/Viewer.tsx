@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Connection } from "./Connector";
 import { RTC_CORE } from "../utils/Config";
-import { request } from "../../common/Common";
+import { Context } from "../../common/Context";
 import useInterval from "../../common/Hooks";
 import Controller from "./Controller";
 import SideMenu from "./SideMenu";
@@ -11,6 +11,7 @@ import RTC from "../rtc/rtc";
 // ボイスチャット画面
 // 親コンポーネント: main.Main
 export default function Viewer() {
+    const { state } = useContext(Context)
     const [conn, setConn] = useState<Connection>()
     const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])
     const [mutes, setMutes] = useState<Set<string>>(new Set())
@@ -31,9 +32,8 @@ export default function Viewer() {
     }, [])
 
     async function start() {
-        const res = await request("GET", "/rtc/init")
-        rtc.KEYS = res.keys
-        ct.init(res.profiles, rtc.message)
+        rtc.KEYS = state.keys
+        ct.init(state.profiles, rtc.message)
         rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
         // ct.init(res.profiles, console.log)
         // ct.start(5, 4)

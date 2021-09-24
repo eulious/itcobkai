@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { RTCPersons } from "./RTCPersons";
 import { RTC_CORE } from "../utils/Config";
-import { request } from "../../common/Common";
 import { Streams } from "../utils/Schema";
+import { Context } from "../../common/Context";
 import ClientAudio from "./ClientAudio";
 import Mapper from "./Mapper";
 import RTC from "../rtc/rtc";
@@ -12,6 +12,7 @@ let streams: Streams
 // マスター画面
 // 親コンポーネント: main.Main
 export default function Master() {
+    const { state } = useContext(Context)
     const rtc = useMemo(() => new RTC(RTC_CORE).Master, [])
     const prs = useMemo(() => new RTCPersons(), [])
     const mp = useMemo(() => new Mapper(rtc.message, prs), [])
@@ -23,10 +24,9 @@ export default function Master() {
     }, [])
 
     async function start() {
-        const res = await request("GET", "/rtc/init")
-        if (res.master) {
-            rtc.KEYS = res.keys
-            prs.set(res.profiles)
+        if (state.master) {
+            rtc.KEYS = state.keys
+            prs.set(state.profiles)
             streams = await rtc.start(receive)
         } else {
             console.error("実行権限がありません")
@@ -68,7 +68,6 @@ export default function Master() {
                 mp.move(clientId, res.x, res.y)
                 break;
             case "join":
-                // mp.join(clientId, rtcId)
                 mp.join(res.profile, clientId, rtcId)
                 makePlayers()
                 break;
