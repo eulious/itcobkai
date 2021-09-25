@@ -1,6 +1,6 @@
 import { map } from "../utils/Map";
 import { MAP } from "../utils/Config";
-import { Person } from "./Person";
+import { Person } from "./Persons";
 
 export interface Position {
     x: number;

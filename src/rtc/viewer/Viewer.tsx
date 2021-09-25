@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Connection } from "./Connector";
+import { useHistory } from "react-router";
 import { RTC_CORE } from "../utils/Config";
+import { Checkbox } from "../../common/BaseComponents";
 import { Context } from "../../common/Context";
 import useInterval from "../../common/Hooks";
+import MainWindow from "./MainWindow";
 import Controller from "./Controller";
 import SideMenu from "./SideMenu";
 import Header from "../../main/Header";
@@ -12,6 +15,7 @@ import RTC from "../rtc/rtc";
 // 親コンポーネント: main.Main
 export default function Viewer() {
     const { state } = useContext(Context)
+    const [mode, setMode] = useState("normal")
     const [conn, setConn] = useState<Connection>()
     const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])
     const [mutes, setMutes] = useState<Set<string>>(new Set())
@@ -19,6 +23,7 @@ export default function Viewer() {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const localAudio = useRef<HTMLAudioElement>(null)
     const remoteAudio = useRef<HTMLAudioElement>(null)
+    const history = useHistory()
 
     useInterval(() => {
         const conn = ct.getConnection()
@@ -33,12 +38,12 @@ export default function Viewer() {
 
     async function start() {
         rtc.KEYS = state.keys
-        ct.init(state.profiles, rtc.message)
-        rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
-        // ct.init(res.profiles, console.log)
-        // ct.start(5, 4)
-        // ct.join(res.profiles["WOzosMqMAy"], "WOzosMqMAy", 6, 7)
-        // ct.join(res.profiles["ym4F1XcR8k"], "ym4F1XcR8k", 6, 6)
+        // ct.init(state.profiles, rtc.message)
+        // rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
+        ct.init(state.profiles, console.log)
+        ct.start(5, 4)
+        ct.join(state.profiles["2Jc4uot"], "2Jc4uot", 6, 7)
+        ct.join(state.profiles["C3kjj1X"], "C3kjj1X", 6, 6)
         // Object.keys(res.profiles).forEach(key => { ct.join(res.profiles[key], key, Math.floor(Math.random() * 24), Math.floor(Math.random() * 24)) })
         setConn(ct.getConnection())
     }
@@ -98,9 +103,16 @@ export default function Viewer() {
         ct.mute(enabled)
     }
 
+    function edit() {
+        const id = ct.player!.id
+        if (id) history.push(`${location.pathname}?mode=note&note=${id}&edit=true`)
+    }
+
     return (
         <div>
-            <Header mode="rtc" />
+            <Header mode="rtc" >
+                <div /><div className="btn-flat" onClick={edit}>編集</div>
+            </Header>
             <table className="viewer__wrapper">
                 <tbody>
                     <tr>
@@ -117,32 +129,18 @@ export default function Viewer() {
                         </td>
                     </tr>
                     <tr>
-                        <td className="viewer__canvas_wrapper">
-                            <canvas className="viewer__canvas" ref={canvasRef} width="512" height="512"></canvas>
-                        </td>
+                        <MainWindow mode={mode} canvasRef={canvasRef} />
                         <td className="viewer__side_wrapper">
-                            <SideMenu conn={conn} player={ct.player} mutes={mutes} />
+                            <SideMenu
+                                conn={conn}
+                                player={ct.player}
+                                mode={mode}
+                                setMode={setMode}
+                                mutes={mutes} />
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    )
-}
-
-
-function Checkbox(props: { label: string, onChange: Function }) {
-    const [checked, setChecked] = useState(false)
-
-    function onChange() {
-        props.onChange(!checked)
-        setChecked(!checked)
-    }
-
-    return (
-        <span onClick={onChange}>
-            <input type="checkbox" checked={checked} onChange={() => { }} />
-            {props.label}
-        </span>
     )
 }

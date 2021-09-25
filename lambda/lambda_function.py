@@ -59,6 +59,19 @@ def discord(post):
     id = id7(int(post["id"]))
     if id not in USERS:
         raise CustomError(401, "無効なユーザーです")
+    if not DynamoDB("notes").get({"id": id}):
+        DynamoDB("notes").put({
+            "id": id,
+            "user_id": id,
+            "title": "__PORTFOLIO__",
+            "roles": [],
+            "updated_at": int(time())
+        })
+        resource('s3').Bucket(S3_INTERNAL).put_object(
+            Key=f'md/{id}.md',
+            Body="",
+            ContentType='text/plain',
+        )
     db = DynamoDB("tokens")
     db.put({"token": secret["access"], "user_id": id, "expired_at": int(time()) + 60*60})
     db.put({"token": secret["refresh"], "user_id": id})
@@ -75,6 +88,7 @@ def get_note(post):
     return {
         "permission": [],
         "content": content,
+        "user_id": meta["user_id"],
         "info": {
             "id": meta["id"],
             "updated_at": int(meta["updated_at"]),
@@ -150,3 +164,19 @@ def remove_note(post):
     auth(post["_access"])
     DynamoDB("notes").delete({"id": post["note_id"]})
     resource("s3").Object(S3_INTERNAL, f"md/{post['note_id']}.md").delete()
+
+
+@app.get("/notes/portfolio")
+def get_portfolio(post):
+    auth(post["_access"])
+    for id, arr in USERS.items():
+        if post["name"] == arr[0]:
+            break
+    meta = DynamoDB("notes").get({"id": id})
+    return {
+        "id": id,
+        "updated_at": meta["updated_at"],
+        "title": "名称未設定",
+        "unread": False,
+        "editable": id == post["_id"],
+    }

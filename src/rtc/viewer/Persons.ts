@@ -1,6 +1,14 @@
 import { avator, request } from "../../common/Common";
 import { HAKASE } from "../../common/Config";
-import { Person } from "./Person";
+
+export interface Person {
+    img: HTMLImageElement
+    mute: boolean
+    profile: Profile
+    x: number
+    y: number
+    id: string
+}
 
 export interface Profile {
     name: string

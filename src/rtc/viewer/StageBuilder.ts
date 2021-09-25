@@ -1,6 +1,6 @@
 import CONFIG, { MAP } from "../utils/Config";
 import { ASSETS } from "../../common/Config";
-import { Person } from "./Person";
+import { Person } from "./Persons";
 import { map } from "../utils/Map";
 
 // Canvasにマップや人物を描画するクラス

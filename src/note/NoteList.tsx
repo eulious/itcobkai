@@ -23,7 +23,6 @@ export default function NoteList(props: NoteListProps) {
     useEffect(() => {
         // loadingがtrueになる問題が起きるかも
         if (Object.keys(state.authors).length) {
-            // 日本語順ソートするならここに
             setLoading(false)
             setAuthors(state.authors)
         } else {

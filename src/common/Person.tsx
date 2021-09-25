@@ -1,28 +1,37 @@
+import classNames from "classnames"
 import React from "react"
-import { avator } from "../../common/Common"
-import { Profile } from "./Persons"
-
-export interface Person {
-    img: HTMLImageElement
-    mute: boolean
-    profile: Profile
-    x: number
-    y: number
-    id: string
-}
+import { avator } from "./Common"
+import { Profile } from "../rtc/viewer/Persons"
 
 // サイドバーに表示されるプレイヤー
 // 親コンポーネント: rtc.viewer.SideMenu, rtc.Master.ClientAudio
 interface PersonInfoProps {
     profile: Profile;
     muted?: boolean;
+    selected?: boolean;
+    onClick?: Function;
 }
 export default function PersonInfo(props: PersonInfoProps) {
+    const className = classNames({
+        "user__contents": true,
+        "user__contents--select": props.selected,
+        "user__contents--unselect": !props.selected,
+    })
+
+    const thumbClass = classNames({
+        "user__thumbnail": true,
+        "user__thumbnail--muted": props.muted
+    })
+
+    function onClick() {
+        if (props.onClick) props.onClick()
+    }
+
     return (
-        <table className="user__contents">
+        <table onClick={onClick} className={className}>
             <tbody><tr>
                 <td className="user__img_box">
-                    <img className={"user__thumbnail " + (props.muted ? "user__thumbnail--muted" : "")}
+                    <img className={thumbClass}
                         src={avator(props.profile.thumbnail)} />
                 </td>
                 <td className="user__profile">

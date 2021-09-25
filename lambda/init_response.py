@@ -42,19 +42,21 @@ def init_response(post):
     notes = {}
     last_updates = {}
     for note in DynamoDB("notes").scan():
+        if note["user_id"] == note["id"]:
+            continue
         name = USERS[note["user_id"]][0]
+        update_at = int(note["updated_at"])
         if name not in notes:
             notes[name] = []
-            last_updates[name] = 0
-        update_at = int(note["updated_at"])
-        if last_updates[name] < update_at:
+            last_updates[name] = update_at
+        elif last_updates[name] < update_at:
             last_updates[name] = update_at
         notes[name].append({
-           "id": note["id"],
-           "updated_at": update_at,
-           "title": note["title"],
-           "unread": False,
-           "editable": note["user_id"] == post["_id"]
+            "id": note["id"],
+            "updated_at": update_at,
+            "title": note["title"],
+            "unread": False,
+            "editable": note["user_id"] == post["_id"]
         })
     authors = []
     for (name, _) in sorted(last_updates.items(), key=lambda x: x[1], reverse=True):

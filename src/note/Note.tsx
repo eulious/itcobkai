@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Render } from "./Components";
-import { request } from "../common/Common";
+import { getParam, request } from "../common/Common";
 import NoteList from "./NoteList";
 import SideMenu from "./SideMenu";
 import Header from "../main/Header";
 import Editor from "./Editor";
+import { useLocation } from "react-router";
 
 // 権限管理するオブジェクト
 // まだ本格的に使ってない
 export interface NoteDetail {
     permission: string[]
+    user_id: string
     content: string
     info: NoteInfo
 }
@@ -29,6 +31,7 @@ export default function Note() {
     const [onEdit, setOnEdit] = useState(false)
     const [note, setNote] = useState<NoteInfo>()
     const [detail, setDetail] = useState<NoteDetail>()
+    const loc = useLocation()
 
     function edit() {
         setOnEdit(true)
@@ -38,6 +41,16 @@ export default function Note() {
         setDetail(detail)
         setNote({ ...detail.info })
     }
+
+    useEffect(() => {
+        const param = getParam()
+        if (!param.note) return
+        request("GET", "/notes/contents", { note_id: param.note }).then(res => {
+            setNote(res.info)
+            setDetail(res)
+            if (param.edit) setOnEdit(true)
+        })
+    }, [loc])
 
     useEffect(() => {
         if (!note) return
