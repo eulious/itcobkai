@@ -45,7 +45,7 @@ class CustomError(Exception):
 
 def auth(access, consistency=False):
     res = DynamoDB("tokens").get({"token": access}, consistency)
-    if res and "expired_at" in res and res["token"] == access:
+    if res and "expires_at" in res and res["token"] == access:
         return res["user_id"]
     else:
         raise CustomError(401, "無効なトークンです")
@@ -71,7 +71,7 @@ def generate_token():
     return {
         "access": id62(),
         "refresh": id62(),
-        "expires_at": int(time()) + 604800
+        "expires_at": int(time()) + 60*60
     }
 
 

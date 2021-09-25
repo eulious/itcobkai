@@ -29,7 +29,7 @@ def refresh(post):
         raise CustomError(401, "無効なトークンです")
     secret = generate_token()
     db.delete({"token": post["_refresh"]})
-    db.put({"token": secret["access"], "user_id": res["user_id"], "expired_at": int(time()) + 60*60})
+    db.put({"token": secret["access"], "user_id": res["user_id"], "expires_at": int(time()) + 60*60})
     db.put({"token": secret["refresh"], "user_id": res["user_id"]})
     return secret
 
@@ -73,7 +73,7 @@ def discord(post):
             ContentType='text/plain',
         )
     db = DynamoDB("tokens")
-    db.put({"token": secret["access"], "user_id": id, "expired_at": int(time()) + 60*60})
+    db.put({"token": secret["access"], "user_id": id, "expires_at": secret["expires_at"]})
     db.put({"token": secret["refresh"], "user_id": id})
     return { "id": id, "secret": secret }
 

@@ -18,6 +18,7 @@ export default class Token {
                 headers: { "Content-Type": "application/json", },
                 body: JSON.stringify({
                     _api: "/refresh",
+                    _method: "POST",
                     _refresh: this.decode(localStorage.refresh)
                 })
             });
@@ -26,7 +27,7 @@ export default class Token {
                 window.alert(`認証エラー: ${d.detail}`)
                 location.href = location.href.split("?")[0] + "?mode=auth"
             }
-            this.save(d.secret)
+            this.save(d)
         }
         return this.decode(localStorage.access)
     }
