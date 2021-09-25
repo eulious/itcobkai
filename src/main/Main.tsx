@@ -19,6 +19,7 @@ export default function Main() {
     const loc = useLocation()
 
     useEffect(() => {
+        if (params.mode === "auth") return
         sessionStorage.disable = dayjs().add(1, "minutes")
         request("GET", "/init").then(res => {
             dispatch({ type: "INIT", init: res })

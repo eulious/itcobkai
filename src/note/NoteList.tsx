@@ -22,9 +22,14 @@ export default function NoteList(props: NoteListProps) {
 
     useEffect(() => {
         // loadingがtrueになる問題が起きるかも
-        if (state.authors.length) setLoading(false)
-        else setLoading(true)
-    }, [state])
+        if (Object.keys(state.authors).length) {
+            // 日本語順ソートするならここに
+            setLoading(false)
+            setAuthors(state.authors)
+        } else {
+            setLoading(true)
+        }
+    }, [state.authors])
 
     useEffect(() => {
         let flag = false

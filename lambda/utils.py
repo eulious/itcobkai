@@ -63,6 +63,10 @@ def id62(num = 0):
     return uid
 
 
+def id7(num):
+    return id62(int(blake2b(str(num).encode(), digest_size=5).hexdigest(), 16))
+
+
 def generate_token():
     return {
         "access": id62(),

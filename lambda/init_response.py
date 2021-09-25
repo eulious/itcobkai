@@ -39,26 +39,31 @@ def init_response(post):
             elif "MV" in role:
                 profiles[id]["member"]["mv"] = True
 
-    author = {}
+    notes = {}
+    last_updates = {}
     for note in DynamoDB("notes").scan():
         name = USERS[note["user_id"]][0]
-        if name not in author:
-            author[name] = {
-                "name": name,
-                "notes": []
-            }
-        author[name]["notes"].append({
+        if name not in notes:
+            notes[name] = []
+            last_updates[name] = 0
+        update_at = int(note["updated_at"])
+        if last_updates[name] < update_at:
+            last_updates[name] = update_at
+        notes[name].append({
            "id": note["id"],
-           "updated_at": int(note["updated_at"]),
+           "updated_at": update_at,
            "title": note["title"],
            "unread": False,
            "editable": note["user_id"] == post["_id"]
         })
+    authors = []
+    for (name, _) in sorted(last_updates.items(), key=lambda x: x[1], reverse=True):
+        authors.append({"name": name, "notes": notes[name]})
 
     return {
         "profiles": profiles,
         "keys": KEYS,
         "master": post["_id"] in MASTER,
         "roles": roles, 
-        "author": author,
+        "authors": authors,
     }

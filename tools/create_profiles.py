@@ -83,5 +83,5 @@ roles.pop(role_id)
 
 # stringify = lambda x: dumps(x, ensure_ascii=False, indent=2)
 stringify = lambda x: dumps(x, ensure_ascii=False, separators=(",", ":"))
-users['ym4F1XcR8k'] = ['うり', '822720457718759434/7958dfc5b9265cbef9d2905428cb8129', []]
+users['C3kjj1X'] = ['うり', '822720457718759434/7958dfc5b9265cbef9d2905428cb8129', []]
 open(OUT_PATH, "wt").write(f"ROLES={stringify(roles)}\nUSERS={stringify(users)}")

@@ -3,7 +3,7 @@
 from time import time
 from keys import S3_INTERNAL, S3_PUBLIC, MASTER
 from boto3 import resource
-from utils import DynamoDB, CustomError, auth, generate_token, id62, blake
+from utils import DynamoDB, CustomError, auth, generate_token, id7, id62, blake
 from base64 import b64decode
 from profiles import USERS
 from lambdaAPI import LambdaAPI
@@ -56,7 +56,7 @@ def refresh(post):
 @app.invoked("/discord")
 def discord(post):
     secret = generate_token()
-    id = id62(int(post["id"]))
+    id = id7(int(post["id"]))
     if id not in USERS:
         raise CustomError(401, "無効なユーザーです")
     db = DynamoDB("tokens")
