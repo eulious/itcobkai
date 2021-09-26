@@ -30,16 +30,6 @@ export async function request(method: "GET" | "POST", api: string, post: any = {
 }
 
 
-export function getParam(): { [key: string]: string } {
-    // Getパラメータ解析。react-router導入後に削除予定
-    const obj: { [key: string]: string } = {};
-    location.search.substring(1).split("&")
-        .map(s => s.split("="))
-        .forEach(arr => obj[arr[0]] = arr[1]);
-    return obj
-}
-
-
 export function throttle(func: Function, limit: number): Function {
     // 関数の実行回数を制限する。多分使われていないので削除予定
     let inThrottle: boolean;

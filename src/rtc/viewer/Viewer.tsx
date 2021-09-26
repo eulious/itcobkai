@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useInterval, useTransition } from "../../common/Hooks";
 import { Connection } from "./Connector";
-import { useHistory } from "react-router";
 import { RTC_CORE } from "../utils/Config";
 import { Checkbox } from "../../common/BaseComponents";
 import { Context } from "../../common/Context";
-import useInterval from "../../common/Hooks";
 import MainWindow from "./MainWindow";
 import Controller from "./Controller";
 import SideMenu from "./SideMenu";
@@ -14,16 +13,16 @@ import RTC from "../rtc/rtc";
 // ボイスチャット画面
 // 親コンポーネント: main.Main
 export default function Viewer() {
-    const { state } = useContext(Context)
+    const { state, dispatch } = useContext(Context)
+    const [mutes, setMutes] = useState<Set<string>>(new Set())
     const [mode, setMode] = useState("normal")
     const [conn, setConn] = useState<Connection>()
-    const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])
-    const [mutes, setMutes] = useState<Set<string>>(new Set())
-    const ct = useMemo(() => new Controller(), []);
-    const canvasRef = useRef<HTMLCanvasElement>(null)
-    const localAudio = useRef<HTMLAudioElement>(null)
+    const transition = useTransition()
     const remoteAudio = useRef<HTMLAudioElement>(null)
-    const history = useHistory()
+    const localAudio = useRef<HTMLAudioElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const rtc = useMemo(() => new RTC(RTC_CORE).Viewer, [])
+    const ct = useMemo(() => new Controller(), []);
 
     useInterval(() => {
         const conn = ct.getConnection()
@@ -37,6 +36,7 @@ export default function Viewer() {
     }, [])
 
     async function start() {
+        dispatch({ type: "RTC", inRTC: true })
         rtc.KEYS = state.keys
         // ct.init(state.profiles, rtc.message)
         // rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
@@ -105,13 +105,15 @@ export default function Viewer() {
 
     function edit() {
         const id = ct.player!.id
-        if (id) history.push(`${location.pathname}?mode=note&note=${id}&edit=true`)
+        if (id) transition(`note&note=${id}&edit=true`, true, false)
     }
 
     return (
         <div>
             <Header mode="rtc" >
-                <div /><div className="btn-flat" onClick={edit}>編集</div>
+                <div className="header__right">
+                    <div className="btn-flat" onClick={edit}>編集</div>
+                </div>
             </Header>
             <table className="viewer__wrapper">
                 <tbody>

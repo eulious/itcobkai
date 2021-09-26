@@ -65,3 +65,30 @@ body {
         text-overflow: ellipsis;
     }
 }
+
+.recording {
+    font-size: 12px;
+    margin: 15px;
+    position: relative;
+    width: 1.4em;
+    height: 1.4em;
+    border: 0.1em solid rgb(211, 80, 76);
+    border-radius: 100%;
+}
+
+.recording::before {
+    content: "";
+    position: absolute;
+    top: 0.3em;
+    left: 0.3em;
+    width: 0.8em;
+    height: 0.8em;
+    background-color: rgb(211, 80, 76);
+    border-radius: 100%;
+}
+
+.recording2 {
+    width: 18px;
+    height: 18px;
+    margin: 15px;
+}

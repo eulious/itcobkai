@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Note, { NoteInfo } from "./Note";
 import { request } from "../common/Common";
 import { Context } from "../common/Context";
+import { useTransition } from "../common/Hooks";
 
 export interface Author {
     name: string
@@ -112,6 +113,7 @@ interface CardProps {
     setNote: Function
 }
 function Card(props: CardProps) {
+    const transition = useTransition()
     const [unread, setUnread] = useState(props.note.unread)
 
     let className = "note__card "
@@ -124,6 +126,7 @@ function Card(props: CardProps) {
     }
 
     function onClick() {
+        transition(`note&note=${props.note.id}`, false, false)
         props.setNote(props.note)
         setUnread(false)
     }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { getParam, useTransition } from "../common/Hooks";
+import { request } from "../common/Common";
 import { Render } from "./Components";
-import { getParam, request } from "../common/Common";
 import NoteList from "./NoteList";
 import SideMenu from "./SideMenu";
 import Header from "../main/Header";
 import Editor from "./Editor";
-import { useLocation } from "react-router";
 
 // 権限管理するオブジェクト
 // まだ本格的に使ってない
@@ -28,12 +28,14 @@ export interface NoteInfo {
 // ノート画面の最上位コンポーネント
 // 親コンポーネント: main.Main
 export default function Note() {
+    const transition = useTransition()
     const [onEdit, setOnEdit] = useState(false)
     const [note, setNote] = useState<NoteInfo>()
     const [detail, setDetail] = useState<NoteDetail>()
-    const loc = useLocation()
+    const param = getParam()
 
     function edit() {
+        transition(`note&note=${note?.id}&edit=true`, false, false)
         setOnEdit(true)
     }
 
@@ -43,14 +45,17 @@ export default function Note() {
     }
 
     useEffect(() => {
-        const param = getParam()
         if (!param.note) return
         request("GET", "/notes/contents", { note_id: param.note }).then(res => {
             setNote(res.info)
             setDetail(res)
-            if (param.edit) setOnEdit(true)
+            if (param.edit && !res.info.editable) {
+                transition(`note&note=${param.note}`, false, true)
+            } else if (param.edit) {
+                setOnEdit(true)
+            }
         })
-    }, [loc])
+    }, [param])
 
     useEffect(() => {
         if (!note) return
@@ -64,7 +69,7 @@ export default function Note() {
                     setOnEdit={setOnEdit}
                     detail={detail}
                     setDetail={updateDetail} />}
-            <Header mode="note">
+            <Header mode="note" onEdit={onEdit}>
                 <div className="header__right">
                     {/* <div>URL取得</div> */}
                     {note?.editable

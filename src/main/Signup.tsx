@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
-import { getParam } from "../common/Common"
 import { LAMBDA_URL } from "../common/Config"
+import { getParam } from "../common/Hooks"
 import Token from "../common/Token"
 import Header from "./Header"
 

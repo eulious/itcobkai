@@ -118,10 +118,10 @@ export default function SideMenu(props: SideMenuProps) {
                 <tr>
                     <td colSpan={3}>
                         <div className="viewer__side_contents" ref={ref}>
-                            通話中
+                            通話中 -- {talking.length}
                             {talking}
                             <br />
-                            オンライン
+                            オンライン -- {online.length}
                             {online}
                         </div>
                     </td>

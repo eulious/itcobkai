@@ -1,14 +1,3 @@
-@mixin member {
-    border-radius: 50%;
-    box-sizing: border-box;
-    line-height: 1.2em;
-    width: 1.1em;
-    height: 1.1em;
-    text-align: center;
-    margin: auto 2px;
-    color: #ccc;
-}
-
 .viewer {
     &__side_wrapper {
         vertical-align: top;
@@ -100,50 +89,5 @@
             width: 100%;
             display: none;
         }
-    }
-}
-
-.user {
-    &__img_box {
-        width: 50px;
-        vertical-align: top;
-    }
-
-    &__thumbnail {
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-
-        &--muted {
-            opacity: 0.2;
-        }
-    }
-
-    &__contents {
-        border-bottom: 1px solid $black3;
-        width: 250px;
-        &:hover {
-            background-color: $black2;
-        }
-    }
-
-    &__dtm {
-        @include member;
-        background-color: #4cadd0;
-    }
-
-    &__cg {
-        @include member;
-        background-color: #45bf84;
-    }
-
-    &__prog {
-        @include member;
-        background-color: #c16b47;
-    }
-
-    &__mv {
-        @include member;
-        background-color: #baa643;
     }
 }

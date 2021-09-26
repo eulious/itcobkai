@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo } from "react";
-import { useHistory, useLocation } from 'react-router-dom';
-import { getParam, request } from "../common/Common";
+import { getParam, useTransition } from "../common/Hooks";
+import { request } from "../common/Common";
 import { Context } from "../common/Context";
 import classNames from "classnames";
 import Master from "../rtc/master/Master";
@@ -14,16 +14,13 @@ import "../scss/style.scss"
 // 親コンポーネント: main.App
 export default function Main() {
     const { dispatch } = useContext(Context)
-    const history = useHistory()
+    const transition = useTransition()
     const params = getParam()
-    const loc = useLocation()
 
     useEffect(() => {
         if (params.mode === "auth") return
-        sessionStorage.disable = dayjs().add(1, "minutes")
         request("GET", "/init").then(res => {
             dispatch({ type: "INIT", init: res })
-            sessionStorage.disable = 0
         })
     }, [])
 
@@ -33,9 +30,10 @@ export default function Main() {
     })
 
     const dom = useMemo(() => {
+        console.log("hook!")
         switch (params.mode) {
             case undefined:
-                history.replace(`${location.pathname}?mode=rtc`)
+                transition("rtc", true, true)
             case "master":
                 return <Master />
             case "auth":

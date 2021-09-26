@@ -21,7 +21,6 @@ export default function MainWindow(props: MainWindowProps) {
     }, [props.mode])
 
     useEffect(() => {
-        console.log(0, user)
         if (user === "") return
         request("GET", "/notes/contents", { "note_id": props.mode }).then(res => {
             console.log(1, res)

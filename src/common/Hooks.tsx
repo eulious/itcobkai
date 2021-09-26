@@ -1,6 +1,29 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useHistory, useLocation } from "react-router";
 
-export default function useInterval(callback: () => void, delay: number | null | false, immediate?: boolean) {
+export function useTransition() {
+    const reactHistory = useHistory()
+    return useCallback((getString: string, hook: boolean, replace: boolean) => {
+        const url = `${location.pathname}?mode=${getString}`
+        hook ? (replace ? reactHistory.replace(url) : reactHistory.push(url))
+            : (replace ? history.replaceState(null, "", url) : history.pushState(null, "", url))
+    }, [reactHistory])
+}
+
+
+export function getParam(): { [key: string]: string } {
+    const location = useLocation()
+    return useMemo(() => {
+        const obj: { [key: string]: string } = {};
+        location.search.substring(1).split("&")
+            .map(s => s.split("="))
+            .forEach(arr => obj[arr[0]] = arr[1]);
+        return obj
+    }, [location])
+}
+
+
+export function useInterval(callback: () => void, delay: number | null | false, immediate?: boolean) {
     // Copyright (c) 2019-present Donavon West
     // https://github.com/donavon/use-interval
     const noop = useMemo(() => () => { }, [])

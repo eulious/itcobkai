@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { NoteDetail } from "./Note";
 
 import timezone from "dayjs/plugin/timezone";
@@ -21,9 +21,14 @@ export default function SideMenu(props: SideMenuProps) {
     const utime = props.detail?.info.updated_at
     const { state } = useContext(Context)
 
+    const profile = useMemo(() => {
+        if (!props.detail || !state.profiles) return
+        return <PersonInfo profile={state.profiles[props.detail.user_id]} />
+    }, [props.detail, state.profiles])
+
     return (
         <div className="note__side">
-            {props.detail && <PersonInfo profile={state.profiles[props.detail.user_id]} />}
+            {profile}
             <div>更新日</div>
             <hr className="note-side__hr" />
             <span>{utime && dayjs(utime * 1000).tz("Asia/Tokyo").format('YYYY/MM/DD, HH:mm')}</span>

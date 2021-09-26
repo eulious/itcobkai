@@ -1,17 +1,20 @@
-import React, { ReactNode, useMemo } from "react";
-import { useHistory } from "react-router";
+import React, { ReactNode, useContext, useMemo } from "react";
+import { useTransition } from "../common/Hooks";
+import { Context } from "../common/Context";
 
 // ヘッダ部
 // 親コンポーネント: main.Main
 interface HeaderProps {
     mode?: "rtc" | "note"
+    onEdit?: boolean
     children?: ReactNode
 }
 export default function Header(props: HeaderProps) {
-    const history = useHistory()
+    const { state } = useContext(Context)
+    const transition = useTransition()
 
     function onClick(mode: string) {
-        history.push(`${location.pathname}?mode=${mode}`)
+        transition(mode, true, false)
     }
 
     return (
@@ -23,6 +26,7 @@ export default function Header(props: HeaderProps) {
                     modes={["rtc", "note"]}
                     setMode={onClick}
                 />}
+                {state.inRTC && !props.onEdit && <div className="recording" />}
             </div>
             {props.children}
         </header>
