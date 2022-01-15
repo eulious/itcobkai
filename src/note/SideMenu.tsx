@@ -1,16 +1,8 @@
 import React, { useContext, useMemo } from "react";
 import { NoteDetail } from "./Note";
-
-import timezone from "dayjs/plugin/timezone";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import "dayjs/locale/ja"
-import PersonInfo from "../common/Person";
 import { Context } from "../common/Context";
-dayjs.extend(timezone);
-dayjs.extend(utc);
-dayjs.locale('ja');
-
+import PersonInfo from "../common/Person";
+import { dayjs } from "../common/Common";
 
 // ノート画面のサイドメニュー
 // 親コンポーネント: note.Note
@@ -31,7 +23,7 @@ export default function SideMenu(props: SideMenuProps) {
             {profile}
             <div>更新日</div>
             <hr className="note-side__hr" />
-            <span>{utime && dayjs(utime * 1000).tz("Asia/Tokyo").format('YYYY/MM/DD, HH:mm')}</span>
+            <span>{utime && dayjs(utime * 1000).format('YYYY/MM/DD, HH:mm')}</span>
             <br />
             <br />
             <div>閲覧可能</div>

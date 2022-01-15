@@ -1,6 +1,17 @@
 import { AVATAR_URL, LAMBDA_URL } from "./Config";
 import Token from "./Token";
 
+// day.jsの日本語対応
+import dayjs_default from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import 'dayjs/locale/ja'
+dayjs_default.extend(utc)
+dayjs_default.extend(timezone)
+dayjs_default.tz.setDefault('Asia/Tokyo')
+dayjs_default.locale('ja')
+export const dayjs = dayjs_default
+
 const t = new Token()
 
 export async function request(method: "GET" | "POST", api: string, post: any = {}, auth = true): Promise<any> {
@@ -27,21 +38,6 @@ export async function request(method: "GET" | "POST", api: string, post: any = {
     console.log("response", d)
     if (d.status === "ng") window.alert(d.detail);
     return d
-}
-
-
-export function throttle(func: Function, limit: number): Function {
-    // 関数の実行回数を制限する。多分使われていないので削除予定
-    let inThrottle: boolean;
-    return function (this: any): any {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            inThrottle = true;
-            func.apply(context, args);
-            setTimeout(() => (inThrottle = false), limit)
-        }
-    }
 }
 
 

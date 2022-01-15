@@ -4,6 +4,10 @@ import { Profile } from "../rtc/viewer/Persons"
 
 /*
 useContextによる状態管理
+0: Masterが起動していない
+1: リロード中
+2: 初期化中
+3: 起動可能
 */
 
 export interface State {

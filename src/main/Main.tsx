@@ -6,7 +6,6 @@ import classNames from "classnames";
 import Master from "../rtc/master/Master";
 import Viewer from "../rtc/viewer/Viewer";
 import Signup from "./Signup";
-import dayjs from "dayjs";
 import Note from "../note/Note";
 import "../scss/style.scss"
 

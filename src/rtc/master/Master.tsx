@@ -105,7 +105,6 @@ export default function Master() {
             <div className="btn-flat" onClick={() => rtc.stop}>停止</div>
             <div className="btn-flat" onClick={debug}>debug</div>
             {players}
-            {/* <Background /> */}
         </div>
     )
 }
