@@ -1,4 +1,4 @@
-import { Streams } from "../utils/Schema"
+import { Streams } from "../rtc/rtc"
 
 // プレイヤーの音声を管理するクラス
 export default class Mixer {

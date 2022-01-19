@@ -1,7 +1,7 @@
+import { Profile } from "../viewer/Persons"
 import classNames from "classnames"
-import React from "react"
 import { avator } from "./Common"
-import { Profile } from "../rtc/viewer/Persons"
+import React from "react"
 
 // サイドバーに表示されるプレイヤー
 // 親コンポーネント: rtc.viewer.SideMenu, rtc.Master.ClientAudio

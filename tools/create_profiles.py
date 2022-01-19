@@ -84,4 +84,42 @@ roles.pop(role_id)
 # stringify = lambda x: dumps(x, ensure_ascii=False, indent=2)
 stringify = lambda x: dumps(x, ensure_ascii=False, separators=(",", ":"))
 users['C3kjj1X'] = ['うり', '822720457718759434/7958dfc5b9265cbef9d2905428cb8129', []]
-open(OUT_PATH, "wt").write(f"ROLES={stringify(roles)}\nUSERS={stringify(users)}")
+# open(OUT_PATH, "wt").write(f"ROLES={stringify(roles)}\nUSERS={stringify(users)}")
+
+#  ===== lambda_function ====
+ROLES = roles
+USERS = users
+profiles = {}
+roles = {}
+
+for [role, attr] in ROLES.values():
+    if attr in roles:
+        roles[attr].append(role)
+    else:
+        roles[attr] = [role]
+
+for id, [name, thumbnail, user_roles] in USERS.items():
+    profiles[id] = {
+        "name": name,
+        "thumbnail": thumbnail,
+        "year": None,
+        "faculty": None,
+        "member": {"dtm": False, "cg": False, "prog": False, "mv": False}
+    }
+    for role_id in user_roles:
+        role, attr = ROLES[role_id]
+        if id not in profiles:
+            continue
+        if "年度" in attr:
+            profiles[id]["year"] = role
+        elif "学科" in attr:
+            profiles[id]["faculty"] = role
+        elif "DTM" in role:
+            profiles[id]["member"]["dtm"] = True
+        elif "PROG" in role:
+            profiles[id]["member"]["prog"] = True
+        elif "CG" in role:
+            profiles[id]["member"]["cg"] = True
+        elif "MV" in role:
+            profiles[id]["member"]["mv"] = True
+open(OUT_PATH, "wt").write(f"PROFILES={str(profiles).replace(' ', '')}")

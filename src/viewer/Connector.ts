@@ -1,5 +1,5 @@
-import { map } from "../utils/Map";
-import { MAP } from "../utils/Config";
+import { MAP } from "../common/Config";
+import { map } from "../master/Map";
 import { Person } from "./Persons";
 
 export interface Position {

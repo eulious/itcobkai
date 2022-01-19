@@ -1,8 +1,7 @@
-import { MOVE_INTERVAL } from "../../common/Config";
+import { MAP, MOVE_INTERVAL } from "../common/Config";
 import { RTCPersons } from "./RTCPersons";
 import { Profile } from "../viewer/Persons";
-import { MAP } from "../utils/Config";
-import { map } from "../utils/Map";
+import { map } from "./Map";
 
 // プレイヤーの座標情報を管理するクラス
 export default class Mapper {

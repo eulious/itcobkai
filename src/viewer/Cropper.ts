@@ -1,5 +1,5 @@
-import CONFIG from "../utils/Config";
-import { map } from "../utils/Map";
+import { map } from "../master/Map";
+import CONFIG from "../common/Config";
 
 export interface Crop {
     x: number;

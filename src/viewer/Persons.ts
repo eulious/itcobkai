@@ -1,5 +1,5 @@
-import { avator, request } from "../../common/Common";
-import { HAKASE } from "../../common/Config";
+import { avator } from "../common/Common";
+import { HAKASE } from "../common/Config";
 
 export interface Person {
     img: HTMLImageElement

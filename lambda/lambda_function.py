@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-from time import time
-from keys import S3_INTERNAL, S3_PUBLIC, MASTER
+from json import dumps
+from keys import  KEYS, S3_INTERNAL, S3_PUBLIC, MASTER, DISCORD
+from utils import id7, blake, CustomError
 from boto3 import resource
-from utils import DynamoDB, CustomError, auth, generate_token, id7, id62, blake
 from base64 import b64decode
-from profiles import USERS
+from profiles import PROFILES
+from datetime import datetime
 from lambdaAPI import LambdaAPI
-from init_response import init_response
 
 app = LambdaAPI()
 
@@ -15,113 +15,120 @@ def lambda_handler(event, _):
     return app.request(event)
 
 
+@app.post("/discord", session=False, token=False)
+def discord(post):
+    try:
+        import requests
+        res = None
+        data = {
+            'client_id': DISCORD["CLIENT_ID"],
+            'client_secret': DISCORD["CLIENT_SECRET"],
+            'grant_type': 'authorization_code',
+            'code': post["code"],
+            'redirect_uri': post["redirect"]
+        }
+        headers = { "Content-Type": "application/x-www-form-urlencoded", }
+        url = 'https://discord.com/api/v8/oauth2/token'
+        res = requests.post(url, data=data, headers=headers).json()
+
+        headers = { "Authorization": f"Bearer {res['access_token']}" }
+        url = "https://discordapp.com/api/users/@me"
+        res = requests.get(url, headers=headers).json()
+    except: 
+        raise CustomError(500, dumps(res))
+    else:
+        id = id7(int(res["id"]))
+        if id in PROFILES:
+            app.issue_session(id)
+            return {"status": "ok"}
+        else:
+            raise CustomError(401, "無効なユーザーです")
+
+
+@app.get("/token", token=False)
+def token(_):
+    return {"token": app.issue_token()}
+
+
+@app.post("/submit", session=False, token=False)
+def submit(post):
+    date = datetime.now().strftime("%y%m%d_%H%M%S")
+    resource('s3').Bucket(S3_INTERNAL).put_object(
+        Key=f"discord/{date}.json",
+        ContentType='application/json',
+        Body=dumps(post, indent=2, ensure_ascii=False)
+    )
+    return {"status": "ok"}
+
+
 @app.get("/init")
-def init(post):
-    auth(post["_access"], True)
-    return init_response(post)
-
-
-@app.post("/refresh")
-def refresh(post):
-    db = DynamoDB("tokens")
-    res = db.get({"token": post["_refresh"]})
-    if not res:
-        raise CustomError(401, "無効なトークンです")
-    secret = generate_token()
-    db.delete({"token": post["_refresh"]})
-    db.put({"token": secret["access"], "user_id": res["user_id"], "expires_at": int(time()) + 60*60})
-    db.put({"token": secret["refresh"], "user_id": res["user_id"]})
-    return secret
-
-
-@app.get("/external/rtc/status")
-def refresh(_):
-    res = DynamoDB("status").get({"mode": "master"})
+def init(_):
     return {
-        "status": res["status"],
-        "counts": int(res["counts"])
+        "profiles": PROFILES,
+        "keys": KEYS,
+        "id": app.id,
+        "master": app.id in MASTER,
     }
 
 
-@app.post("/external/rtc/status")
-def refresh(post):
-    if auth(post["_access"]) in MASTER:
-        DynamoDB("status").put({
-            "mode": "master",
-            "status": post["status"],
-            "counts": post["counts"]
-        })
+@app.post("/status")
+def post_status(post):
+    if app.id not in MASTER:
+        raise CustomError(500, f"許可されていません")
+    s3 = resource('s3').Bucket(S3_PUBLIC)
+    s3.put_object(
+        Key='status.json',
+        ACL="public-read",
+        Body=dumps({
+            "cnt": post["count"],
+            "mtr": PROFILES[app.id]["name"]
+        }, ensure_ascii=False),
+        ContentType='application/json',
+    )
+    return {"status": "ok"}
 
 
-@app.invoked("/discord")
-def discord(post):
-    secret = generate_token()
-    id = id7(int(post["id"]))
-    if id not in USERS:
-        raise CustomError(401, "無効なユーザーです")
-    if not DynamoDB("notes").get({"id": id}):
-        DynamoDB("notes").put({
-            "id": id,
-            "user_id": id,
-            "title": "__PORTFOLIO__",
-            "roles": [],
-            "updated_at": int(time())
-        })
-        resource('s3').Bucket(S3_INTERNAL).put_object(
-            Key=f'md/{id}.md',
-            Body="",
-            ContentType='text/plain',
-        )
-    db = DynamoDB("tokens")
-    db.put({"token": secret["access"], "user_id": id, "expires_at": secret["expires_at"]})
-    db.put({"token": secret["refresh"], "user_id": id})
-    return { "id": id, "secret": secret }
+@app.get("/notes")
+def get_notes(_):
+    mds = []
+    client = resource('s3').meta.client
+    res = client.list_objects_v2(Bucket=S3_INTERNAL, Prefix="md")
+    for md in res["Contents"]:
+        if ".md" not in md["Key"]:
+            continue
+        id = md["Key"].split("/")[1].split(".")[0]
+        mds.append([id, md["LastModified"]])
+    mds = sorted(mds, reverse=True, key=lambda x: x[1])
+    return [md[0] for md in mds]
 
 
 @app.get("/notes/contents")
 def get_note(post):
-    auth(post["_access"])
     s3 = resource('s3').Bucket(S3_INTERNAL)
-    obj = s3.Object(f'md/{post["note_id"]}.md')
-    content = obj.get()['Body'].read().decode('utf-8')
-    meta = DynamoDB("notes").get({"id": post["note_id"]})
-    return {
-        "permission": [],
-        "content": content,
-        "user_id": meta["user_id"],
-        "info": {
-            "id": meta["id"],
-            "updated_at": int(meta["updated_at"]),
-            "title": meta["title"],
-            "unread": False,
-            "editable": meta["user_id"] == post["_id"],
-        }
-    }
+    obj = s3.Object(f'md/{post["id"]}.md')
+    try:
+        content = obj.get()['Body'].read().decode('utf-8')
+        return {"content": content}
+    except Exception as e:
+        if "NoSuchKey" in str(type(e)):
+            return {"content": ""}
+        else:
+            raise e
 
 
 @app.post("/notes/contents")
 def post_note(post):
-    auth(post["_access"])
-    info = post["info"]
-    DynamoDB("notes").put({
-        "id": info["id"],
-        "user_id": post["_id"],
-        "title": info["title"],
-        "roles": [],
-        "updated_at": int(time())
-    })
     resource('s3').Bucket(S3_INTERNAL).put_object(
-        Key=f'md/{info["id"]}.md',
+        Key=f'md/{app.id}.md',
         Body=post["content"],
         ContentType='text/plain',
     )
+    return {"status": "ok"}
 
 
 @app.post("/notes/assets")
 def upload_img(post):
-    auth(post["_access"])
     asset_id = blake(post["base64"])
-
     s3 = resource('s3').Bucket(S3_PUBLIC)
     if post["type"] == "jpg":
         s3.put_object(
@@ -138,45 +145,3 @@ def upload_img(post):
             ContentType='audio/mp3',
         )
     return {"asset_id": asset_id}
-
-
-@app.get("/notes/add")
-def add_note(post):
-    auth(post["_access"])
-    note_id = id62()
-    DynamoDB("notes").put({
-        "id": note_id,
-        "user_id": post["_id"],
-        "title": "名称未設定",
-        "roles": [],
-        "updated_at": int(time())
-    })
-    resource('s3').Bucket(S3_INTERNAL).put_object(
-        Key=f'md/{note_id}.md',
-        Body="",
-        ContentType='text/plain',
-    )
-    return {"note_id": note_id}
-
-
-@app.get("/notes/remove")
-def remove_note(post):
-    auth(post["_access"])
-    DynamoDB("notes").delete({"id": post["note_id"]})
-    resource("s3").Object(S3_INTERNAL, f"md/{post['note_id']}.md").delete()
-
-
-@app.get("/notes/portfolio")
-def get_portfolio(post):
-    auth(post["_access"])
-    for id, arr in USERS.items():
-        if post["name"] == arr[0]:
-            break
-    meta = DynamoDB("notes").get({"id": id})
-    return {
-        "id": id,
-        "updated_at": meta["updated_at"],
-        "title": "名称未設定",
-        "unread": False,
-        "editable": id == post["_id"],
-    }

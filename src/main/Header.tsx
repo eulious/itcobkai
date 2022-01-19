@@ -26,7 +26,6 @@ export default function Header(props: HeaderProps) {
                     modes={["rtc", "note"]}
                     setMode={onClick}
                 />}
-                {state.inRTC && !props.onEdit && <div className="recording" />}
             </div>
             {props.children}
         </header>

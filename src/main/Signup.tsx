@@ -1,7 +1,6 @@
 import React, { useEffect } from "react"
-import { LAMBDA_URL } from "../common/Config"
 import { getParam } from "../common/Hooks"
-import Token from "../common/Token"
+import request from "../common/Request";
 import Header from "./Header"
 
 // Discord連携を促す画面
@@ -31,31 +30,19 @@ export default function Signup() {
 
 
 // Discordの認証の処理を行うコンポーネント
-function PleaseWait(props: { code: string, redirect: string }) {
+interface PleaseWaitProps {
+    code: string
+    redirect: string
+}
+function PleaseWait(props: PleaseWaitProps) {
     useEffect(() => { code2token() }, [])
 
     async function code2token() {
-        let res: any
-        try {
-            res = await fetch(`${LAMBDA_URL}/discord`, {
-                method: "POST",
-                mode: "cors",
-                headers: { "Content-Type": "application/json", },
-                body: JSON.stringify(props)
-            });
-        } catch (error) {
-            console.error(error)
-            window.alert(`認証に失敗しました。もう一度やり直して下さい。`)
-            location.href = location.href.split("?")[0] + "?mode=auth"
-        }
-        const d = await res.json();
-        if (res.status === 200) {
-            const t = new Token()
-            t.save(d.secret)
-            localStorage._id = d.id
+        const res = await request("POST", "/discord", props, true)
+        if (res.status === "ok") {
             location.href = location.href.split("?")[0]
         } else {
-            window.alert(`認証に失敗しました: ${d.detail}`)
+            window.alert(`認証に失敗しました: ${res.detail}`)
             location.href = location.href.split("?")[0] + "?mode=auth"
         }
     }

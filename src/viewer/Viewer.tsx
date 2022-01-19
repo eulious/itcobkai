@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useInterval, useTransition } from "../../common/Hooks";
+import { useInterval, useTransition } from "../common/Hooks";
 import { Connection } from "./Connector";
-import { RTC_CORE } from "../utils/Config";
-import { Checkbox } from "../../common/BaseComponents";
-import { Context } from "../../common/Context";
+import { Checkbox } from "../common/BaseComponents";
+import { RTC_CORE, S3_URL } from "../common/Config";
+import { Context } from "../common/Context";
 import MainWindow from "./MainWindow";
 import Controller from "./Controller";
 import SideMenu from "./SideMenu";
-import Header from "../../main/Header";
+import Header from "../main/Header";
 import RTC from "../rtc/rtc";
 
 // ボイスチャット画面
@@ -36,7 +36,6 @@ export default function Viewer() {
     }, [])
 
     async function start() {
-        dispatch({ type: "RTC", inRTC: true })
         rtc.KEYS = state.keys
         // ct.init(state.profiles, rtc.message)
         // rtc.start(ct.player!.profile, ct.player!.id, localAudio.current!, remoteAudio.current!, receive)
@@ -103,16 +102,15 @@ export default function Viewer() {
         ct.mute(enabled)
     }
 
-    function edit() {
-        const id = ct.player!.id
-        if (id) transition(`note&note=${id}&edit=true`, true, false)
+    function manual() {
+        window.open(`${S3_URL}/manual.pdf`)
     }
 
     return (
         <div>
-            <Header mode="rtc" >
+            <Header mode="rtc">
                 <div className="header__right">
-                    <div className="btn-flat" onClick={edit}>編集</div>
+                    <div className="btn-flat" onClick={manual}>操作説明</div>
                 </div>
             </Header>
             <table className="viewer__wrapper">
@@ -131,7 +129,9 @@ export default function Viewer() {
                         </td>
                     </tr>
                     <tr>
-                        <MainWindow mode={mode} canvasRef={canvasRef} />
+                        <MainWindow
+                            mode={mode}
+                            canvasRef={canvasRef} />
                         <td className="viewer__side_wrapper">
                             <SideMenu
                                 conn={conn}

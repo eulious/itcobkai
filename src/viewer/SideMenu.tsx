@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import PersonInfo from "../../common/Person"
 import { Connection } from "./Connector"
+import PersonInfo from "../common/Person"
 import classnames from "classnames"
 import { Person } from "./Persons"
 

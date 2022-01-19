@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import { getParam, useTransition } from "../common/Hooks";
-import { request } from "../common/Common";
+import request, { init } from "../common/Request";
 import { Context } from "../common/Context";
-import classNames from "classnames";
-import Master from "../rtc/master/Master";
-import Viewer from "../rtc/viewer/Viewer";
+import Master from "../master/Master";
+import Viewer from "../viewer/Viewer";
 import Signup from "./Signup";
 import Note from "../note/Note";
+import Wait from "./Wait";
 import "../scss/style.scss"
 
 // 最上位コンポーネント
@@ -18,34 +18,33 @@ export default function Main() {
 
     useEffect(() => {
         if (params.mode === "auth") return
-        request("GET", "/init").then(res => {
-            dispatch({ type: "INIT", init: res })
+        init().then(() => {
+            request("GET", "/init").then(res => {
+                dispatch({ type: "INIT", init: res })
+            })
         })
     }, [])
 
-    const makeClass = (mode?: string) => classNames({
-        "main__component": true,
-        "main__component--active": params.mode === mode
-    })
+    useEffect(() => {
+        if (params.mode !== "panic" && sessionStorage.panic) {
+            transition("panic", true, false)
+        }
+    }, [params])
 
     const dom = useMemo(() => {
-        console.log("hook!")
         switch (params.mode) {
-            case undefined:
-                transition("rtc", true, true)
+            case "rtc":
+                return <Viewer />
             case "master":
                 return <Master />
             case "auth":
                 return <Signup />
+            case "panic":
+                return <Wait />
+            case "note":
+                return <Note />
             default:
-                return (<>
-                    <div className={makeClass("rtc")}>
-                        <Viewer />
-                    </div>
-                    <div className={makeClass("note")}>
-                        <Note />
-                    </div>
-                </>)
+                transition("rtc", true, false)
         }
     }, [params])
 

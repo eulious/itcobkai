@@ -1,4 +1,3 @@
-import { request } from "../../common/Common";
 import { Profile } from "../viewer/Persons";
 
 // プレイヤーの情報を管理するクラス

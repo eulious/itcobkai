@@ -1,8 +1,7 @@
 import Peer, { DataConnection, MediaConnection } from "skyway-js";
-import { id62 } from "../../common/Common";
-import { beep } from "../utils/Common";
-import { Streams } from "../utils/Schema";
+import { beep, id62 } from "../common/Common";
 import { Profile } from "../viewer/Persons";
+import { Streams } from "./rtc";
 
 export class RTCMaster {
     public KEYS: any

@@ -1,8 +1,8 @@
-import { beep } from "../utils/Common"
-import { Streams } from "../utils/Schema"
 import { Profile } from "../viewer/Persons"
 import startMaster from "./kinesisMaster"
 import startViewer from "./kinesisViewer"
+import { Streams } from "./rtc"
+import { beep } from "../common/Common"
 
 export class RTCMaster {
     public KEYS: any

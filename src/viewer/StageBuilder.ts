@@ -1,7 +1,6 @@
-import CONFIG, { MAP } from "../utils/Config";
-import { ASSETS } from "../../common/Config";
 import { Person } from "./Persons";
-import { map } from "../utils/Map";
+import { map } from "../master/Map";
+import CONFIG, { ASSETS, MAP } from "../common/Config";
 
 // Canvasにマップや人物を描画するクラス
 export default class StageBuilder {

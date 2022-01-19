@@ -1,5 +1,5 @@
-import { Connection, Connector } from "./Connector";
 import { Person, Persons, Profile } from "./Persons";
+import { Connection, Connector } from "./Connector";
 import Cropper, { Crop } from "./Cropper";
 import StageBuilder from "./StageBuilder";
 

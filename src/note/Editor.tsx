@@ -1,111 +1,195 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { EditorCore, Render } from "./Components";
-import { NoteSetting } from "./Settings";
-import { NoteDetail } from "./Note";
-import { Toggle } from "../main/Header";
-import { request } from "../common/Common";
+import React, { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { Render } from "./NoteViewer";
+import AceEditor from "react-ace";
+import request from "../common/Request";
+import "ace-builds/src-noconflict/mode-markdown";
+import "ace-builds/src-noconflict/theme-twilight";
+import classnames from "classnames";
 
-// 「編集」を押すと表示される画面
-// 親コンポーネント: note.Note
+
 interface EditorProps {
-    detail?: NoteDetail
-    setDetail: Function
-    setOnEdit: Function
+    content: string
+    onChange: Function
+    width: number
+    height: number
 }
 export default function Editor(props: EditorProps) {
-    const [mode, setMode] = useState("確認")
-    const [value, setValue] = useState(props.detail ? props.detail.content : "")
-    const [title, setTitle] = useState(props.detail ? props.detail.info.title : "")
+    const [content, setContent] = useState(props.content)
+    const [isEdit, setIsEdit] = useState(true)
 
-    function finish() {
-        props.setOnEdit(false)
-        props.detail!.info.title = title ? title : "名称未設定"
-        props.detail!.content = value
-        props.setDetail({ ...props.detail! })
-        request("POST", "/notes/contents", props.detail)
+    return (
+        <div>
+            <div style={{ width: `${props.width}px`, height: `${props.height}px` }}>
+                {isEdit ? (
+                    <EditorCore
+                        content={content}
+                        setContent={setContent}
+                        height={`${props.height}px`}
+                        width={`${props.height}px`} />
+                ) : (
+                    <Render
+                        className="viewer__portfolio"
+                        content={content} />
+                )}
+            </div>
+            <div className="viewer__editor-tab"
+                style={{ top: `-${props.height + 50}px` }}>
+                <div onClick={() => setIsEdit(true)}
+                    className={classnames({
+                        "viewer__tab-switch": true,
+                        "viewer__tab-switch--100": true,
+                        "viewer__tab-switch--select": isEdit
+                    })} >
+                    編集
+                </div>
+                <div onClick={() => setIsEdit(false)}
+                    className={classnames({
+                        "viewer__tab-switch": true,
+                        "viewer__tab-switch--100": true,
+                        "viewer__tab-switch--select": !isEdit
+                    })} >
+                    確認
+                </div>
+                <div className="viewer__onedit">
+                    <div
+                        onClick={() => props.onChange(content)}
+                        className="btn-flat">編集完了</div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// マークダウンエディタ
+// ACEをラップしたようなコンポーネント
+// 親コンポーネント: note.Editor
+interface EditorCoreProps {
+    content?: string
+    setContent: Function
+    className?: string
+    height?: string
+    width?: string
+}
+export function EditorCore(props: EditorCoreProps) {
+    const [selector, setSelector] = useState(0)
+
+    function onChange(value: string | undefined, e: any) {
+        props.setContent(value)
     }
 
-    function titleChange(e: ChangeEvent<HTMLInputElement>) {
-        setTitle(e.target.value)
+    function onCursorChange(e: any) {
+        setSelector(e.cursor.row)
+    }
+
+    function onDrop(asset_id: string, tpe: string) {
+        let value = ""
+        props.content?.split("\n").forEach((line, i) => {
+            value += line + "\n"
+            if (i === selector) value += `@import-${tpe}{"id": "${asset_id}"}\n`
+        })
+        props.setContent(value.slice(0, -1))
     }
 
     return (
-        <div className="editor__modal">
-            <div className="editor__container">
-                <header className="editor__header">
-                    <div className="header__left">
-                        <input
-                            type="text"
-                            className="editor__title--edit"
-                            value={title}
-                            onChange={titleChange} />
-                    </div>
-                    <div className="header__right" style={{ display: "flex" }}>
-                        <Toggle
-                            mode={mode}
-                            modes={["確認", "設定"]}
-                            setMode={setMode} />
-                        <div>
-                            <div className="btn-flat" onClick={finish}>編集完了</div>
-                        </div>
-                    </div>
-                </header>
-                <EditorCore value={value} setValue={setValue} />
-                {mode == "確認"
-                    ? <Render className="editor__render" value={value} />
-                    : <NoteSetting
-                        detail={props.detail}
-                        setDetail={props.setDetail} />
-                }
-            </div>
-        </div>
+        <Dropzone className="editor__editor" onDrop={onDrop}>
+            <AceEditor
+                width={props.width ? props.width : "100%"}
+                height={props.height ? props.height : "calc(100vh - 100px)"}
+                mode="markdown"
+                theme="twilight"
+                name="ace-editor"
+                onChange={onChange}
+                onCursorChange={onCursorChange}
+                wrapEnabled={true}
+                fontSize={14}
+                showPrintMargin={true}
+                showGutter={true}
+                highlightActiveLine={true}
+                value={props.content}
+                setOptions={{
+                    // enableBasicAutocompletion: true,
+                    // enableLiveAutocompletion: false,
+                    // enableSnippets: false,
+                    showLineNumbers: true,
+                    tabSize: 2,
+                }} />
+        </Dropzone>
     );
 }
 
 
-// ノートのタイトルを表示
-// 編集可能で更新されたらAPIを叩く
-interface TitleProps {
-    title: string
-    setTitle: Function
+// マークダウンエディタにファイルをドラッグすると表示される
+// 親コンポーネント: note.Editor
+interface DropzoneProps {
+    children?: React.ReactNode
+    className?: string
+    onDrop: Function
 }
-function Title(props: TitleProps) {
-    const [onEdit, setOnEdit] = useState(false)
-    const ref = useRef<HTMLInputElement>(null)
+function Dropzone(props: DropzoneProps) {
+    const { getRootProps, isDragActive } = useDropzone({ onDrop })
+    const [isUploading, setIsUploading] = useState(false)
 
-    function onChange(e: ChangeEvent<HTMLInputElement>) {
-        props.setTitle(e.target.value)
-    }
-
-    function keydown(e: KeyboardEvent) {
-        if (e.key === "Enter") setOnEdit(false)
-    }
-
-    useEffect(() => {
-        window.addEventListener("keydown", keydown)
-        return () => {
-            window.removeEventListener("keydown", keydown)
-            if (ref.current == null) props.setTitle(props.title)
+    async function onDrop(files: any) {
+        const f = files[0]
+        let tpe = ""
+        if (files[0].type === "audio/mpeg") {
+            tpe = "mp3"
+        } else if (files[0].type === "image/jpeg") {
+            tpe = "jpg"
+        } else {
+            return
         }
-    })
-
-    useEffect(() => {
-        ref.current?.focus();
-        ref.current?.select();
-    }, [onEdit])
+        var reader = new FileReader();
+        reader.readAsDataURL(files[0]);
+        reader.onload = async () => {
+            const base64 = (reader.result as string).split(",")[1];
+            setIsUploading(true)
+            const res = await request("POST", "/notes/assets", {
+                type: tpe, base64: base64
+            })
+            setIsUploading(false)
+            props.onDrop(res.asset_id, tpe)
+        };
+    }
 
     return (
-        <div>
-            {onEdit
-                ? <input type="text" ref={ref}
-                    className="editor__title--edit"
-                    value={props.title}
-                    onBlur={() => setOnEdit(false)}
-                    onChange={onChange} />
-                : <div className="editor__title"
-                    onClick={() => setOnEdit(true)}>
-                    {props.title}</div>
-            }
+        <div {...getRootProps()} className={props.className}>
+            {(() => {
+                if (isDragActive) {
+                    return (
+                        <div className="editor__drop">
+                            <p className="editor__drop_message">ここにドラッグして下さい</p>
+                        </div>
+                    )
+                } else if (isUploading) {
+                    return (
+                        <div className="editor__drop">
+                            <p className="editor__drop_message--upload">アップロードしています...</p>
+                        </div>
+                    )
+                } else {
+                    return props.children
+                }
+            })()}
         </div>
     )
+}
+
+
+export async function convertImg(base64: string): Promise<string> {
+    const canvas = document.createElement("canvas");
+    if (base64.match(/^data: image\/jpeg;base64,/)) {
+        return new Promise<string>(resolve => { resolve(base64) })
+    }
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const newImg = new Image()
+        newImg.src = base64;
+        newImg.onload = () => resolve(newImg);
+        newImg.onerror = (e) => reject(e);
+    })
+    canvas.width = img.naturalWidth
+    canvas.height = img.naturalHeight
+    canvas.getContext("2d")!.drawImage(img, 0, 0);
+    return canvas.toDataURL("image/jpeg");
 }

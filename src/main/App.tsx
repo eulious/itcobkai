@@ -1,6 +1,6 @@
-import React, { useReducer } from "react";
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { Context, initState, reducer } from "../common/Context";
+import React, { useReducer } from "react";
 import { ErrorBoundary } from 'react-error-boundary'
 import Main from "./Main";
 import "../scss/style.scss"

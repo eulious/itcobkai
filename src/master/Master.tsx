@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
+import RTC, { Streams } from "../rtc/rtc";
 import { RTCPersons } from "./RTCPersons";
-import { RTC_CORE } from "../utils/Config";
-import { Streams } from "../utils/Schema";
-import { Context } from "../../common/Context";
+import { RTC_CORE } from "../common/Config";
 import ClientAudio from "./ClientAudio";
+import { Context } from "../common/Context";
 import Mapper from "./Mapper";
-import RTC from "../rtc/rtc";
 
 let streams: Streams
 
