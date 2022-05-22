@@ -1,7 +1,10 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/react'
 import React, { useEffect, useRef, useState } from "react"
 import { getParam, useTransition } from "../common/Hooks"
 import request from "../common/Request";
 import Header from "./Header"
+import { authStyle } from "./Signup";
 
 // Discord連携を促す画面
 // 親コンポーネント: main.Main
@@ -29,8 +32,8 @@ export default function Wait() {
     return (
         <div>
             <Header />
-            <div className="auth__form-wrapper">
-                <h1 className="auth__h1">Please Wait</h1>
+            <div css={authStyle.formWrapper}>
+                <h1 css={authStyle.h1}>復旧中...</h1>
                 <div>
                     <div>
                         障害が発生したため、

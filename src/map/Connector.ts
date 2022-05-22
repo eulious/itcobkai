@@ -1,6 +1,6 @@
 import { MAP } from "../common/Config";
-import { map } from "../master/Map";
-import { Person } from "./Persons";
+import { map } from "./Map";
+import { Person } from "../viewer/Persons";
 
 export interface Position {
     x: number;

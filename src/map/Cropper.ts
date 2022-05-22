@@ -1,4 +1,4 @@
-import { map } from "../master/Map";
+import { map } from "./Map";
 import CONFIG from "../common/Config";
 
 export interface Crop {

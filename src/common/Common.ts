@@ -1,15 +1,15 @@
 import { AVATAR_URL } from "./Config";
 
 // day.jsの日本語対応
-import dayjs_default from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
-import 'dayjs/locale/ja'
-dayjs_default.extend(utc)
-dayjs_default.extend(timezone)
-dayjs_default.tz.setDefault('Asia/Tokyo')
-dayjs_default.locale('ja')
-export const dayjs = dayjs_default
+// import dayjs_default from 'dayjs'
+// import timezone from 'dayjs/plugin/timezone'
+// import utc from 'dayjs/plugin/utc'
+// import 'dayjs/locale/ja'
+// dayjs_default.extend(utc)
+// dayjs_default.extend(timezone)
+// dayjs_default.tz.setDefault('Asia/Tokyo')
+// dayjs_default.locale('ja')
+// export const dayjs = dayjs_default
 
 
 export function avator(thumbnail: string) {

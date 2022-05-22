@@ -31,8 +31,9 @@ export class Persons {
     public persons: Person[] = [];
     public all: Person[] = [];
 
-    constructor(profiles: { [key: string]: Profile }) {
-        const myId = localStorage._id
+    constructor(myId: string, profiles: { [key: string]: Profile }) {
+        // const myId = localStorage._id
+        console.log(0, myId, profiles[myId], profiles)
         this.player = this.createPerson(profiles[myId], myId)
         this.enable(this.player, 0, 0)
         Object.keys(profiles).forEach((id: string) => {
@@ -79,6 +80,7 @@ export class Persons {
             }
         })
     }
+
 
     private createPerson(profile: Profile, id: string): Person {
         return ({

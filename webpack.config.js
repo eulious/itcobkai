@@ -1,8 +1,7 @@
 const path = require('path');
-const mode = process.env.NODE_ENV
 
 module.exports = {
-    mode: mode,
+    mode: "production",
     entry: "./src/index.tsx",
     output: {
         path: path.join(__dirname, 'build'),
@@ -12,11 +11,10 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
     },
-    devtool: 'source-map',
-    devServer: {
-        contentBase: ".",
-        hot: true
+    watchOptions: {
+        ignored: ['**/build', '**/node_modules'],
     },
+    devtool: 'source-map',
     optimization: {
         splitChunks: {
             cacheGroups: {
@@ -34,26 +32,6 @@ module.exports = {
                 test: /\.(ts|tsx)$/,
                 use: 'ts-loader'
             },
-            {
-                test: /\.(sc|sa|c)ss/,
-                use: [
-                    "style-loader",
-                    {
-                        loader: "css-loader",
-                        options: {
-                            url: false,
-                            sourceMap: true,
-                            importLoaders: 2
-                        }
-                    },
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            sourceMap: true
-                        },
-                    },
-                ],
-            }
         ]
     }
 };

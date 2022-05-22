@@ -5,6 +5,7 @@ import { RTC_CORE } from "../common/Config";
 import ClientAudio from "./ClientAudio";
 import { Context } from "../common/Context";
 import Mapper from "./Mapper";
+import { Button } from "../common/Style";
 
 let streams: Streams
 
@@ -100,9 +101,9 @@ export default function Master() {
     return (
         <div>
             <h1>WebRTC Master</h1>
-            <div className="btn-flat" onClick={start}>起動</div>
-            <div className="btn-flat" onClick={() => rtc.stop}>停止</div>
-            <div className="btn-flat" onClick={debug}>debug</div>
+            <Button onClick={start}>起動</Button>
+            <Button onClick={() => rtc.stop}>停止</Button>
+            <Button onClick={debug}>debug</Button>
             {players}
         </div>
     )

@@ -1,10 +1,9 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from "react"
-import classNames from "classnames"
+/** @jsx jsx */
+import React, { useContext, useEffect, useState } from "react"
 import request from "../common/Request"
-import { Render } from "../note/NoteViewer"
-import Editor, { EditorCore } from "../note/Editor"
-import classnames from "classnames"
 import { Context } from "../common/Context"
+import { css, jsx } from '@emotion/react'
+import Slide from "./Slide"
 
 interface MainWindowProps {
     canvasRef: React.RefObject<HTMLCanvasElement>
@@ -32,11 +31,6 @@ export default function MainWindow(props: MainWindowProps) {
         })
     }, [user])
 
-    const canvasClass = classNames({
-        "viewer__canvas_wrapper": true,
-        "viewer__canvas_wrapper--disable": !isMap
-    })
-
     function onChange(content: string) {
         setContent(content)
         request("POST", "/notes/contents", { "content": content })
@@ -44,14 +38,15 @@ export default function MainWindow(props: MainWindowProps) {
 
     return (
         <td>
-            <div className={canvasClass}>
+            <div css={[style.wrapper, !isMap && style.disable]}>
                 <canvas
-                    className="viewer__canvas"
+                    data-id="map"
+                    css={style.canvas}
                     ref={props.canvasRef}
                     width="512"
                     height="512" />
             </div>
-            <Note size={size}
+            <Slide size={size}
                 content={content}
                 onChange={onChange}
                 canEdit={state.id === props.mode}
@@ -62,53 +57,19 @@ export default function MainWindow(props: MainWindowProps) {
 }
 
 
-interface NoteProps {
-    size: number
-    content: string
-    onChange: Function
-    canEdit: boolean
-    visible: boolean
-}
-function Note(props: NoteProps) {
-    const [isEdit, setIsEdit] = useState(false)
+const style = {
+    canvas: css({
+        "-webkit-user-select": "none",
+        userSelect: "none"
+    }),
 
-    useEffect(() => {
-        setIsEdit(false)
-    }, [props.content])
+    wrapper: css({
+        "-webkit-user-select": "none",
+        userSelect: "none",
+        padding: "5px 20px"
+    }),
 
-    const portfolioClass = classNames({
-        "viewer__portfolio_wrapper": true,
-        "viewer__portfolio_wrapper--disable": !props.visible
+    disable: css({
+        display: "none"
     })
-
-    function onClick() {
-        setIsEdit(true)
-    }
-
-    function onChange(content: string) {
-        console.log("onchange")
-        setIsEdit(false)
-        props.onChange(content)
-    }
-
-    return (
-        <div style={{ width: `${props.size}px`, height: `${props.size}px` }}
-            className={portfolioClass}>
-            {isEdit ? (
-                <Editor content={props.content}
-                    onChange={onChange}
-                    width={props.size}
-                    height={props.size} />
-            ) : (
-                <Render
-                    className="viewer__portfolio"
-                    content={props.content} />
-            )}
-            {(props.canEdit && !isEdit && props.content !== "読み込み中...") && (
-                <div style={{ position: "relative", top: `-${props.size}px`, right: `-${props.size - 90}px` }}
-                    onClick={onClick}
-                    className="btn-flat">編集</div>
-            )}
-        </div >
-    )
 }

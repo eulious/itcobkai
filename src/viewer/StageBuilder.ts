@@ -1,5 +1,5 @@
 import { Person } from "./Persons";
-import { map } from "../master/Map";
+import { map } from "../map/Map";
 import CONFIG, { ASSETS, MAP } from "../common/Config";
 
 // Canvasにマップや人物を描画するクラス
@@ -107,7 +107,7 @@ export default class StageBuilder {
             touching = false
             if (!e.target) return
             const dom = e.target as HTMLElement
-            if (dom.className !== "viewer__canvas") return
+            if (dom.dataset.id !== "map") return
             e.preventDefault();
             touching = true
             const rect = dom.getClientRects()[0]

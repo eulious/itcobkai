@@ -1,7 +1,7 @@
-import { Person, Persons, Profile } from "./Persons";
+import { Person, Persons, Profile } from "../viewer/Persons";
 import { Connection, Connector } from "./Connector";
 import Cropper, { Crop } from "./Cropper";
-import StageBuilder from "./StageBuilder";
+import StageBuilder from "../viewer/StageBuilder";
 
 // Viewerの肥大化を防ぐため処理部分を全てこちらに分離
 export default class Controller {
@@ -23,8 +23,8 @@ export default class Controller {
     }
 
 
-    public init(profiles: { [key: string]: Profile }, message: Function) {
-        this.prs = new Persons(profiles)
+    public init(id: string, profiles: { [key: string]: Profile }, message: Function) {
+        this.prs = new Persons(id, profiles)
         this.message = message;
     }
 

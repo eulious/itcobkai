@@ -5,14 +5,12 @@ import { Context } from "../common/Context";
 import Master from "../master/Master";
 import Viewer from "../viewer/Viewer";
 import Signup from "./Signup";
-import Note from "../note/Note";
 import Wait from "./Wait";
-import "../scss/style.scss"
 
 // 最上位コンポーネント
 // 親コンポーネント: main.App
 export default function Main() {
-    const { dispatch } = useContext(Context)
+    const { state, dispatch } = useContext(Context)
     const transition = useTransition()
     const params = getParam()
 
@@ -34,19 +32,17 @@ export default function Main() {
     const dom = useMemo(() => {
         switch (params.mode) {
             case "rtc":
-                return <Viewer />
+                return state.id ? (<Viewer />) : (<div />)
             case "master":
                 return <Master />
             case "auth":
                 return <Signup />
             case "panic":
                 return <Wait />
-            case "note":
-                return <Note />
             default:
                 transition("rtc", true, false)
         }
-    }, [params])
+    }, [params, state])
 
     return (<>{dom}</>)
 }

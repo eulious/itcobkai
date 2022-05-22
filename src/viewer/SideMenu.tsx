@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
-import { Connection } from "./Connector"
+/** @jsx jsx */
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Connection } from "../map/Connector"
 import PersonInfo from "../common/Person"
-import classnames from "classnames"
+import { css, jsx } from '@emotion/react'
 import { Person } from "./Persons"
+import { mixin, styleValue } from "../common/Style"
 
 // サイドメニュー
 // 親コンポーネント: rtc.viewer.Viewer
@@ -84,40 +86,31 @@ export default function SideMenu(props: SideMenuProps) {
     }, [props])
 
     function resize() {
-        const dom = document.getElementsByClassName("viewer__canvas")[0]
+        const dom = document.querySelector('[data-id="map"]')
         const height = (dom as HTMLCanvasElement).height
         ref.current!.style.height = `${height}px`
     }
 
     return (
-        <table className="viewer__tab-wrap">
+        <table css={style.wrap}>
             <tbody>
                 <tr>
                     <td onClick={() => onClick("normal")}
-                        className={classnames({
-                            "viewer__tab-switch": true,
-                            "viewer__tab-switch--select": props.mode === "normal"
-                        })} >
+                        css={[style.switch, props.mode === "normal" && style.select]} >
                         通常
                     </td>
                     <td onClick={() => onClick("overall")}
-                        className={classnames({
-                            "viewer__tab-switch": true,
-                            "viewer__tab-switch--select": props.mode === "overall"
-                        })} >
+                        css={[style.switch, props.mode === "overall" && style.select]} >
                         全体図
                     </td>
                     <td onClick={() => onClick(select)}
-                        className={classnames({
-                            "viewer__tab-switch": true,
-                            "viewer__tab-switch--select": props.mode !== "normal" && props.mode !== "overall"
-                        })} >
+                        css={[style.switch, props.mode !== "normal" && props.mode !== "overall" && style.select]} >
                         人物
                     </td>
                 </tr>
                 <tr>
                     <td colSpan={3}>
-                        <div className="viewer__side_contents" ref={ref}>
+                        <div css={style.contents} ref={ref}>
                             通話中 -- {talking.length}
                             {talking}
                             <br />
@@ -129,4 +122,36 @@ export default function SideMenu(props: SideMenuProps) {
             </tbody>
         </table>
     )
+}
+
+
+const style = {
+    wrap: css({
+        tableLayout: "fixed",
+        width: "250px",
+    }),
+
+    switch: css({
+        cursor: "pointer",
+        textAlign: "center",
+        borderBottom: `3px solid ${styleValue.black3}`,
+        height: "2em",
+        order: -1,
+        ":hover": {
+            color: "#888"
+        },
+    }),
+
+    select: css({
+        borderBottom: "3px solid white",
+    }),
+
+    contents: css({
+        ...mixin.scrollbar,
+        color: "#ccc",
+        overflowY: "scroll",
+        boxSizing: "border-box",
+        overflowX: "hidden",
+        height: "calc(100vh - 300px)",
+    })
 }

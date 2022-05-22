@@ -1,7 +1,9 @@
+/** @jsx jsx */
+import { css, jsx } from '@emotion/react'
 import { Profile } from "../viewer/Persons"
-import classNames from "classnames"
 import { avator } from "./Common"
-import React from "react"
+import { styleValue } from './Style'
+import { CSSObject } from '@emotion/serialize'
 
 // サイドバーに表示されるプレイヤー
 // 親コンポーネント: rtc.viewer.SideMenu, rtc.Master.ClientAudio
@@ -12,38 +14,96 @@ interface PersonInfoProps {
     onClick?: Function;
 }
 export default function PersonInfo(props: PersonInfoProps) {
-    const className = classNames({
-        "user__contents": true,
-        "user__contents--select": props.selected,
-        "user__contents--unselect": !props.selected,
-    })
-
-    const thumbClass = classNames({
-        "user__thumbnail": true,
-        "user__thumbnail--muted": props.muted
-    })
-
     function onClick() {
         if (props.onClick) props.onClick()
     }
 
     return (
-        <table onClick={onClick} className={className}>
+        <table onClick={onClick} css={[
+            style.contents,
+            props.selected && style.contentSelect,
+            !props.selected && style.contentUnselect
+        ]}>
             <tbody><tr>
-                <td className="user__img_box">
-                    <img className={thumbClass}
+                <td css={style.imgBox}>
+                    <img css={[style.thumbnail, props.muted && style.thumbnailMuted]}
                         src={avator(props.profile.thumbnail)} />
                 </td>
-                <td className="user__profile">
+                <td >
                     <div> {props.profile.name} </div>
                     <div>
                         <span >{props.profile.year}, {props.profile.faculty}</span>
-                        {props.profile.member.dtm ? <span className="user__dtm">D</span> : <span />}
-                        {props.profile.member.prog ? <span className="user__prog">P</span> : <span />}
-                        {props.profile.member.cg ? <span className="user__cg">C</span> : <span />}
-                        {props.profile.member.mv ? <span className="user__mv">M</span> : <span />}
+                        {props.profile.member.dtm ? <span css={style.dtm}>D</span> : <span />}
+                        {props.profile.member.prog ? <span css={style.prog}>P</span> : <span />}
+                        {props.profile.member.cg ? <span css={style.cg}>C</span> : <span />}
+                        {props.profile.member.mv ? <span css={style.mv}>M</span> : <span />}
                     </div> </td>
             </tr></tbody>
-        </table>
+        </table >
     )
+}
+
+
+const member: CSSObject = {
+    borderRadius: "50%",
+    boxSizing: "border-box",
+    lineHeight: "1.2em",
+    width: "1.1em",
+    height: "1.1em",
+    textAlign: "center",
+    margin: "auto 2px",
+    color: "#ccc",
+}
+
+const style = {
+    imgBox: css({
+        width: "50px",
+        verticalAlign: "top",
+    }),
+
+    thumbnail: css({
+        borderRadius: "50%",
+        width: "50px",
+        height: "50px",
+
+    }),
+
+    thumbnailMuted: css({
+        opacity: "0.2"
+    }),
+
+    contents: css({
+        borderBottom: `1px solid ${styleValue.black3}`,
+        width: "250px"
+    }),
+
+    contentSelect: css({
+        backgroundcolor: styleValue.black3
+    }),
+
+    contentUnselect: css({
+        ":hover": {
+            backgroundColor: styleValue.black3
+        }
+    }),
+
+    dtm: css({
+        ...member,
+        backgroundColor: "#4cadd0",
+    }),
+
+    cg: css({
+        ...member,
+        backgroundColor: "#45bf84",
+    }),
+
+    prog: css({
+        ...member,
+        backgroundColor: "#c16b47",
+    }),
+
+    mv: css({
+        ...member,
+        backgroundColor: "#baa643"
+    })
 }

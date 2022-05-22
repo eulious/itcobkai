@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export function useTransition() {
-    const reactHistory = useHistory()
+    const navigate = useNavigate()
     return useCallback((getString: string, hook: boolean, replace: boolean) => {
         const url = `${location.pathname}?mode=${getString}`
-        hook ? (replace ? reactHistory.replace(url) : reactHistory.push(url))
+        hook ? (replace ? navigate(url, { replace: true }) : navigate(url))
             : (replace ? history.replaceState(null, "", url) : history.pushState(null, "", url))
-    }, [reactHistory])
+    }, [navigate])
 }
 
 

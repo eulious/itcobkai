@@ -1,9 +1,9 @@
-import { Route, BrowserRouter, Switch } from 'react-router-dom';
+import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import { Context, initState, reducer } from "../common/Context";
 import React, { useReducer } from "react";
 import { ErrorBoundary } from 'react-error-boundary'
+import GlobalStyle from '../common/Style';
 import Main from "./Main";
-import "../scss/style.scss"
 
 // 最上位コンポーネント
 // 親コンポーネント: 無し
@@ -13,18 +13,16 @@ export default function App() {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} >
             <Context.Provider value={{ state, dispatch }}>
+                <GlobalStyle />
                 <BrowserRouter>
-                    <Switch>
-                        <Route>
-                            <Main />
-                        </Route>
-                    </Switch>
+                    <Routes>
+                        <Route path="*" element={<Main />} />
+                    </Routes>
                 </BrowserRouter>
             </Context.Provider>
         </ErrorBoundary >
     )
 }
-
 
 // React関連のエラー時にエラーを表示
 function ErrorFallback({ error, resetErrorBoundary }: { error: any, resetErrorBoundary: any }) {
@@ -35,6 +33,11 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: any, resetErrorBo
             <button onClick={resetErrorBoundary}>Try again</button>
         </div>
     )
+}
+
+if (localStorage.develop === "true") {
+    const ws = new WebSocket("ws://localhost:10005")
+    ws.onmessage = m => location.href = location.href.split("&dev=")[0] + "&dev=" + String(new Date().getTime())
 }
 
 setInterval(() => console.clear(), 15 * 60 * 1000)
